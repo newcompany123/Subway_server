@@ -35,6 +35,13 @@ SECRETS_DIR = os.path.join(ROOT_DIR, '.secrets')
 import_secrets()
 
 
+MEDIA_ROOT = os.path.join(ROOT_DIR, '.media')
+MEDIA_URL = '/media/'
+
+STATIC_ROOT = os.path.join(ROOT_DIR, '.static')
+STATIC_URL = '/static/'
+
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -44,7 +51,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    # Custom app
+    'users',
 ]
+
+# Substituting a custom User model
+# https://docs.djangoproject.com/en/2.0/topics/auth/customizing/#substituting-a-custom-user-model
+AUTH_USER_MODEL = 'users.User'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -110,9 +124,3 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/2.0/howto/static-files/
-
-STATIC_URL = '/static/'
