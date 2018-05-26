@@ -53,6 +53,7 @@ INSTALLED_APPS = [
 
     # Thirdparty app
     'rest_framework',
+    'rest_framework.authtoken',
 
     # Custom app
     'users',
@@ -67,6 +68,12 @@ AUTHENTICATION_BACKENDS = [
     'users.backends.APIFacebookBackend',
 ]
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+    ),
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

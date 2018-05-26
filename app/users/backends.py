@@ -2,6 +2,8 @@ import requests
 from django.contrib.auth import get_user_model
 from rest_framework import status
 
+from users.models import UserOAuthID
+
 User = get_user_model()
 
 
@@ -29,11 +31,11 @@ class APIFacebookBackend:
         if response.status_code == status.HTTP_200_OK:
             response_dict = response.json()
 
-            print('response.content: ')
-            print(response.content)
-
-            print('response_dict: ')
-            print(response_dict)
+            # print('response.content: ')
+            # print(response.content)
+            #
+            # print('response_dict: ')
+            # print(response_dict)
 
             facebook_id = response_dict['id']
             img_profile_url = response_dict['picture']['data']['url']
@@ -47,6 +49,9 @@ class APIFacebookBackend:
                     username=facebook_id,
                     email=email,
                 )
+                obj = UserOAuthID.objects.create(user=user)
+                obj.facebook_id = facebook_id
+                obj.save()
             return user
 
     def get_user(self, user_id):
