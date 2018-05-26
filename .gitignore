@@ -2,6 +2,7 @@
 /.media
 /.static
 /.secrets
+.vscode/
 
 
 # Created by https://www.gitignore.io/api/git,linux,macos,django,python,sublimetext,pycharm+all
