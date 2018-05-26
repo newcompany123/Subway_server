@@ -3,7 +3,6 @@ from rest_framework.views import APIView
 
 from ..serializers import UserSerializer, FacebookAccessTokenSerializer
 
-
 __all__ = (
     'UserFacebookAccessTokenView',
 )

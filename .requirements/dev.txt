@@ -5,3 +5,4 @@ django-storages==1.6.6
 djangorestframework==3.8.2
 Pillow==5.1.0
 psycopg2-binary==2.7.4
+requests==2.18.4

@@ -15,7 +15,7 @@ class FacebookAccessTokenSerializer(serializers.Serializer):
         if access_token:
             user = authenticate(access_token=access_token)
             if not user:
-                raise serializers.ValidationError('액세스 토큰이 옯바르지 않습니다.')
+                raise serializers.ValidationError('액세스 토큰이 올바르지 않습니다.')
         else:
             raise serializers.ValidationError('액세스 토큰이 필요합니다.')
 
