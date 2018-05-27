@@ -16,10 +16,9 @@ from djs import import_secrets
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 ROOT_DIR = os.path.dirname(BASE_DIR)
 
-
-# 1) secrets값 일일이 json loads로 처리
 # # SECRET # #
 # * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+# 1) secrets값 일일이 json loads로 처리
 # SECRETS_DIR = os.path.join(ROOT_DIR, '.secrets')
 # SECRETS_BASE = os.path.join(SECRETS_DIR, 'base.json')
 #
@@ -27,12 +26,12 @@ ROOT_DIR = os.path.dirname(BASE_DIR)
 # secrets_base_json = open(SECRETS_BASE, 'rt').read()
 # secrets_base_dict = json.loads(secrets_base_json)
 # SECRET_KEY = secrets_base_dict['SECRET_KEY']
-# * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
 # 2) 'django-json-secrets' package 활용
 #     https://github.com/LeeHanYeong/django-json-secrets
 SECRETS_DIR = os.path.join(ROOT_DIR, '.secrets')
 import_secrets()
+# * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
 
 MEDIA_ROOT = os.path.join(ROOT_DIR, '.media')
@@ -52,6 +51,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    # Thirdparty app
+    'rest_framework',
+    'rest_framework.authtoken',
+
     # Custom app
     'users',
 ]
@@ -59,6 +62,18 @@ INSTALLED_APPS = [
 # Substituting a custom User model
 # https://docs.djangoproject.com/en/2.0/topics/auth/customizing/#substituting-a-custom-user-model
 AUTH_USER_MODEL = 'users.User'
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'users.backends.APIFacebookBackend',
+]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+    ),
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
