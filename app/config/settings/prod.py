@@ -2,7 +2,11 @@ from .base import *
 
 
 DEBUG = True
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    '.elasticbeanstalk.com',
+    '.amazonaws.com',
+    '.smallbee.kr'
+]
 WSGI_APPLICATION = 'config.wsgi.prod.application'
 
 INSTALLED_APPS += [
