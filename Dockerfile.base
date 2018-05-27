@@ -1,0 +1,21 @@
+# docker build -t smallbee3/subway:base -f Dockerfile .
+
+FROM        python:3.6.5-slim
+MAINTAINER  smallbee3@gmail.com
+
+# 간혹 pip install할 때 ascii code error 나는 현상을 방지
+ENV         LANG    C.UTF-8
+
+# apt-get을 통해 nginx, supervisor 설치
+RUN         apt-get -y update
+RUN         apt-get -y dist-upgrade
+RUN         apt-get -y install build-essential nginx supervisor
+
+# 전체 소스코드 중 requirements만 복사 (아래서 pip install을 하기 위함)
+COPY        .requirements/prod.txt  /srv/requirements.txt
+
+# pip install (Dockerhub에 업로드되는 base 파일에서 아래 과정을 실행해서 배포시간을 단축)
+WORKDIR     /srv
+RUN         pip install --upgrade pip
+RUN         pip install -r /srv/requirements.txt
+RUN         rm -f          /srv/requirements.txt
