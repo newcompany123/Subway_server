@@ -1,3 +1,4 @@
+import json
 import requests
 from django.contrib.auth import get_user_model
 from rest_framework import status
@@ -59,3 +60,40 @@ class APIFacebookBackend:
             return User.objects.get(pk=user_id)
         except User.DoesNotExist:
             return None
+
+
+class APIKakaoBackend:
+    def authenticate(self, access_token):
+        """
+        Kakao access_token을 사용해서
+        사용자의 nickname 및 email을 가져옴
+        (엔드포인트 'me'를 사용해서 access_token에 해당하는 사용자의 정보를 가져옴)
+        :param access_token: 정보를 가져올 Kakao User access token
+        :return: User정보 (dict)
+        """
+        url = "https://kapi.kakao.com/v2/user/me"
+
+        headers = {
+                'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
+                'Authorization': 'Bearer ' + str(access_token)
+        }
+
+        response = requests.get(url, headers=headers)
+
+        if response.status_code == status.HTTP_200_OK:
+            response_dict = response.json()
+
+            kakao_id = response_dict['properties']['nickname']
+            email = response_dict.get('kaccount_email')
+
+            try:
+                user = User.objects.get(oauthid__kakao_id=kakao_id)
+            except User.DoesNotExist:
+                user = User.objects.create_user(
+                    username=kakao_id,
+                    email=email
+                )
+                obj = UserOAuthID.objects.create(user=user)
+                obj.kakao_id = kakao_id
+                obj.save()
+            return user

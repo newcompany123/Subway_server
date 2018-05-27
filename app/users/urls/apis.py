@@ -1,11 +1,12 @@
 from django.urls import path
 
-from ..apis import UserFacebookAccessTokenView
+from ..apis import UserFacebookAccessTokenView, UserKakaoAccessTokenView
 from ..apis.user import UserListCreateView, UserRetrieveUpdateDestroyView
 
-
+from ..views import *
 urlpatterns = [
     path('', UserListCreateView.as_view()),
     path('<int:pk>/', UserRetrieveUpdateDestroyView.as_view()),
     path('facebook-login/', UserFacebookAccessTokenView.as_view()),
+    path('kakao-login/', UserKakaoAccessTokenView.as_view())
 ]
