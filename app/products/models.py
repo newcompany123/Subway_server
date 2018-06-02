@@ -33,7 +33,7 @@ class Product(models.Model):
 
     product_maker = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         blank=True,
         null=True,
         verbose_name='레시피 제작자',
