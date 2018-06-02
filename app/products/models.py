@@ -27,12 +27,15 @@ class Product(models.Model):
     )
     vegetables = models.ManyToManyField(
         'vegetables',
+        blank=True,
         verbose_name='야채',
     )
 
     product_maker = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
+        blank=True,
+        null=True,
         verbose_name='레시피 제작자',
     )
     img_profile = models.ImageField(upload_to='user', blank=True)
