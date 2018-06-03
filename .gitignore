@@ -4,6 +4,12 @@
 /.secrets
 .vscode/
 
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
+
+
 
 # Created by https://www.gitignore.io/api/git,linux,macos,django,python,sublimetext,pycharm+all
 
@@ -264,7 +270,3 @@ GitHub.sublime-settings
 
 
 # End of https://www.gitignore.io/api/git,linux,macos,django,python,sublimetext,pycharm+all
-# Elastic Beanstalk Files
-.elasticbeanstalk/*
-!.elasticbeanstalk/*.cfg.yml
-!.elasticbeanstalk/*.global.yml
