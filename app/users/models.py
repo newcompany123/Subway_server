@@ -5,8 +5,6 @@ from django.db import models
 class User(AbstractUser):
     username = models.CharField(max_length=255, unique=True)
     email = models.EmailField(max_length=255, blank=True, null=True)
-    img_profile = models.ImageField(upload_to='user', blank=True)
-    img_profile_thumbnail = models.ImageField(upload_to='user', blank=True)
 
     def __str__(self):
         return f'{self.pk} {self.username}'

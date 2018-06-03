@@ -57,6 +57,7 @@ INSTALLED_APPS = [
 
     # Custom app
     'users',
+    'products',
 ]
 
 # Substituting a custom User model

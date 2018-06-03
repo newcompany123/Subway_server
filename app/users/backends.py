@@ -10,7 +10,7 @@ User = get_user_model()
 
 class APIFacebookBackend:
 
-    def authenticate(self, request, access_token):
+    def authenticate(self, access_token):
         """
         Facebook access_token을 사용해서
         GraphAPI의 'User'항목을 리턴
@@ -23,6 +23,7 @@ class APIFacebookBackend:
             'fields': ','.join([
                 'id',
                 'email',
+                'first_name',
                 'picture.width(512)',
             ])
         }
@@ -39,6 +40,7 @@ class APIFacebookBackend:
             # print(response_dict)
 
             facebook_id = response_dict['id']
+            first_name = response_dict['first_name']
             img_profile_url = response_dict['picture']['data']['url']
             # email은 기본공개정보가 아니기 때문에 유저마다 존재유무가 다름
             email = response_dict.get('email')
@@ -47,7 +49,7 @@ class APIFacebookBackend:
                 user = User.objects.get(oauthid__facebook_id=facebook_id)
             except User.DoesNotExist:
                 user = User.objects.create_user(
-                    username=facebook_id,
+                    username=first_name,
                     email=email,
                 )
                 obj = UserOAuthID.objects.create(user=user)
@@ -83,17 +85,23 @@ class APIKakaoBackend:
         if response.status_code == status.HTTP_200_OK:
             response_dict = response.json()
 
-            kakao_id = response_dict['properties']['nickname']
+            print('response.content: ')
+            print(response.content)
+
+            print('response_dict: ')
+            print(response_dict)
+
+            nick_name = response_dict['properties']['nickname']
             email = response_dict.get('kaccount_email')
 
             try:
                 user = User.objects.get(oauthid__kakao_id=kakao_id)
             except User.DoesNotExist:
                 user = User.objects.create_user(
-                    username=kakao_id,
+                    username=nick_name,
                     email=email
                 )
                 obj = UserOAuthID.objects.create(user=user)
-                obj.kakao_id = kakao_id
+                obj.kakao_id = nick_name
                 obj.save()
             return user
