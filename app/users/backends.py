@@ -91,17 +91,18 @@ class APIKakaoBackend:
             print('response_dict: ')
             print(response_dict)
 
+            kakao_id = response_dict['id']
             nick_name = response_dict['properties']['nickname']
             email = response_dict.get('kaccount_email')
 
             try:
-                user = User.objects.get(oauthid__kakao_id=kakao_id)
+                user = User.objects.get(oauthid__kakao_id=nick_name)
             except User.DoesNotExist:
                 user = User.objects.create_user(
                     username=nick_name,
                     email=email
                 )
                 obj = UserOAuthID.objects.create(user=user)
-                obj.kakao_id = nick_name
+                obj.kakao_id = kakao_id
                 obj.save()
             return user

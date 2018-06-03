@@ -4,25 +4,34 @@ from django.db import models
 
 class Product(models.Model):
 
-    BREAD_TYPE_WHITE = 'WHI'
-    BREAD_TYPE_HEARTY = 'HEA'
-    BREAD_TYPE_PARMESAN = 'PAR'
-    BREAD_TYPE_WHEAT = 'WHE'
-    BREAD_TYPE_HONEYOAT = 'HON'
-    BREAD_TYPE_FLAT = 'FLA'
+    # BREAD_TYPE_WHITE = 'WHI'
+    # BREAD_TYPE_HEARTY = 'HEA'
+    # BREAD_TYPE_PARMESAN = 'PAR'
+    # BREAD_TYPE_WHEAT = 'WHE'
+    # BREAD_TYPE_HONEYOAT = 'HON'
+    # BREAD_TYPE_FLAT = 'FLA'
+    #
+    # BREAD_TYPE_CHOICES = (
+    #     (BREAD_TYPE_WHITE, '화이트'),
+    #     (BREAD_TYPE_HEARTY, '하티'),
+    #     (BREAD_TYPE_PARMESAN, '파마산오레가노'),
+    #     (BREAD_TYPE_WHEAT, '위트'),
+    #     (BREAD_TYPE_HONEYOAT, '허니오트'),
+    #     (BREAD_TYPE_FLAT, '플랫'),
+    # )
 
-    BREAD_TYPE_CHOICES = (
-        (BREAD_TYPE_WHITE, '화이트'),
-        (BREAD_TYPE_HEARTY, '하티'),
-        (BREAD_TYPE_PARMESAN, '파마산오레가노'),
-        (BREAD_TYPE_WHEAT, '위트'),
-        (BREAD_TYPE_HONEYOAT, '허니오트'),
-        (BREAD_TYPE_FLAT, '플랫'),
-    )
+    # breads = models.CharField(
+    #     max_length=3,
+    #     choices=BREAD_TYPE_CHOICES,
+    #     verbose_name='빵',
+    # )
 
-    breads = models.CharField(
+    breads = models.OneToOneField(
+        'breads',
         max_length=3,
-        choices=BREAD_TYPE_CHOICES,
+        on_delete=models.SET_NULL,
+        blank=False,
+        null=True,
         verbose_name='빵',
     )
     vegetables = models.ManyToManyField(
@@ -43,6 +52,23 @@ class Product(models.Model):
 
     def __str__(self):
         return f'{self.pk} : {self.breads}|{list(self.vegetables.all().values_list("name", flat=True))}'
+
+
+class Breads(models.Model):
+    """
+    Product와 OneToOneField로 연결된 bread
+    """
+    name = models.CharField(
+        max_length=100,
+        unique=True,
+        help_text='100자까지의 bread의 이름을 저장합니다.',
+    )
+
+    class Meta:
+        verbose_name_plural = '선택한 breads'
+
+    def __str__(self):
+        return self.name
 
 
 class Vegetables(models.Model):
