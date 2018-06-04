@@ -4,28 +4,6 @@ from django.db import models
 
 class Product(models.Model):
 
-    # BREAD_TYPE_WHITE = 'WHI'
-    # BREAD_TYPE_HEARTY = 'HEA'
-    # BREAD_TYPE_PARMESAN = 'PAR'
-    # BREAD_TYPE_WHEAT = 'WHE'
-    # BREAD_TYPE_HONEYOAT = 'HON'
-    # BREAD_TYPE_FLAT = 'FLA'
-    #
-    # BREAD_TYPE_CHOICES = (
-    #     (BREAD_TYPE_WHITE, '화이트'),
-    #     (BREAD_TYPE_HEARTY, '하티'),
-    #     (BREAD_TYPE_PARMESAN, '파마산오레가노'),
-    #     (BREAD_TYPE_WHEAT, '위트'),
-    #     (BREAD_TYPE_HONEYOAT, '허니오트'),
-    #     (BREAD_TYPE_FLAT, '플랫'),
-    # )
-
-    # breads = models.CharField(
-    #     max_length=3,
-    #     choices=BREAD_TYPE_CHOICES,
-    #     verbose_name='빵',
-    # )
-
     breads = models.OneToOneField(
         'breads',
         max_length=3,
@@ -68,7 +46,7 @@ class Breads(models.Model):
         verbose_name_plural = '선택한 breads'
 
     def __str__(self):
-        return self.name
+        return f'{self.pk} {self.name}'
 
 
 class Vegetables(models.Model):
