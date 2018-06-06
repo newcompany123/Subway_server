@@ -4,8 +4,8 @@ from django.db import models
 
 class Product(models.Model):
 
-    breads = models.OneToOneField(
-        'breads',
+    bread = models.OneToOneField(
+        'bread',
         max_length=3,
         on_delete=models.SET_NULL,
         blank=False,
@@ -29,10 +29,10 @@ class Product(models.Model):
     img_profile_thumbnail = models.ImageField(upload_to='user', blank=True)
 
     def __str__(self):
-        return f'{self.pk} : {self.breads}|{list(self.vegetables.all().values_list("name", flat=True))}'
+        return f'{self.pk} : {self.bread}|{list(self.vegetables.all().values_list("name", flat=True))}'
 
 
-class Breads(models.Model):
+class Bread(models.Model):
     """
     Product와 OneToOneField로 연결된 bread
     """
@@ -43,7 +43,7 @@ class Breads(models.Model):
     )
 
     class Meta:
-        verbose_name_plural = '선택한 breads'
+        verbose_name_plural = '선택한 bread'
 
     def __str__(self):
         return f'{self.pk} {self.name}'
