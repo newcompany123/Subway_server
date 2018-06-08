@@ -4,14 +4,22 @@ from django.db import models
 
 class Product(models.Model):
 
-    bread = models.OneToOneField(
+    # bread = models.OneToOneField(
+    #     'bread',
+    #     max_length=3,
+    #     on_delete=models.SET_NULL,
+    #     blank=False,
+    #     null=True,
+    #     verbose_name='빵',
+    # )
+
+    bread = models.ForeignKey(
         'bread',
-        max_length=3,
         on_delete=models.SET_NULL,
-        blank=False,
         null=True,
         verbose_name='빵',
     )
+
     vegetables = models.ManyToManyField(
         'vegetables',
         blank=True,
@@ -21,7 +29,6 @@ class Product(models.Model):
     product_maker = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
-        blank=True,
         null=True,
         verbose_name='레시피 제작자',
     )
@@ -34,11 +41,11 @@ class Product(models.Model):
 
 class Bread(models.Model):
     """
-    Product와 OneToOneField로 연결된 bread
+    Product와 Many-to-one relationship으로 연결된 bread
     """
     name = models.CharField(
         max_length=100,
-        unique=True,
+        # unique=True,
         help_text='100자까지의 bread의 이름을 저장합니다.',
     )
 
@@ -51,7 +58,7 @@ class Bread(models.Model):
 
 class Vegetables(models.Model):
     """
-    Product와 ManyToMany로 연결된 vegetables
+    Product와 Many-to-many relationship으로 연결된 vegetables
     """
     name = models.CharField(
         max_length=100,
