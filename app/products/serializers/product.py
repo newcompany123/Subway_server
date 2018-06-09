@@ -41,24 +41,44 @@ class ProductSerializer(serializers.ModelSerializer):
         )
 
     def validate(self, attrs):
-        # self.initial_data에서 입력된 bread의 pk 데이터를 꺼내 attrs에 직접 할당
+        # 과정1) self.initial_data에서 입력된 bread의 pk 데이터를 꺼내 attrs에 직접 할당
         if self.initial_data.get('bread'):
             bread_pk = self.initial_data.get('bread')
-            attrs['bread'] = get_object_or_404(Bread, pk=bread_pk)
+            bread_obj = get_object_or_404(Bread, pk=bread_pk)
+            attrs['bread'] = bread_obj
         else:
             raise APIException("'bread' field is required.")
 
-        # self.initial_data에서 입력된 vetables의 pk 데이터를 꺼내 attrs에 직접 할당
+        # 과정2) self.initial_data에서 입력된 vetables의 pk 데이터를 꺼내 attrs에 직접 할당
         if self.initial_data.get('vegetables'):
             veg_list = []
             veg_pk_list = self.initial_data.getlist('vegetables')
+
+            # 과정3_2) 하단의 uniqueness 검증을 위한 sort 과정 추
+            veg_pk_list = sorted(veg_pk_list)
             for veg_pk in veg_pk_list:
-                veg_obj = get_object_or_404(Vegetables, pk=veg_pk)
+                # veg_obj = get_object_or_404(Vegetables, pk=veg_pk)
+                try:
+                    veg_obj = Vegetables.objects.get(pk=veg_pk)
+                except Exception:
+                    raise APIException("Input non-existing 'vegetables' object.")
+
                 veg_list.append(veg_obj)
             attrs['vegetables'] = veg_list
             print(veg_list)
         else:
             raise APIException("'vegetables' field is required.")
+
+        # 과정3) product의 uniqueness 확인
+        for product in Product.objects.all():
+            print(f'{product.bread} {bread_obj}')
+            if product.bread == bread_obj:
+
+                print(f'{list(product.vegetables.all())} {veg_list}')
+                if list(product.vegetables.all()) == veg_list:
+                    raise APIException("Same product already exists")
+
+        # attrs을 return하여 validate 과정 종료
         return attrs
 
     def create(self, validated_data):
