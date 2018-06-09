@@ -3,7 +3,9 @@ from django.db import models
 
 
 class Product(models.Model):
-
+    """
+    Bread, Vegetables, Sauces, Toppings의 조합으로 만들어진 샌드위치 object
+    """
     # bread = models.OneToOneField(
     #     'bread',
     #     max_length=3,
@@ -12,6 +14,13 @@ class Product(models.Model):
     #     null=True,
     #     verbose_name='빵',
     # )
+
+    name = models.OneToOneField(
+        'productname',
+        on_delete=models.SET_NULL,
+        null=True,
+        verbose_name='이름',
+    )
 
     bread = models.ForeignKey(
         'bread',
@@ -36,17 +45,17 @@ class Product(models.Model):
     img_profile_thumbnail = models.ImageField(upload_to='user', blank=True)
 
     def __str__(self):
-        return f'{self.pk} : {self.bread}|{list(self.vegetables.all().values_list("name", flat=True))}'
+        return f'{self.pk} [ {self.bread}, {list(self.vegetables.all().values_list("name", flat=True))} ]'
 
 
 class Bread(models.Model):
     """
-    Product와 Many-to-one relationship으로 연결된 bread
+    Product와 Many-to-one relationship(ForeignKey)으로 연결된 bread
     """
     name = models.CharField(
         max_length=100,
         # unique=True,
-        help_text='100자까지의 bread의 이름을 저장합니다.',
+        help_text='100자까지 bread의 이름을 저장합니다.',
     )
 
     class Meta:
@@ -63,11 +72,25 @@ class Vegetables(models.Model):
     name = models.CharField(
         max_length=100,
         unique=True,
-        help_text='100자까지의 vegetable의 이름을 저장합니다.',
+        help_text='100자까지 vegetable의 이름을 저장합니다.',
     )
 
     class Meta:
         verbose_name_plural = '선택한 vegetables'
 
     def __str__(self):
-        return self.name
+        return f'{self.pk} {self.name}'
+
+
+class ProductName(models.Model):
+    """
+    Product의 Name을 저장하는 모델
+    """
+    name = models.CharField(
+        max_length=255,
+        unique=True,
+        help_text='255자까지 product의 이름을 저장합니다.'
+    )
+
+    def __str__(self):
+        return f'{self.pk} {self.name}'
