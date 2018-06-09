@@ -3,13 +3,19 @@ from rest_framework import serializers
 from rest_framework.exceptions import APIException
 from rest_framework.generics import get_object_or_404
 
-from ..models import Product, Bread, Vegetables
+from ..models import Product, Bread, Vegetables, ProductName
 
 User = get_user_model()
 
 __all__ = (
     'ProductSerializer',
 )
+
+
+class ProductNameSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductName
+        fields = '__all__'
 
 
 class BreadSerializer(serializers.ModelSerializer):
@@ -26,6 +32,7 @@ class VegetableSerializer(serializers.ModelSerializer):
 
 class ProductSerializer(serializers.ModelSerializer):
 
+    name = ProductNameSerializer(read_only=True)
     bread = BreadSerializer(read_only=True)
     vegetables = VegetableSerializer(read_only=True, many=True)
 
@@ -33,6 +40,7 @@ class ProductSerializer(serializers.ModelSerializer):
         model = Product
         fields = (
             'id',
+            'name',
             'product_maker',
             'bread',
             'vegetables',
@@ -77,6 +85,14 @@ class ProductSerializer(serializers.ModelSerializer):
                 print(f'{list(product.vegetables.all())} {veg_list}')
                 if list(product.vegetables.all()) == veg_list:
                     raise APIException("Same product already exists")
+
+        # 과정4) product의 name 설정
+        if self.initial_data.get('name'):
+            product_name_pk = self.initial_data.get('name')
+            product_name_obj = get_object_or_404(ProductName, pk=product_name_pk)
+            attrs['name'] = product_name_obj
+        else:
+            raise APIException("'name' field(product name) is required.")
 
         # attrs을 return하여 validate 과정 종료
         return attrs
