@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import AnonymousUser
 from rest_framework import serializers
 from rest_framework.exceptions import APIException
 from rest_framework.generics import get_object_or_404
@@ -35,6 +36,7 @@ class ProductSerializer(serializers.ModelSerializer):
     # name = ProductNameSerializer(read_only=True)
     # bread = BreadSerializer(read_only=True)
     # vegetables = VegetableSerializer(read_only=True, many=True)
+    product_like_state = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Product
@@ -46,6 +48,7 @@ class ProductSerializer(serializers.ModelSerializer):
             'vegetables',
             'img_profile',
             'img_profile_thumbnail',
+            'product_like_state',
         )
 
     def validate(self, attrs):
@@ -127,3 +130,13 @@ class ProductSerializer(serializers.ModelSerializer):
         ret['name'] = serializer.data
 
         return ret
+
+    def get_product_like_state(self, obj):
+        user = self._kwargs['context']['request'].user
+
+        if type(user) is AnonymousUser:
+            return "Don't know"
+        if obj in user.liked_product.all():
+            return 'True'
+        else:
+            return 'False'
