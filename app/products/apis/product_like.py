@@ -28,7 +28,7 @@ class ProductLikeListCreateAPIView(APIView):
                 status=status.HTTP_200_OK,
             )
 
-    def get(self, pk):
+    def get(self, request, pk):
         product = Product.objects.get(pk=pk)
         product_likers = product.product_liker.all()
         serializer = UserSerializer(product_likers, many=True)
