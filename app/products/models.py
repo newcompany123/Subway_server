@@ -39,13 +39,20 @@ class Product(models.Model):
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
         null=True,
+        related_name='made_product',
         verbose_name='레시피 제작자',
     )
     img_profile = models.ImageField(upload_to='user', blank=True)
     img_profile_thumbnail = models.ImageField(upload_to='user', blank=True)
 
+    product_liker = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        related_name='liked_product',
+        through='ProductLike',
+    )
+
     def __str__(self):
-        return f'{self.pk} [ {self.bread}, {list(self.vegetables.all().values_list("name", flat=True))} ]'
+        return f'{self.pk} {self.name} [ {self.bread}, {list(self.vegetables.all().values_list("name", flat=True))} ]'
 
 
 class Bread(models.Model):
@@ -94,3 +101,22 @@ class ProductName(models.Model):
 
     def __str__(self):
         return f'{self.pk} {self.name}'
+
+
+class ProductLike(models.Model):
+    """
+    Product와 좋아요한 User를 연결하는 intermediate model
+    """
+    liker = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+    )
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+    )
+    created_date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'User {self.liker}의' \
+               f' Product {self.product} 좋아요'
