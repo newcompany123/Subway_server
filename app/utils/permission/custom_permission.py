@@ -1,4 +1,7 @@
+from django.contrib.auth import get_user_model
 from rest_framework import permissions
+
+User = get_user_model()
 
 
 class IsOwnerOrReadOnly(permissions.BasePermission):
@@ -15,3 +18,12 @@ class IsProductMakerOrReadOnly(permissions.BasePermission):
             return True
 
         return obj.product_maker == request.user
+
+
+class IsSuperUserOrReadOnly(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+
+        superuser = User.objects.first()
+        return superuser == request.user

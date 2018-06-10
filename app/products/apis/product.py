@@ -1,15 +1,15 @@
 from django.contrib.auth import get_user_model
 from rest_framework import generics, permissions
 
-from utils.permission.custom_permission import IsProductMakerOrReadOnly
-from ..serializers.product import ProductSerializer
-from ..models import Product
+from utils.permission.custom_permission import IsProductMakerOrReadOnly, IsSuperUserOrReadOnly
+from ..serializers.product import ProductSerializer, ProductNameSerializer
+from ..models import Product, ProductName
 
 User = get_user_model()
 
 __all__ = (
     'ProductListCreateView',
-    'UserRetrieveUpdataeDestroyView',
+    'ProductRetrieveUpdateDestroyView',
 )
 
 
@@ -25,11 +25,21 @@ class ProductListCreateView(generics.ListCreateAPIView):
         serializer.save(product_maker=self.request.user)
 
 
-class UserRetrieveUpdataeDestroyView(generics.RetrieveUpdateDestroyAPIView):
+class ProductRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
     permission_classes = (
         permissions.IsAuthenticatedOrReadOnly,
         IsProductMakerOrReadOnly,
+    )
+
+
+class ProductNameListCreateView(generics.ListCreateAPIView):
+    queryset = ProductName.objects.all()
+    serializer_class = ProductNameSerializer
+
+    permission_classes = (
+        permissions.IsAuthenticatedOrReadOnly,
+        IsSuperUserOrReadOnly,
     )
