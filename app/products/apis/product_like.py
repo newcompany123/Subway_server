@@ -20,7 +20,7 @@ class ProductLikeListCreateAPIView(APIView):
             instance.delete()
             return Response(
                 f'User({user})가 product({product})에 대한 좋아요를 취소하였습니다.',
-                status=status.HTTP_200_OK,
+                status=status.HTTP_204_NO_CONTENT,
             )
         else:
             return Response(

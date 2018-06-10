@@ -6,6 +6,8 @@ class Product(models.Model):
     """
     Bread, Vegetables, Sauces, Toppings의 조합으로 만들어진 샌드위치 object
     """
+    # [ Shoveling log ]
+
     # bread = models.OneToOneField(
     #     'bread',
     #     max_length=3,
@@ -20,6 +22,13 @@ class Product(models.Model):
         on_delete=models.SET_NULL,
         null=True,
         verbose_name='이름',
+    )
+
+    main_ingredient = models.ForeignKey(
+        'mainingredient',
+        on_delete=models.SET_NULL,
+        null=True,
+        verbose_name='기본 샌드위치',
     )
 
     bread = models.ForeignKey(
@@ -53,6 +62,17 @@ class Product(models.Model):
 
     def __str__(self):
         return f'{self.pk} {self.name} [ {self.bread}, {list(self.vegetables.all().values_list("name", flat=True))} ]'
+
+
+class MainIngredient(models.Model):
+    """
+    Product와 Many-to-one relationship(ForeignKey)으로 연결된 Main ingredient
+    """
+    name = models.CharField(
+        max_length=100,
+        unique=True,
+        help_text='100자까지 Product Ingredient의 이름을 저장합니다.'
+    )
 
 
 class Bread(models.Model):

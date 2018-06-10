@@ -4,7 +4,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import APIException
 from rest_framework.generics import get_object_or_404
 
-from ..models import Product, Bread, Vegetables, ProductName, ProductLike
+from ..models import Product, Bread, Vegetables, ProductName, MainIngredient
 
 User = get_user_model()
 
@@ -16,6 +16,12 @@ __all__ = (
 class ProductNameSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductName
+        fields = '__all__'
+
+
+class MainIngredientSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MainIngredient
         fields = '__all__'
 
 
@@ -44,6 +50,7 @@ class ProductSerializer(serializers.ModelSerializer):
             'id',
             'name',
             'product_maker',
+            'main_ingredient',
             'bread',
             'vegetables',
             'img_profile',
@@ -52,6 +59,9 @@ class ProductSerializer(serializers.ModelSerializer):
         )
 
     def validate(self, attrs):
+
+        # [ Shoveling log ]
+
         # 과정1) self.initial_data에서 입력된 bread의 pk 데이터를 꺼내 attrs에 직접 할당
         # if self.initial_data.get('bread'):
         #     bread_pk = self.initial_data.get('bread')
@@ -88,15 +98,19 @@ class ProductSerializer(serializers.ModelSerializer):
         # else:
         #     raise APIException("'name' field(product name) is required.")
 
-        # product의 uniqueness 확인
+        # product's uniqueness validation
         for product in Product.objects.all():
-            bread_obj = attrs.get('bread')
-            # print(f'{product.bread} {bread_obj}')
-            if product.bread == bread_obj:
-                veg_list = attrs.get('vegetables')
-                # print(f'{list(product.vegetables.all())} {veg_list}')
-                if list(product.vegetables.all()) == veg_list:
-                    raise APIException("Same product already exists")
+            main_ingredient_obj = attrs.get('main_ingredient')
+            if product.main_ingredient == main_ingredient_obj:
+
+                bread_obj = attrs.get('bread')
+                # print(f'{product.bread} {bread_obj}')
+                if product.bread == bread_obj:
+
+                    veg_list = attrs.get('vegetables')
+                    # print(f'{list(product.vegetables.all())} {veg_list}')
+                    if list(product.vegetables.all()) == veg_list:
+                        raise APIException("Same product already exists")
 
         # attrs을 return하여 validate 과정 종료
         return attrs
@@ -107,6 +121,12 @@ class ProductSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         ret = super().to_representation(instance)
+
+        # Response에서 main_ingredient의 형태를 기존의 pk에서 [{"id": 1, "name": "Italian B.M.T"} 형태로 변환
+        main_ingredient_pk = ret.get('main_ingredient')
+        main_ingredient_obj = MainIngredient.objects.get(pk=main_ingredient_pk)
+        serializer = MainIngredientSerializer(main_ingredient_obj)
+        ret['main_ingredient'] = serializer.data
 
         # Response에서 bread의 형태를 기존의 pk에서 {"id": 1, "name": "Wheat"} 형태로 변환
         bread_pk = ret.get('bread')
@@ -135,7 +155,7 @@ class ProductSerializer(serializers.ModelSerializer):
         user = self._kwargs['context']['request'].user
 
         if type(user) is AnonymousUser:
-            return "Don't know"
+            return 'None'
         if obj in user.liked_product.all():
             return 'True'
         else:
