@@ -43,6 +43,7 @@ class ProductSerializer(serializers.ModelSerializer):
     # bread = BreadSerializer(read_only=True)
     # vegetables = VegetableSerializer(read_only=True, many=True)
     product_like_state = serializers.SerializerMethodField(read_only=True)
+    product_save_state = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Product
@@ -56,11 +57,13 @@ class ProductSerializer(serializers.ModelSerializer):
             'img_profile',
             'img_profile_thumbnail',
             'product_like_state',
+            'product_save_state',
         )
 
     def validate(self, attrs):
 
         # [ Shoveling log ]
+        #   : hardcoding eradicated
 
         # 과정1) self.initial_data에서 입력된 bread의 pk 데이터를 꺼내 attrs에 직접 할당
         # if self.initial_data.get('bread'):
@@ -157,6 +160,16 @@ class ProductSerializer(serializers.ModelSerializer):
         if type(user) is AnonymousUser:
             return 'None'
         if obj in user.liked_product.all():
+            return 'True'
+        else:
+            return 'False'
+
+    def get_product_save_state(self, obj):
+        user = self._kwargs['context']['request'].user
+
+        if type(user) is AnonymousUser:
+            return 'None'
+        if obj in user.saved_product.all():
             return 'True'
         else:
             return 'False'

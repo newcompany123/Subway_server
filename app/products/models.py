@@ -7,7 +7,8 @@ class Product(models.Model):
     Bread, Vegetables, Sauces, Toppings의 조합으로 만들어진 샌드위치 object
     """
     # [ Shoveling log ]
-
+    #   : OneToOneField -> ForeignKey fixed
+    #
     # bread = models.OneToOneField(
     #     'bread',
     #     max_length=3,
@@ -58,6 +59,12 @@ class Product(models.Model):
         settings.AUTH_USER_MODEL,
         related_name='liked_product',
         through='ProductLike',
+    )
+
+    product_saver = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        related_name='saved_product',
+        through='ProductSave',
     )
 
     def __str__(self):
@@ -140,3 +147,22 @@ class ProductLike(models.Model):
     def __str__(self):
         return f'User {self.liker}의' \
                f' Product {self.product} 좋아요'
+
+
+class ProductSave(models.Model):
+    """
+    Product와 해당 product를 저장한 User를 연결하는 intermediate model
+    """
+    saver = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+    )
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+    )
+    created_date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'User {self.saver}의' \
+               f' Product {self.product} 저장'
