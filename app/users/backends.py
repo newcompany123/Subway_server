@@ -85,11 +85,11 @@ class APIKakaoBackend:
         if response.status_code == status.HTTP_200_OK:
             response_dict = response.json()
 
-            print('response.content: ')
-            print(response.content)
-
-            print('response_dict: ')
-            print(response_dict)
+            # print('response.content: ')
+            # print(response.content)
+            #
+            # print('response_dict: ')
+            # print(response_dict)
 
             kakao_id = response_dict['id']
             nick_name = response_dict['properties']['nickname']
