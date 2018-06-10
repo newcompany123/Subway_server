@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from rest_framework import generics, permissions
+from utils.permission.custom_permission import IsProductMakerOrReadOnly, IsSuperUserOrReadOnly
 
-from utils.permission.custom_permission import IsProductMakerOrReadOnly
 from ..serializers.product import ProductSerializer, ProductNameSerializer
 from ..models import Product, ProductName
 
@@ -41,4 +41,5 @@ class ProductNameListCreateView(generics.ListCreateAPIView):
 
     permission_classes = (
         permissions.IsAuthenticatedOrReadOnly,
+        IsSuperUserOrReadOnly,
     )

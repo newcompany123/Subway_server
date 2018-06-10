@@ -3,7 +3,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import APIException
 from rest_framework.generics import get_object_or_404
 
-from ..models import Product, Bread, Vegetables, ProductName
+from ..models import Product, Bread, Vegetables, ProductName, ProductLike
 
 User = get_user_model()
 

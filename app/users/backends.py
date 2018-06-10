@@ -96,7 +96,7 @@ class APIKakaoBackend:
             email = response_dict.get('kaccount_email')
 
             try:
-                user = User.objects.get(oauthid__kakao_id=nick_name)
+                user = User.objects.get(oauthid__kakao_id=kakao_id)
             except User.DoesNotExist:
                 user = User.objects.create_user(
                     username=nick_name,
