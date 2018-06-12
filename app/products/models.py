@@ -68,7 +68,8 @@ class Product(models.Model):
     )
 
     def __str__(self):
-        return f'{self.pk} {self.name} [ {self.bread}, {list(self.vegetables.all().values_list("name", flat=True))} ]'
+        return f'{self.pk}) {self.name} ' \
+               f'[ {self.main_ingredient} {self.bread}, {list(self.vegetables.all().values_list("name", flat=True))} ]'
 
 
 class MainIngredient(models.Model):
@@ -80,6 +81,9 @@ class MainIngredient(models.Model):
         unique=True,
         help_text='100자까지 Product Ingredient의 이름을 저장합니다.'
     )
+
+    def __str__(self):
+        return f'{self.pk})_{self.name}'
 
 
 class Bread(models.Model):
@@ -96,7 +100,7 @@ class Bread(models.Model):
         verbose_name_plural = '선택한 bread'
 
     def __str__(self):
-        return f'{self.pk} {self.name}'
+        return f'{self.pk}_{self.name}'
 
 
 class Vegetables(models.Model):
@@ -113,7 +117,7 @@ class Vegetables(models.Model):
         verbose_name_plural = '선택한 vegetables'
 
     def __str__(self):
-        return f'{self.pk} {self.name}'
+        return f'{self.pk}_{self.name}'
 
 
 class ProductName(models.Model):
@@ -127,7 +131,7 @@ class ProductName(models.Model):
     )
 
     def __str__(self):
-        return f'{self.pk} {self.name}'
+        return f'{self.pk}_{self.name}'
 
 
 class ProductLike(models.Model):
