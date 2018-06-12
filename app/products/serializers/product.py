@@ -1,9 +1,9 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
-from rest_framework import serializers
-from rest_framework.exceptions import APIException
+from rest_framework import serializers, status
 from rest_framework.generics import get_object_or_404
 
+from utils.exceptions.custom_exception import CustomException
 from ..models import Product, Bread, Vegetables, ProductName, MainIngredient
 
 User = get_user_model()
@@ -113,7 +113,10 @@ class ProductSerializer(serializers.ModelSerializer):
                     veg_list = attrs.get('vegetables')
                     # print(f'{list(product.vegetables.all())} {veg_list}')
                     if list(product.vegetables.all()) == veg_list:
-                        raise APIException("Same product already exists")
+                        raise CustomException(
+                            detail='Same sandwich recipe already exists!',
+                            status_code=status.HTTP_400_BAD_REQUEST
+                        )
 
         # attrs을 return하여 validate 과정 종료
         return attrs
@@ -133,7 +136,7 @@ class ProductSerializer(serializers.ModelSerializer):
 
         # Response에서 bread의 형태를 기존의 pk에서 {"id": 1, "name": "Wheat"} 형태로 변환
         bread_pk = ret.get('bread')
-        bread_obj = get_object_or_404(Bread, pk=bread_pk)
+        bread_obj = Bread.objects.get(pk=bread_pk)
         serializer = BreadSerializer(bread_obj)
         ret['bread'] = serializer.data
 
@@ -151,7 +154,6 @@ class ProductSerializer(serializers.ModelSerializer):
         name_obj = ProductName.objects.get(pk=name_pk)
         serializer = ProductNameSerializer(name_obj)
         ret['name'] = serializer.data
-
         return ret
 
     def get_product_like_state(self, obj):
