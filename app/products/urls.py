@@ -1,8 +1,9 @@
 from django.urls import path
 
-from products.apis.product_save import ProductSaveListCreateView
+from products.apis.product_name import ProductNameListCreateView
+from .apis.product_save import ProductSaveListCreateView
 from .apis.product_like import ProductLikeListCreateView
-from .apis.product import ProductListCreateView, ProductRetrieveUpdateDestroyView, ProductNameListCreateView
+from .apis.product import ProductListCreateView, ProductRetrieveUpdateDestroyView
 
 urlpatterns = [
     path('', ProductListCreateView.as_view()),
