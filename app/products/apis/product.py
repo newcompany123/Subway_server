@@ -25,8 +25,11 @@ class ProductListCreateView(generics.ListCreateAPIView):
         permissions.IsAuthenticatedOrReadOnly,
     )
 
-    filter_backends = (DjangoFilterBackend,)
+    filter_backends = (DjangoFilterBackend, OrderingFilter)
+
     filter_fields = ('main_ingredient',)
+    ordering_fields = ('id', 'like_count', 'save_count',)
+    ordering = ('-like_save_count', '-save_count', '-like_count',)
 
     def perform_create(self, serializer):
         serializer.save(product_maker=self.request.user)
