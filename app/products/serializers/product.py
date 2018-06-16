@@ -44,6 +44,9 @@ class ProductSerializer(serializers.ModelSerializer):
     # vegetables = VegetableSerializer(read_only=True, many=True)
     product_like_state = serializers.SerializerMethodField(read_only=True)
     product_save_state = serializers.SerializerMethodField(read_only=True)
+    like_count = serializers.IntegerField(read_only=True)
+    save_count = serializers.IntegerField(read_only=True)
+    like_save_count = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Product
@@ -58,6 +61,10 @@ class ProductSerializer(serializers.ModelSerializer):
             'img_profile_thumbnail',
             'product_like_state',
             'product_save_state',
+
+            'like_count',
+            'save_count',
+            'like_save_count',
         )
 
     def validate(self, attrs):
