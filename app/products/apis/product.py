@@ -31,6 +31,15 @@ class ProductListCreateView(generics.ListCreateAPIView):
     ordering_fields = ('id', 'like_count', 'save_count',)
     ordering = ('-like_save_count', '-save_count', '-like_count',)
 
+    def get_queryset(self):
+        queryset = Product.objects.annotate(
+            like_count=Count('product_liker', distinct=True),
+            save_count=Count('product_saver', distinct=True),
+            like_save_count=Count('product_liker', distinct=True) +
+                            Count('product_saver', distinct=True),
+        )
+        return queryset
+
     def perform_create(self, serializer):
         serializer.save(product_maker=self.request.user)
 
