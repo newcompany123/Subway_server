@@ -1,4 +1,8 @@
 from django.contrib.auth import get_user_model
+from django.db.models import Count
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.filters import OrderingFilter
+
 from rest_framework import generics, permissions
 from utils.permission.custom_permission import IsProductMakerOrReadOnly, IsSuperUserOrReadOnly
 
@@ -14,12 +18,15 @@ __all__ = (
 
 
 class ProductListCreateView(generics.ListCreateAPIView):
-    queryset = Product.objects.all()
+    # queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
     permission_classes = (
         permissions.IsAuthenticatedOrReadOnly,
     )
+
+    filter_backends = (DjangoFilterBackend,)
+    filter_fields = ('main_ingredient',)
 
     def perform_create(self, serializer):
         serializer.save(product_maker=self.request.user)
