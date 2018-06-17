@@ -31,6 +31,6 @@ class ProductSaveListCreateView(APIView):
 
     def get(self, request, pk):
         product = get_object_or_404_customed(Product, pk=pk)
-        product_saver = product.product_liker.all()
-        serializer = UserSerializer(product_saver, many=True)
+        product_savers = product.product_saver.all()
+        serializer = UserSerializer(product_savers, many=True)
         return Response(serializer.data)
