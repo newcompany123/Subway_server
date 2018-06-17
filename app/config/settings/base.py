@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     # Thirdparty app
     'rest_framework',
     'rest_framework.authtoken',
+    'webpack_loader',
 
     # Custom app
     'users',
@@ -92,7 +93,7 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, "templates")],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -105,6 +106,13 @@ TEMPLATES = [
     },
 ]
 
+# Webpack Loader (React frontend)
+WEBPACK_LOADER = {
+    'DEFAULT': {
+            'BUNDLE_DIR_NAME': 'bundles/',
+            'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats.dev.json'),
+        }
+}
 
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
