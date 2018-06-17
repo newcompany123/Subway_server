@@ -46,8 +46,8 @@ class ProductNameListingField(serializers.RelatedField):
         return serializer.data
 
     def to_internal_value(self, data):
-        product_name_id = data.get('id')
-        product_name = ProductName.objects.get(pk=product_name_id)
+        product_name_name = data.get('name')
+        product_name = get_object_or_404_customed(ProductName, name=product_name_name)
 
         # serializer = ProductNameSerializer(data=data)
         # serializer.is_valid()
@@ -65,8 +65,8 @@ class MainIngredientListingField(serializers.RelatedField):
         return serializer.data
 
     def to_internal_value(self, data):
-        main_ingredient_id = data.get('id')
-        main_ingredient = get_object_or_404_customed(MainIngredient, pk=main_ingredient_id)
+        main_ingredient_name = data.get('name')
+        main_ingredient = get_object_or_404_customed(MainIngredient, name=main_ingredient_name)
         return main_ingredient
 
 
@@ -78,8 +78,8 @@ class BreadListingField(serializers.RelatedField):
         return serializer.data
 
     def to_internal_value(self, data):
-        bread_id = data.get('id')
-        bread = get_object_or_404_customed(Bread, pk=bread_id)
+        bread_name = data.get('name')
+        bread = get_object_or_404_customed(Bread, name=bread_name)
         return bread
 
 
@@ -91,8 +91,8 @@ class VegetableListingField(serializers.RelatedField):
         return serializer.data
 
     def to_internal_value(self, data):
-        vegetable_id = data.get('id')
-        vegetable = get_object_or_404_customed(Vegetables, pk=vegetable_id)
+        vegetable_name = data.get('name')
+        vegetable = get_object_or_404_customed(Vegetables, name=vegetable_name)
         quantity_text = data.get('quantity')
         if not quantity_text in ['LE', 'NO', 'MO'] \
                 or quantity_text is None:
@@ -114,8 +114,9 @@ class ProductMakerListingField(serializers.RelatedField):
         return serializer.data
 
     def to_internal_value(self, data):
-        user_id = data.get('id')
-        user = get_object_or_404_customed(User, pk=user_id)
+        user_name = data.get('username')
+        # user = get_object_or_404_customed(User, name=user_name)
+        user = User.objects.get(username=user_name)
         return user
 
 
