@@ -1,10 +1,11 @@
 from django.contrib.auth import get_user_model
 from django.db.models import Count
+from django_filters import FilterSet, Filter
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import OrderingFilter, SearchFilter
 
 from rest_framework import generics, permissions
-from utils.permission.custom_permission import IsProductMakerOrReadOnly, IsSuperUserOrReadOnly
+from utils.permission.custom_permission import IsProductMakerOrReadOnly
 
 from ..serializers.product import ProductSerializer
 from ..models import Product
@@ -17,6 +18,26 @@ __all__ = (
 )
 
 
+class ListFilter(Filter):
+    def filter(self, queryset, value):
+        if not value:
+            return queryset
+
+        self.lookup_expr = 'in'
+        values = value.split(',')
+        return super(ListFilter, self).filter(queryset, values)
+
+
+class ProductFilter(FilterSet):
+    main_ingredient = ListFilter()
+
+    class Meta:
+        model = Product
+        fields = (
+            'main_ingredient',
+        )
+
+
 class ProductListCreateView(generics.ListCreateAPIView):
     # queryset = Product.objects.all()
     serializer_class = ProductSerializer
@@ -27,7 +48,11 @@ class ProductListCreateView(generics.ListCreateAPIView):
 
     filter_backends = (DjangoFilterBackend, OrderingFilter, SearchFilter)
 
-    filter_fields = ('main_ingredient',)
+    # filter_fields = ('main_ingredient',)
+    # DjangoFilterBackends에 multiple id를 사용하기 위해
+    # filter_class와 ListFilter를 활용하여 Custom
+    filter_class = ProductFilter
+
     ordering_fields = ('id', 'like_count', 'save_count',)
     ordering = ('-like_save_count', '-save_count', '-like_count',)
     search_fields = ('name__name',)

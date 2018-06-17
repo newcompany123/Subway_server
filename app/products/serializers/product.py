@@ -1,7 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
 from rest_framework import serializers, status
-from rest_framework.generics import get_object_or_404
 
 from utils.exceptions.custom_exception import CustomException
 from ..models import Product, Bread, Vegetables, ProductName, MainIngredient
@@ -42,8 +41,8 @@ class ProductSerializer(serializers.ModelSerializer):
     # name = ProductNameSerializer(read_only=True)
     # bread = BreadSerializer(read_only=True)
     # vegetables = VegetableSerializer(read_only=True, many=True)
-    product_like_state = serializers.SerializerMethodField(read_only=True)
-    product_save_state = serializers.SerializerMethodField(read_only=True)
+    user_like_state = serializers.SerializerMethodField(read_only=True)
+    user_save_state = serializers.SerializerMethodField(read_only=True)
     like_count = serializers.IntegerField(read_only=True)
     save_count = serializers.IntegerField(read_only=True)
     like_save_count = serializers.IntegerField(read_only=True)
@@ -59,8 +58,8 @@ class ProductSerializer(serializers.ModelSerializer):
             'vegetables',
             'img_profile',
             'img_profile_thumbnail',
-            'product_like_state',
-            'product_save_state',
+            'user_like_state',
+            'user_save_state',
 
             'like_count',
             'save_count',
@@ -163,7 +162,7 @@ class ProductSerializer(serializers.ModelSerializer):
         ret['name'] = serializer.data
         return ret
 
-    def get_product_like_state(self, obj):
+    def get_user_like_state(self, obj):
         user = self._kwargs['context']['request'].user
 
         if type(user) is AnonymousUser:
@@ -173,7 +172,7 @@ class ProductSerializer(serializers.ModelSerializer):
         else:
             return 'False'
 
-    def get_product_save_state(self, obj):
+    def get_user_save_state(self, obj):
         user = self._kwargs['context']['request'].user
 
         if type(user) is AnonymousUser:
