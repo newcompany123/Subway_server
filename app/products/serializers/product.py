@@ -2,7 +2,9 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
 from rest_framework import serializers, status
 
+from users.serializers import UserSerializer
 from utils.exceptions.custom_exception import CustomException
+from utils.exceptions.get_object_or_404 import get_object_or_404_customed
 from ..models import Product, Bread, Vegetables, ProductName, MainIngredient
 
 User = get_user_model()
@@ -24,23 +26,114 @@ class MainIngredientSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class VegetableSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Vegetables
-        fields = '__all__'
-
-
 class BreadSerializer(serializers.ModelSerializer):
     class Meta:
         model = Bread
         fields = '__all__'
 
 
+class VegetableSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Vegetables
+        fields = '__all__'
+
+
+class ProductNameListingField(serializers.RelatedField):
+    queryset = ProductName.objects.all()
+
+    def to_representation(self, value):
+        serializer = ProductNameSerializer(value)
+        return serializer.data
+
+    def to_internal_value(self, data):
+        product_name_id = data.get('id')
+        product_name = ProductName.objects.get(pk=product_name_id)
+
+        # serializer = ProductNameSerializer(data=data)
+        # serializer.is_valid()
+        # obj = serializer.save
+        # return obj
+
+        return product_name
+
+
+class MainIngredientListingField(serializers.RelatedField):
+    queryset = MainIngredient.objects.all()
+
+    def to_representation(self, value):
+        serializer = MainIngredientSerializer(value)
+        return serializer.data
+
+    def to_internal_value(self, data):
+        main_ingredient_id = data.get('id')
+        main_ingredient = get_object_or_404_customed(MainIngredient, pk=main_ingredient_id)
+        return main_ingredient
+
+
+class BreadListingField(serializers.RelatedField):
+    queryset = Bread.objects.all()
+
+    def to_representation(self, value):
+        serializer = BreadSerializer(value)
+        return serializer.data
+
+    def to_internal_value(self, data):
+        bread_id = data.get('id')
+        bread = get_object_or_404_customed(Bread, pk=bread_id)
+        return bread
+
+
+class VegetableListingField(serializers.RelatedField):
+    queryset = Vegetables.objects.all()
+
+    def to_representation(self, value):
+        serializer = VegetableSerializer(value)
+        return serializer.data
+
+    def to_internal_value(self, data):
+        vegetable_id = data.get('id')
+        vegetable = get_object_or_404_customed(Vegetables, pk=vegetable_id)
+        quantity_text = data.get('quantity')
+        if not quantity_text in ['LE', 'NO', 'MO'] \
+                or quantity_text is None:
+            raise CustomException(
+                detail='Input correct vegetable quantity option!',
+                status_code=status.HTTP_400_BAD_REQUEST
+            )
+        else:
+            vegetable.quantity = quantity_text
+            vegetable.save()
+        return vegetable
+
+
+class ProductMakerListingField(serializers.RelatedField):
+    queryset = User.objects.all()
+
+    def to_representation(self, value):
+        serializer = UserSerializer(value)
+        return serializer.data
+
+    def to_internal_value(self, data):
+        user_id = data.get('id')
+        user = get_object_or_404_customed(User, pk=user_id)
+        return user
+
+
 class ProductSerializer(serializers.ModelSerializer):
 
-    # name = ProductNameSerializer(read_only=True)
-    # bread = BreadSerializer(read_only=True)
-    # vegetables = VegetableSerializer(read_only=True, many=True)
+    # NestedSerializer로 사용하면 해당 Serializer에서 전달된 json 객체를
+    #  생성하려 들기 때문에 문제가 됨.
+    # product_name = ProductNameSerializer()
+    # main_ingredient = MainIngredientSerializer()
+    # bread = BreadSerializer()
+    # vegetables = VegetableSerializer(many=True)
+
+    product_name = ProductNameListingField()
+    main_ingredient = MainIngredientListingField()
+    bread = BreadListingField()
+    vegetables = VegetableListingField(many=True)
+    product_maker = ProductMakerListingField()
+
     user_like_state = serializers.SerializerMethodField(read_only=True)
     user_save_state = serializers.SerializerMethodField(read_only=True)
     like_count = serializers.IntegerField(read_only=True)
@@ -51,7 +144,7 @@ class ProductSerializer(serializers.ModelSerializer):
         model = Product
         fields = (
             'id',
-            'name',
+            'product_name',
             'product_maker',
             'main_ingredient',
             'bread',
@@ -107,8 +200,17 @@ class ProductSerializer(serializers.ModelSerializer):
         # else:
         #     raise APIException("'name' field(product name) is required.")
 
-        # product's uniqueness validation
         for product in Product.objects.all():
+
+            # product name's uniqueness validation
+            product_name = attrs.get('product_name')
+            if product.product_name == product_name:
+                raise CustomException(
+                    detail='Same sandwich name already exists!',
+                    status_code=status.HTTP_400_BAD_REQUEST
+                )
+
+            # product recipe's uniqueness validation
             main_ingredient_obj = attrs.get('main_ingredient')
             if product.main_ingredient == main_ingredient_obj:
 
@@ -131,36 +233,36 @@ class ProductSerializer(serializers.ModelSerializer):
         result = super().create(validated_data)
         return result
 
-    def to_representation(self, instance):
-        ret = super().to_representation(instance)
-
-        # Response에서 main_ingredient의 형태를 기존의 pk에서 [{"id": 1, "name": "Italian B.M.T"} 형태로 변환
-        main_ingredient_pk = ret.get('main_ingredient')
-        main_ingredient_obj = MainIngredient.objects.get(pk=main_ingredient_pk)
-        serializer = MainIngredientSerializer(main_ingredient_obj)
-        ret['main_ingredient'] = serializer.data
-
-        # Response에서 bread의 형태를 기존의 pk에서 {"id": 1, "name": "Wheat"} 형태로 변환
-        bread_pk = ret.get('bread')
-        bread_obj = Bread.objects.get(pk=bread_pk)
-        serializer = BreadSerializer(bread_obj)
-        ret['bread'] = serializer.data
-
-        # Response에서 vegetables의 형태를 기존의 pk에서 [{"id": 1: "name": "Lettuce"} 형태로 변환
-        vege_pk_list = ret.get('vegetables')
-        vege_list = []
-        for vege_pk in vege_pk_list:
-            vege_obj = Vegetables.objects.get(pk=vege_pk)
-            serializer = VegetableSerializer(vege_obj)
-            vege_list.append(serializer.data)
-        ret['vegetables'] = vege_list
-
-        # Response에서 name의 형태를 기존의 pk에서 [{"id": 1, "name": "넘맛있는BLT"} 형태로 변환
-        name_pk = ret.get('name')
-        name_obj = ProductName.objects.get(pk=name_pk)
-        serializer = ProductNameSerializer(name_obj)
-        ret['name'] = serializer.data
-        return ret
+    # def to_representation(self, instance):
+    #     ret = super().to_representation(instance)
+    #
+    #     # Response에서 main_ingredient의 형태를 기존의 pk에서 [{"id": 1, "name": "Italian B.M.T"} 형태로 변환
+    #     main_ingredient_pk = ret.get('main_ingredient')
+    #     main_ingredient_obj = MainIngredient.objects.get(pk=main_ingredient_pk)
+    #     serializer = MainIngredientSerializer(main_ingredient_obj)
+    #     ret['main_ingredient'] = serializer.data
+    #
+    #     # Response에서 bread의 형태를 기존의 pk에서 {"id": 1, "name": "Wheat"} 형태로 변환
+    #     bread_pk = ret.get('bread')
+    #     bread_obj = Bread.objects.get(pk=bread_pk)
+    #     serializer = BreadSerializer(bread_obj)
+    #     ret['bread'] = serializer.data
+    #
+    #     # Response에서 vegetables의 형태를 기존의 pk에서 [{"id": 1: "name": "Lettuce"} 형태로 변환
+    #     vege_pk_list = ret.get('vegetables')
+    #     vege_list = []
+    #     for vege_pk in vege_pk_list:
+    #         vege_obj = Vegetables.objects.get(pk=vege_pk)
+    #         serializer = VegetableSerializer(vege_obj)
+    #         vege_list.append(serializer.data)
+    #     ret['vegetables'] = vege_list
+    #
+    #     # Response에서 name의 형태를 기존의 pk에서 [{"id": 1, "name": "넘맛있는BLT"} 형태로 변환
+    #     name_pk = ret.get('name')
+    #     name_obj = ProductName.objects.get(pk=name_pk)
+    #     serializer = ProductNameSerializer(name_obj)
+    #     ret['name'] = serializer.data
+    #     return ret
 
     def get_user_like_state(self, obj):
         user = self._kwargs['context']['request'].user
