@@ -3,7 +3,7 @@
 /.static
 /.secrets
 .vscode/
-webpack-stats.dev.json
+app/webpack-stats.dev.json
 
 # Elastic Beanstalk Files
 .elasticbeanstalk/*
