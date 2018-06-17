@@ -19,9 +19,9 @@ __all__ = (
 
 
 class ListFilter(Filter):
-    def filter(self, queryset, value):
+    def filter(self, qs, value):
         if not value:
-            return queryset
+            return qs
 
         self.lookup_expr = 'in'
         values_text = value.split(',')
@@ -29,7 +29,7 @@ class ListFilter(Filter):
         for value in values_text:
             obj = MainIngredient.objects.get(name=value)
             values.append(obj.id)
-        return super().filter(queryset, values)
+        return super().filter(qs, values)
 
 
 class ProductFilter(FilterSet):

@@ -18,7 +18,7 @@ class UserSerializer(serializers.ModelSerializer):
             'id',
             'username',
             'email',
-            'date_joined',
+            # 'date_joined',
         )
 
     def to_representation(self, instance):

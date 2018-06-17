@@ -111,7 +111,11 @@ class ProductMakerListingField(serializers.RelatedField):
 
     def to_representation(self, value):
         serializer = UserSerializer(value)
-        return serializer.data
+
+        # Product Response에서 Productmaker의 token값 제거
+        result = serializer.data
+        del result['token']
+        return result
 
     def to_internal_value(self, data):
         user_name = data.get('username')
