@@ -8,7 +8,7 @@ from rest_framework import generics, permissions
 from utils.permission.custom_permission import IsProductMakerOrReadOnly
 
 from ..serializers.product import ProductSerializer
-from ..models import Product
+from ..models import Product, MainIngredient
 
 User = get_user_model()
 
@@ -24,8 +24,12 @@ class ListFilter(Filter):
             return queryset
 
         self.lookup_expr = 'in'
-        values = value.split(',')
-        return super(ListFilter, self).filter(queryset, values)
+        values_text = value.split(',')
+        values = []
+        for value in values_text:
+            obj = MainIngredient.objects.get(name=value)
+            values.append(obj.id)
+        return super().filter(queryset, values)
 
 
 class ProductFilter(FilterSet):
@@ -55,7 +59,7 @@ class ProductListCreateView(generics.ListCreateAPIView):
 
     ordering_fields = ('id', 'like_count', 'save_count',)
     ordering = ('-like_save_count', '-save_count', '-like_count',)
-    search_fields = ('name__name',)
+    search_fields = ('product_name__name',)
 
     def get_queryset(self):
         queryset = Product.objects.annotate(
