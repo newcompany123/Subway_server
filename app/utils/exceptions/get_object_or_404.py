@@ -1,8 +1,7 @@
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.http import Http404
 from django.shortcuts import get_object_or_404 as _get_object_or_404
 from rest_framework import status
-from rest_framework.exceptions import NotFound
 
 from utils.exceptions.custom_exception import CustomException
 
@@ -16,9 +15,10 @@ def get_object_or_404_customed(queryset, *filter_args, **filter_kwargs):
         return _get_object_or_404(queryset, *filter_args, **filter_kwargs)
     except (TypeError, ValueError, ValidationError):
         raise Http404
-    except Exception as e:
+    except Http404 as e:
         # print(e)
+        # print(type(e))
         raise CustomException(
-            detail=f"{queryset.__name__}'s object(id:{filter_kwargs['pk']}) is not found.",
+            detail=f"{queryset.__name__}'s object is not found!",
             status_code=status.HTTP_404_NOT_FOUND
         )

@@ -115,8 +115,14 @@ class ProductMakerListingField(serializers.RelatedField):
 
     def to_internal_value(self, data):
         user_name = data.get('username')
-        # user = get_object_or_404_customed(User, name=user_name)
-        user = User.objects.get(username=user_name)
+        user = get_object_or_404_customed(User, username=user_name)
+        # try:
+        #     user = User.objects.get(username=user_name)
+        # except User.DoesNotExist:
+        #     raise CustomException(
+        #         detail='User matching query does not exist.',
+        #         status_code=status.HTTP_400_BAD_REQUEST
+        #     )
         return user
 
 
@@ -203,7 +209,7 @@ class ProductSerializer(serializers.ModelSerializer):
 
         for product in Product.objects.all():
 
-            # product name's uniqueness validation
+            # 1) product name's uniqueness validation
             product_name = attrs.get('product_name')
             if product.product_name == product_name:
                 raise CustomException(
@@ -211,7 +217,7 @@ class ProductSerializer(serializers.ModelSerializer):
                     status_code=status.HTTP_400_BAD_REQUEST
                 )
 
-            # product recipe's uniqueness validation
+            # 2) product recipe's uniqueness validation
             main_ingredient_obj = attrs.get('main_ingredient')
             if product.main_ingredient == main_ingredient_obj:
 
