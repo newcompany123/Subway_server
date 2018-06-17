@@ -18,7 +18,7 @@ class Product(models.Model):
     #     verbose_name='빵',
     # )
 
-    name = models.OneToOneField(
+    product_name = models.OneToOneField(
         'productname',
         on_delete=models.SET_NULL,
         null=True,
@@ -68,5 +68,5 @@ class Product(models.Model):
     )
 
     def __str__(self):
-        return f'{self.pk}) {self.name} ' \
+        return f'{self.pk} {self.product_name} ' \
                f'[ {self.main_ingredient} {self.bread}, {list(self.vegetables.all().values_list("name", flat=True))} ]'
