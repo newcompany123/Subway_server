@@ -47,7 +47,7 @@
   "scripts": {
     "start": "node -- scripts/start.js",
     "build": "node scripts/build.js",
-    "test": "standard && node scripts/test.js --env=jsdom"
+    "test": "standard --fix && node scripts/test.js --env=jsdom"
   },
   "jest": {
     "collectCoverageFrom": [
