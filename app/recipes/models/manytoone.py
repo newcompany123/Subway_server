@@ -1,14 +1,14 @@
 from django.db import models
 
 
-class MainIngredient(models.Model):
+class Sandwich(models.Model):
     """
-    Product와 Many-to-one relationship(ForeignKey)으로 연결된 Main ingredient
+    Recipe와 Many-to-one relationship(ForeignKey)으로 연결된 Sandwich
     """
     name = models.CharField(
         max_length=100,
         unique=True,
-        help_text='100자까지 Product Ingredient의 이름을 저장합니다.'
+        help_text='100자까지 Sandwich의 이름을 저장합니다.'
     )
 
     def __str__(self):
@@ -17,7 +17,7 @@ class MainIngredient(models.Model):
 
 class Bread(models.Model):
     """
-    Product와 Many-to-one relationship(ForeignKey)으로 연결된 bread
+    Recipe와 Many-to-one relationship(ForeignKey)으로 연결된 Bread
     """
     name = models.CharField(
         max_length=100,

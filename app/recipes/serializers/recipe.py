@@ -5,24 +5,24 @@ from rest_framework import serializers, status
 from users.serializers import UserSerializer
 from utils.exceptions.custom_exception import CustomException
 from utils.exceptions.get_object_or_404 import get_object_or_404_customed
-from ..models import Product, Bread, Vegetables, ProductName, MainIngredient
+from ..models import Recipe, Bread, Vegetables, RecipeName, Sandwich
 
 User = get_user_model()
 
 __all__ = (
-    'ProductSerializer',
+    'RecipeSerializer',
 )
 
 
-class ProductNameSerializer(serializers.ModelSerializer):
+class RecipeNameSerializer(serializers.ModelSerializer):
     class Meta:
-        model = ProductName
+        model = RecipeName
         fields = '__all__'
 
 
-class MainIngredientSerializer(serializers.ModelSerializer):
+class SandwichSerializer(serializers.ModelSerializer):
     class Meta:
-        model = MainIngredient
+        model = Sandwich
         fields = '__all__'
 
 
@@ -32,45 +32,45 @@ class BreadSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class VegetableSerializer(serializers.ModelSerializer):
+class VegetablesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Vegetables
         fields = '__all__'
 
 
-class ProductNameListingField(serializers.RelatedField):
-    queryset = ProductName.objects.all()
+class RecipeNameRelatedField(serializers.RelatedField):
+    queryset = RecipeName.objects.all()
 
     def to_representation(self, value):
-        serializer = ProductNameSerializer(value)
+        serializer = RecipeNameSerializer(value)
         return serializer.data
 
     def to_internal_value(self, data):
-        product_name_name = data.get('name')
-        product_name = get_object_or_404_customed(ProductName, name=product_name_name)
+        recipe_name_name = data.get('name')
+        recipe_name = get_object_or_404_customed(RecipeName, name=recipe_name_name)
 
-        # serializer = ProductNameSerializer(data=data)
+        # serializer = RecipeNameSerializer(data=data)
         # serializer.is_valid()
         # obj = serializer.save
         # return obj
 
-        return product_name
+        return recipe_name
 
 
-class MainIngredientListingField(serializers.RelatedField):
-    queryset = MainIngredient.objects.all()
+class SandwichRelatedField(serializers.RelatedField):
+    queryset = Sandwich.objects.all()
 
     def to_representation(self, value):
-        serializer = MainIngredientSerializer(value)
+        serializer = SandwichSerializer(value)
         return serializer.data
 
     def to_internal_value(self, data):
-        main_ingredient_name = data.get('name')
-        main_ingredient = get_object_or_404_customed(MainIngredient, name=main_ingredient_name)
-        return main_ingredient
+        sandwich_name = data.get('name')
+        sandwich = get_object_or_404_customed(Sandwich, name=sandwich_name)
+        return sandwich
 
 
-class BreadListingField(serializers.RelatedField):
+class BreadRelatedField(serializers.RelatedField):
     queryset = Bread.objects.all()
 
     def to_representation(self, value):
@@ -83,11 +83,11 @@ class BreadListingField(serializers.RelatedField):
         return bread
 
 
-class VegetableListingField(serializers.RelatedField):
+class VegetablesRelatedField(serializers.RelatedField):
     queryset = Vegetables.objects.all()
 
     def to_representation(self, value):
-        serializer = VegetableSerializer(value)
+        serializer = VegetablesSerializer(value)
         return serializer.data
 
     def to_internal_value(self, data):
@@ -106,13 +106,13 @@ class VegetableListingField(serializers.RelatedField):
         return vegetable
 
 
-class ProductMakerListingField(serializers.RelatedField):
+class InventorRelatedField(serializers.RelatedField):
     queryset = User.objects.all()
 
     def to_representation(self, value):
         serializer = UserSerializer(value)
 
-        # Product Response에서 Productmaker의 token값 제거
+        # Recipe Response에서 Productmaker의 token값 제거
         result = serializer.data
         del result['token']
         return result
@@ -130,44 +130,44 @@ class ProductMakerListingField(serializers.RelatedField):
         return user
 
 
-class ProductSerializer(serializers.ModelSerializer):
+class RecipeSerializer(serializers.ModelSerializer):
 
     # NestedSerializer로 사용하면 해당 Serializer에서 전달된 json 객체를
     #  생성하려 들기 때문에 문제가 됨.
-    # product_name = ProductNameSerializer()
-    # main_ingredient = MainIngredientSerializer()
+    # name = RecipeNameSerializer()
+    # sandwich = SandwichSerializer()
     # bread = BreadSerializer()
-    # vegetables = VegetableSerializer(many=True)
+    # vegetables = VegetablesSerializer(many=True)
 
-    product_name = ProductNameListingField()
-    main_ingredient = MainIngredientListingField()
-    bread = BreadListingField()
-    vegetables = VegetableListingField(many=True)
-    product_maker = ProductMakerListingField()
+    name = RecipeNameRelatedField()
+    sandwich = SandwichRelatedField()
+    bread = BreadRelatedField()
+    vegetables = VegetablesRelatedField(many=True)
+    inventor = InventorRelatedField()
 
-    user_like_state = serializers.SerializerMethodField(read_only=True)
-    user_save_state = serializers.SerializerMethodField(read_only=True)
+    auth_user_like_state = serializers.SerializerMethodField(read_only=True)
+    auth_user_save_state = serializers.SerializerMethodField(read_only=True)
     like_count = serializers.IntegerField(read_only=True)
-    save_count = serializers.IntegerField(read_only=True)
-    like_save_count = serializers.IntegerField(read_only=True)
+    bookmark_count = serializers.IntegerField(read_only=True)
+    like_bookmark_count = serializers.IntegerField(read_only=True)
 
     class Meta:
-        model = Product
+        model = Recipe
         fields = (
             'id',
-            'product_name',
-            'product_maker',
-            'main_ingredient',
+            'name',
+            'inventor',
+            'sandwich',
             'bread',
             'vegetables',
             'img_profile',
             'img_profile_thumbnail',
-            'user_like_state',
-            'user_save_state',
+            'auth_user_like_state',
+            'auth_user_save_state',
 
             'like_count',
-            'save_count',
-            'like_save_count',
+            'bookmark_count',
+            'like_bookmark_count',
         )
 
     def validate(self, attrs):
@@ -206,32 +206,32 @@ class ProductSerializer(serializers.ModelSerializer):
         # 과정3) product의 name 설정
         # if self.initial_data.get('name'):
         #     product_name_pk = self.initial_data.get('name')
-        #     product_name_obj = get_object_or_404(ProductName, pk=product_name_pk)
+        #     product_name_obj = get_object_or_404(RecipeName, pk=product_name_pk)
         #     attrs['name'] = product_name_obj
         # else:
-        #     raise APIException("'name' field(product name) is required.")
+        #     raise APIException("'name' field(recipe name) is required.")
 
-        for product in Product.objects.all():
+        for recipe in Recipe.objects.all():
 
-            # 1) product name's uniqueness validation
-            product_name = attrs.get('product_name')
-            if product.product_name == product_name:
+            # 1) recipe name's uniqueness validation
+            name = attrs.get('name')
+            if recipe.name == name:
                 raise CustomException(
                     detail='Same sandwich name already exists!',
                     status_code=status.HTTP_400_BAD_REQUEST
                 )
 
-            # 2) product recipe's uniqueness validation
-            main_ingredient_obj = attrs.get('main_ingredient')
-            if product.main_ingredient == main_ingredient_obj:
+            # 2) recipe recipe's uniqueness validation
+            sandwich = attrs.get('sandwich')
+            if recipe.sandwich == sandwich:
 
-                bread_obj = attrs.get('bread')
-                # print(f'{product.bread} {bread_obj}')
-                if product.bread == bread_obj:
+                bread = attrs.get('bread')
+                # print(f'{recipe.bread} {bread_obj}')
+                if recipe.bread == bread:
 
                     veg_list = attrs.get('vegetables')
-                    # print(f'{list(product.vegetables.all())} {veg_list}')
-                    if list(product.vegetables.all()) == veg_list:
+                    # print(f'{list(recipe.vegetables.all())} {veg_list}')
+                    if list(recipe.vegetables.all()) == veg_list:
                         raise CustomException(
                             detail='Same sandwich recipe already exists!',
                             status_code=status.HTTP_400_BAD_REQUEST
@@ -248,10 +248,10 @@ class ProductSerializer(serializers.ModelSerializer):
     #     ret = super().to_representation(instance)
     #
     #     # Response에서 main_ingredient의 형태를 기존의 pk에서 [{"id": 1, "name": "Italian B.M.T"} 형태로 변환
-    #     main_ingredient_pk = ret.get('main_ingredient')
-    #     main_ingredient_obj = MainIngredient.objects.get(pk=main_ingredient_pk)
-    #     serializer = MainIngredientSerializer(main_ingredient_obj)
-    #     ret['main_ingredient'] = serializer.data
+    #     main_ingredient_pk = ret.get('sandwich')
+    #     main_ingredient_obj = Sandwich.objects.get(pk=main_ingredient_pk)
+    #     serializer = SandwichSerializer(main_ingredient_obj)
+    #     ret['sandwich'] = serializer.data
     #
     #     # Response에서 bread의 형태를 기존의 pk에서 {"id": 1, "name": "Wheat"} 형태로 변환
     #     bread_pk = ret.get('bread')
@@ -264,33 +264,33 @@ class ProductSerializer(serializers.ModelSerializer):
     #     vege_list = []
     #     for vege_pk in vege_pk_list:
     #         vege_obj = Vegetables.objects.get(pk=vege_pk)
-    #         serializer = VegetableSerializer(vege_obj)
+    #         serializer = VegetablesSerializer(vege_obj)
     #         vege_list.append(serializer.data)
     #     ret['vegetables'] = vege_list
     #
     #     # Response에서 name의 형태를 기존의 pk에서 [{"id": 1, "name": "넘맛있는BLT"} 형태로 변환
     #     name_pk = ret.get('name')
-    #     name_obj = ProductName.objects.get(pk=name_pk)
-    #     serializer = ProductNameSerializer(name_obj)
+    #     name_obj = RecipeName.objects.get(pk=name_pk)
+    #     serializer = RecipeNameSerializer(name_obj)
     #     ret['name'] = serializer.data
     #     return ret
 
-    def get_user_like_state(self, obj):
+    def get_auth_user_like_state(self, obj):
         user = self._kwargs['context']['request'].user
 
         if type(user) is AnonymousUser:
             return 'None'
-        if obj in user.liked_product.all():
+        if obj in user.liked_recipe.all():
             return 'True'
         else:
             return 'False'
 
-    def get_user_save_state(self, obj):
+    def get_auth_user_save_state(self, obj):
         user = self._kwargs['context']['request'].user
 
         if type(user) is AnonymousUser:
             return 'None'
-        if obj in user.saved_product.all():
+        if obj in user.bookmarked_recipe.all():
             return 'True'
         else:
             return 'False'

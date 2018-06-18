@@ -2,9 +2,9 @@ from django.conf import settings
 from django.db import models
 
 
-class Product(models.Model):
+class Recipe(models.Model):
     """
-    Bread, Vegetables, Sauces, Toppings의 조합으로 만들어진 샌드위치 object
+    Bread, Vegetables, Sauces, Cheese, Toppings의 조합으로 만들어진 샌드위치 object
     """
     # [ Shoveling log ]
     #   : OneToOneField -> ForeignKey fixed
@@ -18,55 +18,56 @@ class Product(models.Model):
     #     verbose_name='빵',
     # )
 
-    product_name = models.OneToOneField(
-        'productname',
+    name = models.OneToOneField(
+        'RecipeName',
         on_delete=models.SET_NULL,
         null=True,
         verbose_name='이름',
     )
 
-    main_ingredient = models.ForeignKey(
-        'mainingredient',
+    sandwich = models.ForeignKey(
+        'Sandwich',
         on_delete=models.SET_NULL,
         null=True,
         verbose_name='기본 샌드위치',
     )
 
     bread = models.ForeignKey(
-        'bread',
+        'Bread',
         on_delete=models.SET_NULL,
         null=True,
         verbose_name='빵',
     )
 
     vegetables = models.ManyToManyField(
-        'vegetables',
+        'Vegetables',
         blank=True,
         verbose_name='야채',
     )
 
-    product_maker = models.ForeignKey(
+    inventor = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
         null=True,
-        related_name='made_product',
+        related_name='made_recipe',
         verbose_name='레시피 제작자',
     )
+
+    liker = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        related_name='liked_recipe',
+        through='RecipeLike',
+    )
+
+    bookmarker = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        related_name='bookmarked_recipe',
+        through='RecipeBookmark',
+    )
+
     img_profile = models.ImageField(upload_to='user', blank=True)
     img_profile_thumbnail = models.ImageField(upload_to='user', blank=True)
 
-    product_liker = models.ManyToManyField(
-        settings.AUTH_USER_MODEL,
-        related_name='liked_product',
-        through='ProductLike',
-    )
-
-    product_saver = models.ManyToManyField(
-        settings.AUTH_USER_MODEL,
-        related_name='saved_product',
-        through='ProductSave',
-    )
-
     def __str__(self):
-        return f'{self.pk} {self.product_name} ' \
-               f'[ {self.main_ingredient} {self.bread}, {list(self.vegetables.all().values_list("name", flat=True))} ]'
+        return f'{self.pk} {self.name} ' \
+               f'[ {self.sandwich} {self.bread}, {list(self.vegetables.all().values_list("name", flat=True))} ]'

@@ -3,7 +3,7 @@ from django.db import models
 
 class Vegetables(models.Model):
     """
-    Product와 Many-to-many relationship으로 연결된 vegetables
+    Recipe와 Many-to-many relationship으로 연결된 vegetables
     """
 
     VEGETABLE_LESS = 'LE'
