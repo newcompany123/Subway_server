@@ -1,5 +1,8 @@
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
+from django.utils.module_loading import import_string
+
 from rest_framework import serializers, status
 
 from users.serializers import UserSerializer
@@ -241,8 +244,22 @@ class RecipeSerializer(serializers.ModelSerializer):
         return attrs
 
     def create(self, validated_data):
-        result = super().create(validated_data)
-        return result
+        recipe = super().create(validated_data)
+
+        image_file_path = 'sandwich/' + recipe.sandwich.name + '.jpg'
+
+        # iamge_url_path = os.path.join(settings.STATIC_DIR, image_file_path)
+        static_storage_class = import_string(settings.STATICFILES_STORAGE)
+        static_storage = static_storage_class()
+        static_file = static_storage.open(
+            image_file_path
+        )
+        # print(static_file)
+        # print(type(static_file))
+
+        recipe.img_profile = static_file
+        recipe.save()
+        return recipe
 
     # def to_representation(self, instance):
     #     ret = super().to_representation(instance)
