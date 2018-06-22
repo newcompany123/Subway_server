@@ -257,6 +257,10 @@ class RecipeSerializer(serializers.ModelSerializer):
         # print(static_file)
         # print(type(static_file))
 
+        print(static_file)
+        print(static_file.name)
+        print(type(static_file))
+        print(type(static_file.name))
         recipe.img_profile = static_file
         recipe.save()
         return recipe
