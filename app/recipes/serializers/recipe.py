@@ -1,7 +1,5 @@
-from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
-from django.utils.module_loading import import_string
 
 from rest_framework import serializers, status
 
@@ -163,8 +161,8 @@ class RecipeSerializer(serializers.ModelSerializer):
             'sandwich',
             'bread',
             'vegetables',
-            'img_profile',
-            'img_profile_thumbnail',
+            # 'img_profile',
+            # 'img_profile_thumbnail',
             'auth_user_like_state',
             'auth_user_save_state',
 
@@ -175,6 +173,7 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
 
+        # ------------------------------------------------------------
         # [ Shoveling log ]
         #   : hardcoding eradicated
 
@@ -213,6 +212,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         #     attrs['name'] = product_name_obj
         # else:
         #     raise APIException("'name' field(recipe name) is required.")
+        # ------------------------------------------------------------
 
         for recipe in Recipe.objects.all():
 
@@ -245,24 +245,6 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         recipe = super().create(validated_data)
-
-        image_file_path = 'sandwich/' + recipe.sandwich.name + '.jpg'
-
-        # iamge_url_path = os.path.join(settings.STATIC_DIR, image_file_path)
-        static_storage_class = import_string(settings.STATICFILES_STORAGE)
-        static_storage = static_storage_class()
-        static_file = static_storage.open(
-            image_file_path
-        )
-        # print(static_file)
-        # print(type(static_file))
-
-        print(static_file)
-        print(static_file.name)
-        print(type(static_file))
-        print(type(static_file.name))
-        recipe.img_profile = static_file
-        recipe.save()
         return recipe
 
     # def to_representation(self, instance):
