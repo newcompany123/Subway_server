@@ -65,8 +65,11 @@ class Recipe(models.Model):
         through='RecipeBookmark',
     )
 
-    img_profile = models.ImageField(upload_to='user', blank=True)
-    img_profile_thumbnail = models.ImageField(upload_to='user', blank=True)
+    # [ Shoveling log ]
+    # 이곳이 아닌 sandwich에서 url을 설정하게 되면 매번 recipe를 생성할 때 마다 image 생성 작업을
+    # 불필요하게 하지 않아도 됨.
+    # image = models.ImageField(blank=True)
+    # image2x = models.ImageField(blank=True)
 
     def __str__(self):
         return f'{self.pk} {self.name} ' \

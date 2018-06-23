@@ -10,6 +10,8 @@ class Sandwich(models.Model):
         unique=True,
         help_text='100자까지 Sandwich의 이름을 저장합니다.'
     )
+    # image = models.FilePathField(path='sandwich', blank=True, max_length=1000)
+    image = models.ImageField(blank=True)
 
     def __str__(self):
         return f'{self.pk})_{self.name}'
