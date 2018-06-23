@@ -24,11 +24,13 @@ class Bread(models.Model):
     name = models.CharField(
         max_length=100,
         # unique=True,
-        help_text='100자까지 bread의 이름을 저장합니다.',
+        help_text='100자까지 Bread 이름을 저장합니다.',
     )
+    # image = models.ImageField(blank=True)
+    image = models.ImageField(blank=True, default='')
 
     class Meta:
-        verbose_name_plural = '선택한 bread'
+        verbose_name_plural = 'bread'
 
     def __str__(self):
         return f'{self.pk}_{self.name}'

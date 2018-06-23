@@ -4,7 +4,7 @@ from django.db import models
 
 class Recipe(models.Model):
     """
-    Bread, Vegetables, Sauces, Cheese, Toppings의 조합으로 만들어진 샌드위치 object
+    Bread, Vegetables, Sauces, Cheese, Toppings의 조합으로 만들어진 Recipe object
     """
     # [ Shoveling log ]
     #   : OneToOneField -> ForeignKey fixed
@@ -17,34 +17,29 @@ class Recipe(models.Model):
     #     null=True,
     #     verbose_name='빵',
     # )
-
     name = models.OneToOneField(
         'RecipeName',
         on_delete=models.SET_NULL,
         null=True,
         verbose_name='이름',
     )
-
     sandwich = models.ForeignKey(
         'Sandwich',
         on_delete=models.SET_NULL,
         null=True,
         verbose_name='기본 샌드위치',
     )
-
     bread = models.ForeignKey(
         'Bread',
         on_delete=models.SET_NULL,
         null=True,
         verbose_name='빵',
     )
-
     vegetables = models.ManyToManyField(
         'Vegetables',
         blank=True,
         verbose_name='야채',
     )
-
     inventor = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
@@ -52,19 +47,16 @@ class Recipe(models.Model):
         related_name='made_recipe',
         verbose_name='레시피 제작자',
     )
-
     liker = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
         related_name='liked_recipe',
         through='RecipeLike',
     )
-
     bookmarker = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
         related_name='bookmarked_recipe',
         through='RecipeBookmark',
     )
-
     # [ Shoveling log ]
     # 이곳이 아닌 sandwich에서 url을 설정하게 되면 매번 recipe를 생성할 때 마다 image 생성 작업을
     # 불필요하게 하지 않아도 됨.

@@ -3,9 +3,8 @@ from django.db import models
 
 class Vegetables(models.Model):
     """
-    Recipe와 Many-to-many relationship으로 연결된 vegetables
+    Recipe와 Many-to-many relationship으로 연결된 Vegetables
     """
-
     VEGETABLE_LESS = 'LE'
     VEGETABLE_NORMAL = 'NO'
     VEGETABLE_MORE = 'MO'
@@ -15,21 +14,17 @@ class Vegetables(models.Model):
         (VEGETABLE_NORMAL, 'NORMAL'),
         (VEGETABLE_MORE, 'MORE'),
     )
-
     name = models.CharField(
         max_length=100,
         unique=True,
-        help_text='100자까지 vegetable의 이름을 저장합니다.',
+        help_text='100자까지 Vegetable의 이름을 저장합니다.',
     )
-
     quantity = models.CharField(
         max_length=2,
         choices=VEGETABLE_QUANTITY_CHOICES,
         default='NO'
     )
-
-    class Meta:
-        verbose_name_plural = '선택한 vegetables'
+    image = models.ImageField(blank=True)
 
     def __str__(self):
         return f'{self.pk}_{self.name}'
