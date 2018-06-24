@@ -2,13 +2,11 @@ from django.conf import settings
 from django.core.management import BaseCommand
 from django.utils.module_loading import import_string
 
-from ...models import Vegetables, Bread, RecipeName, Sandwich
+from ...models import Vegetables, Bread, RecipeName, Sandwich, Cheese, Toppings, Sauces
 
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
-        vegetable_list = ['lettuce', 'tomatoes', 'cucumbers', 'peppers', 'red_onions', 'pickles', 'olives', 'jalapenos', 'avocado']
-        bread_list = ['honey_oat', 'hearty_italian', 'wheat', 'parmesan_oregano', 'white', 'flat_bread']
         recipe_name_list = ['sandwich1', 'sandwich2', 'sandwich3', 'sandwich4', 'sandwich5']
         sandwich_list = ['spicy_italian_avocado', 'turkey_bacon_avocado', 'veggie_avocado', 'pulled_pork',
                          'blt', 'egg_mayo', 'subway_club']
@@ -20,15 +18,26 @@ class Command(BaseCommand):
         # sandwich_list = ['Spicy Italian Avocado', 'Turkey Bacon Avocado', 'Veggie Avocado', 'Pulled Pork',
         #                        'Egg Mayo', 'Italian B.M.T', 'B.L.T', 'Meatball', 'Ham', 'Tuna', 'Rotisserie Chicken', 'Roasted Chicken']
 
-        # [Sandwich.objects.get_or_create(name=name) for name in sandwich_list]
-        [Vegetables.objects.get_or_create(name=name) for name in vegetable_list]
-        [Bread.objects.get_or_create(name=name) for name in bread_list]
+        bread_list = ['honey_oat', 'hearty_italian', 'wheat', 'parmesan_oregano', 'white', 'flat_bread']
+        cheese_list = ['american_cheese', 'shrewd_cheese']
+
+        vegetable_list = ['lettuce', 'tomatoes', 'cucumbers', 'peppers', 'red_onions', 'pickles', 'olives', 'jalapenos', 'avocado']
+        topping_list = ['double_up', 'egg_mayo', 'omelet']
+        sauce_list = ['ranch', 'mayonnaise', 'sweet_onion']
+
         [RecipeName.objects.get_or_create(name=name) for name in recipe_name_list]
+        # [Sandwich.objects.get_or_create(name=name) for name in sandwich_list]
+        [Cheese.objects.get_or_create(name=name) for name in cheese_list]
+
+        [Bread.objects.get_or_create(name=name) for name in bread_list]
+        [Vegetables.objects.get_or_create(name=name) for name in vegetable_list]
+        [Toppings.objects.get_or_create(name=name) for name in topping_list]
+        [Sauces.objects.get_or_create(name=name) for name in sauce_list]
 
         for name in sandwich_list:
             sandwich, _ = Sandwich.objects.get_or_create(name=name)
-            image_path = 'sandwich/' + name + '.jpg'
 
+            image_path = 'sandwich/' + name + '.jpg'
             static_storage_class = import_string(settings.STATICFILES_STORAGE)
             static_storage = static_storage_class()
             static_file = static_storage.open(
