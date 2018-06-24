@@ -24,6 +24,36 @@ class Vegetables(models.Model):
         choices=VEGETABLE_QUANTITY_CHOICES,
         default='NO'
     )
+    image = models.ImageField(blank=True, default='')
+
+    def __str__(self):
+        return f'{self.pk}_{self.name}'
+
+
+class Toppings(models.Model):
+    """
+    Recipe와 Many-to-many relationship으로 연결된 Toppings
+    """
+    name = models.CharField(
+        max_length=100,
+        unique=True,
+        help_text='100자까지 Topping의 이름을 저장합니다.',
+    )
+    image = models.ImageField(blank=True)
+
+    def __str__(self):
+        return f'{self.pk}_{self.name}'
+
+
+class Sauces(models.Model):
+    """
+    Recipe와 Many-to-many relationship으로 연결된 Sauces
+    """
+    name = models.CharField(
+        max_length=100,
+        unique=True,
+        help_text='100자까지 Sauce의 이름을 저장합니다.',
+    )
     image = models.ImageField(blank=True)
 
     def __str__(self):

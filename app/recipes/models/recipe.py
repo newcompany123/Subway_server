@@ -1,6 +1,8 @@
 from django.conf import settings
 from django.db import models
 
+from ..models import Toppings, Cheese, Sauces
+
 
 class Recipe(models.Model):
     """
@@ -35,11 +37,29 @@ class Recipe(models.Model):
         null=True,
         verbose_name='빵',
     )
+    cheese = models.ForeignKey(
+        Cheese,
+        on_delete=models.SET_NULL,
+        null=True,
+        verbose_name='치즈',
+    )
     vegetables = models.ManyToManyField(
         'Vegetables',
         blank=True,
         verbose_name='야채',
     )
+    toppings = models.ManyToManyField(
+        Toppings,
+        blank=True,
+        verbose_name='토핑',
+    )
+    sauces = models.ManyToManyField(
+        Sauces,
+        blank=True,
+        verbose_name='소스',
+    )
+    toasting = models.BooleanField(default=False)
+
     inventor = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
