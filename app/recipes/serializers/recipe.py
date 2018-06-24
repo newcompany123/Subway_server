@@ -6,7 +6,7 @@ from rest_framework import serializers, status
 from users.serializers import UserSerializer
 from utils.exceptions.custom_exception import CustomException
 from utils.exceptions.get_object_or_404 import get_object_or_404_customed
-from ..models import Recipe, Bread, Vegetables, RecipeName, Sandwich
+from ..models import Recipe, Bread, Vegetables, RecipeName, Sandwich, Cheese, Toppings, Sauces
 
 User = get_user_model()
 
@@ -33,9 +33,27 @@ class BreadSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class CheeseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Bread
+        fields = '__all__'
+
+
 class VegetablesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Vegetables
+        fields = '__all__'
+
+
+class ToppingsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Toppings
+        fields = '__all__'
+
+
+class SaucesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Sauces
         fields = '__all__'
 
 
@@ -84,6 +102,19 @@ class BreadRelatedField(serializers.RelatedField):
         return bread
 
 
+class CheeseRelatedField(serializers.RelatedField):
+    queryset = Bread.objects.all()
+
+    def to_representation(self, value):
+        serializer = CheeseSerializer(value)
+        return serializer.data
+
+    def to_internal_value(self, data):
+        cheese_name = data.get('name')
+        cheese = get_object_or_404_customed(Cheese, name=cheese_name)
+        return cheese
+
+
 class VegetablesRelatedField(serializers.RelatedField):
     queryset = Vegetables.objects.all()
 
@@ -105,6 +136,32 @@ class VegetablesRelatedField(serializers.RelatedField):
             vegetable.quantity = quantity_text
             vegetable.save()
         return vegetable
+
+
+class ToppingsRelatedField(serializers.RelatedField):
+    queryset = Toppings.objects.all()
+
+    def to_representation(self, value):
+        serializer = ToppingsSerializer(value)
+        return serializer.data
+
+    def to_internal_value(self, data):
+        topping_name = data.get('name')
+        topping = get_object_or_404_customed(Toppings, name=topping_name)
+        return topping
+
+
+class SaucesRelatedField(serializers.RelatedField):
+    queryset = Sauces.objects.all()
+
+    def to_representation(self, value):
+        serializer = SaucesSerializer(value)
+        return serializer.data
+
+    def to_internal_value(self, data):
+        sauce_name = data.get('name')
+        sauce = get_object_or_404_customed(Sauces, name=sauce_name)
+        return sauce
 
 
 class InventorRelatedField(serializers.RelatedField):
@@ -143,11 +200,14 @@ class RecipeSerializer(serializers.ModelSerializer):
     name = RecipeNameRelatedField()
     sandwich = SandwichRelatedField()
     bread = BreadRelatedField()
+    cheese = CheeseRelatedField()
     vegetables = VegetablesRelatedField(many=True)
+    toppings = ToppingsRelatedField(many=True)
+    sauces = SaucesRelatedField(many=True)
     inventor = InventorRelatedField()
 
     auth_user_like_state = serializers.SerializerMethodField(read_only=True)
-    auth_user_save_state = serializers.SerializerMethodField(read_only=True)
+    auth_user_bookmark_state = serializers.SerializerMethodField(read_only=True)
     like_count = serializers.IntegerField(read_only=True)
     bookmark_count = serializers.IntegerField(read_only=True)
     like_bookmark_count = serializers.IntegerField(read_only=True)
@@ -157,15 +217,17 @@ class RecipeSerializer(serializers.ModelSerializer):
         fields = (
             'id',
             'name',
-            'inventor',
             'sandwich',
             'bread',
+            'cheese',
             'vegetables',
-            # 'img_profile',
-            # 'img_profile_thumbnail',
-            'auth_user_like_state',
-            'auth_user_save_state',
+            'toppings',
+            'sauces',
+            'toasting',
+            'inventor',
 
+            'auth_user_like_state',
+            'auth_user_bookmark_state',
             'like_count',
             'bookmark_count',
             'like_bookmark_count',
@@ -232,13 +294,23 @@ class RecipeSerializer(serializers.ModelSerializer):
                 # print(f'{recipe.bread} {bread_obj}')
                 if recipe.bread == bread:
 
-                    veg_list = attrs.get('vegetables')
-                    # print(f'{list(recipe.vegetables.all())} {veg_list}')
-                    if list(recipe.vegetables.all()) == veg_list:
-                        raise CustomException(
-                            detail='Same sandwich recipe already exists!',
-                            status_code=status.HTTP_400_BAD_REQUEST
-                        )
+                    cheese = attrs.get('cheese')
+                    if recipe.cheese == cheese:
+
+                        vegetable_list = attrs.get('vegetables')
+                        # print(f'{list(recipe.vegetables.all())} {veg_list}')
+                        if list(recipe.vegetables.all()) == vegetable_list:
+
+                            topping_list = attrs.get('toppings')
+                            if list(recipe.toppings.all()) == topping_list:
+
+                                sauce_list = attrs.get('sauces')
+                                if list(recipe.sauces.all()) == sauce_list:
+
+                                    raise CustomException(
+                                        detail='Same sandwich recipe already exists!',
+                                        status_code=status.HTTP_400_BAD_REQUEST
+                                    )
 
         # attrs을 return하여 validate 과정 종료
         return attrs
@@ -288,7 +360,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         else:
             return 'False'
 
-    def get_auth_user_save_state(self, obj):
+    def get_auth_user_bookmark_state(self, obj):
         user = self._kwargs['context']['request'].user
 
         if type(user) is AnonymousUser:
