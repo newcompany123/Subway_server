@@ -24,7 +24,7 @@ class Vegetables(models.Model):
         choices=VEGETABLE_QUANTITY_CHOICES,
         default='NO'
     )
-    image = models.ImageField(blank=True, default='')
+    image = models.FilePathField(max_length=255)
 
     def __str__(self):
         return f'{self.pk}_{self.name}'
@@ -39,7 +39,7 @@ class Toppings(models.Model):
         unique=True,
         help_text='100자까지 Topping의 이름을 저장합니다.',
     )
-    image = models.ImageField(blank=True)
+    image = models.FilePathField(max_length=255)
 
     def __str__(self):
         return f'{self.pk}_{self.name}'
@@ -54,7 +54,7 @@ class Sauces(models.Model):
         unique=True,
         help_text='100자까지 Sauce의 이름을 저장합니다.',
     )
-    image = models.ImageField(blank=True)
+    image = models.FilePathField(max_length=255)
 
     def __str__(self):
         return f'{self.pk}_{self.name}'

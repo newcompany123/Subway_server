@@ -3,6 +3,7 @@
 /.static
 /.secrets
 .vscode/
+static
 
 # Elastic Beanstalk Files
 .elasticbeanstalk/*

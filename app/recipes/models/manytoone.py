@@ -10,7 +10,7 @@ class Sandwich(models.Model):
         unique=True,
         help_text='100자까지 Sandwich의 이름을 저장합니다.'
     )
-    image = models.FilePathField(path='sandwich', blank=True, max_length=255)
+    image = models.FilePathField(path='sandwich', max_length=255)
 
     # image = models.ImageField(blank=True)
     # -> ImageField에 image의 url을 저장할 경우 아래와 같은 문제가 발생
@@ -33,8 +33,7 @@ class Bread(models.Model):
         # unique=True,
         help_text='100자까지 Bread 이름을 저장합니다.',
     )
-    # image = models.ImageField(blank=True)
-    image = models.ImageField(blank=True, default='')
+    image = models.FilePathField(max_length=255)
 
     class Meta:
         verbose_name_plural = 'bread'
@@ -52,8 +51,7 @@ class Cheese(models.Model):
         # unique=True,
         help_text='100자까지 Cheese 이름을 저장합니다.',
     )
-    # image = models.ImageField(blank=True)
-    image = models.ImageField(blank=True, default='')
+    image = models.FilePathField(max_length=255)
 
     class Meta:
         verbose_name_plural = 'bread'
