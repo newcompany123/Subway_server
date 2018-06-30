@@ -1,5 +1,7 @@
 from django.db import models
 
+from recipes.models import MainIngredient
+
 
 class Sandwich(models.Model):
     """
@@ -20,6 +22,12 @@ class Sandwich(models.Model):
     # (settings == prod)
     # "image": "https://s3.ap-northeast-2.amazonaws.com/
     #           bucket-subway/media/https%3A/s3.ap-northeast-2.amazonaws.com/bucket-subway/static/sandwich/spicy_italian_avocado.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIM4DF24YBH6QS24Q%2F20180625%2Fap-northeast-2%2Fs3%2Faws4_request&X-Amz-Date=20180625T102742Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=1aa3b156a1d08c0c66e92fcb04b623bc6ea060bfca4b862c56d1ae82a0635559"
+
+    main_ingredient = models.ManyToManyField(
+        MainIngredient,
+        blank=True,
+        verbose_name='구성재료'
+    )
 
     def __str__(self):
         return f'{self.pk})_{self.name}'
