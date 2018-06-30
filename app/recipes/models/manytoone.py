@@ -43,6 +43,7 @@ class Bread(models.Model):
         help_text='100자까지 Bread 이름을 저장합니다.',
     )
     image = models.FilePathField(max_length=255)
+    image3x = models.FilePathField(max_length=255)
 
     class Meta:
         verbose_name_plural = 'bread'
@@ -61,6 +62,7 @@ class Cheese(models.Model):
         help_text='100자까지 Cheese 이름을 저장합니다.',
     )
     image = models.FilePathField(max_length=255)
+    image3x = models.FilePathField(max_length=255)
 
     class Meta:
         verbose_name_plural = 'bread'

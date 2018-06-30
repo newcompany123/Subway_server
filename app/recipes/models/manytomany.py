@@ -25,6 +25,7 @@ class Vegetables(models.Model):
         default='NO'
     )
     image = models.FilePathField(max_length=255)
+    image3x = models.FilePathField(max_length=255)
 
     def __str__(self):
         return f'{self.pk}_{self.name}'
@@ -40,6 +41,7 @@ class Toppings(models.Model):
         help_text='100자까지 Topping의 이름을 저장합니다.',
     )
     image = models.FilePathField(max_length=255)
+    image3x = models.FilePathField(max_length=255)
 
     def __str__(self):
         return f'{self.pk}_{self.name}'
@@ -55,6 +57,7 @@ class Sauces(models.Model):
         help_text='100자까지 Sauce의 이름을 저장합니다.',
     )
     image = models.FilePathField(max_length=255)
+    image3x = models.FilePathField(max_length=255)
 
     def __str__(self):
         return f'{self.pk}_{self.name}'
@@ -66,13 +69,23 @@ class MainIngredient(models.Model):
     """
     name = models.CharField(
         max_length=100,
-        unique=True,
+        # unique=True,
+        # 대신에 'unique_together' 추가
         help_text='100까지 MainIngredient의 이름을 저장합니다.',
     )
+    image = models.FilePathField(max_length=255)
+    image3x = models.FilePathField(max_length=255)
+
     quantity = models.CharField(
         max_length=100,
+        blank=True,
         help_text='100자까지 MainIngredient의 quantity를 저장합니다.',
     )
+
+    class Meta:
+        unique_together = (
+            ('name', 'quantity'),
+        )
 
     def __str__(self):
         return f'{self.pk}_{self.name}'
