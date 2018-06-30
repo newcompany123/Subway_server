@@ -6,7 +6,7 @@ from rest_framework import serializers, status
 from users.serializers import UserSerializer
 from utils.exceptions.custom_exception import CustomException
 from utils.exceptions.get_object_or_404 import get_object_or_404_customed
-from ..models import Recipe, Bread, Vegetables, RecipeName, Sandwich, Cheese, Toppings, Sauces
+from ..models import Recipe, Bread, Vegetables, RecipeName, Sandwich, Cheese, Toppings, Sauces, MainIngredient
 
 User = get_user_model()
 
@@ -21,10 +21,32 @@ class RecipeNameSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class MainIngredientSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MainIngredient
+        fields = '__all__'
+
+
 class SandwichSerializer(serializers.ModelSerializer):
+    main_ingredient = MainIngredientSerializer(many=True, read_only=True)
+
     class Meta:
         model = Sandwich
-        fields = '__all__'
+        fields = (
+            'id',
+            'name',
+            'image',
+            'image3x',
+            'main_ingredient',
+        )
+
+    # def to_representation(self, instance):
+    #     ret = super().to_representation(instance)
+    #     main_ingredient_list = ret.get('main_ingredient')
+    #     for main_ingredient in main_ingredient_list:
+    #         ...
+    #     ret['main_ingredient'] = ...
+    #     return ret
 
 
 class BreadSerializer(serializers.ModelSerializer):
