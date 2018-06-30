@@ -45,10 +45,10 @@ class Command(BaseCommand):
 
         main_ingredients_list = ['all_veggies',
                                  'chicken_breast',
-                                 'ham',
-                                 'meat_ball',
                                  'chicken_strip',
                                  'chicken_teriyaki',
+                                 'ham',
+                                 'meat_ball',
                                  'pepperoni',
                                  'pulled_pork',
                                  'roast_beef',
@@ -164,8 +164,11 @@ class Command(BaseCommand):
             sandwich, _ = Sandwich.objects.get_or_create(name=name)
 
             # 1) Sandwich 인스턴스 생성 후 image url path 저장
-            image_path = 'sandwich/' + name + '.png'
-            image_path3x = 'sandwich/' + name + '@3x.png'
+            image_path_left = 'sandwich/left/' + name + '.png'
+            image_path3x_left = 'sandwich/left/' + name + '@3x.png'
+
+            image_path_right = 'sandwich/right/' + name + '.png'
+            image_path3x_right = 'sandwich/right/' + name + '@3x.png'
 
             static_storage_class = import_string(settings.STATICFILES_STORAGE)
             static_storage = static_storage_class()
@@ -198,10 +201,16 @@ class Command(BaseCommand):
             #          이미지를 다시 받아오는 문제가 있어서 다시 이 방법으로 회귀
             #          (* 클라이언트에서 이미지 캐싱은 url 주소로 판단한다고 함)
 
-            image_url = static_storage.url(image_path)
-            image_url3x = static_storage.url(image_path3x)
-            sandwich.image = image_url
-            sandwich.image3x = image_url3x
+            image_url_left = static_storage.url(image_path_left)
+            image_url3x_left = static_storage.url(image_path3x_left)
+            sandwich.image_left = image_url_left
+            sandwich.image3x_left = image_url3x_left
+
+            image_url_right = static_storage.url(image_path_right)
+            image_url3x_right = static_storage.url(image_path3x_right)
+            sandwich.image_right = image_url_right
+            sandwich.image3x_right = image_url3x_right
+
             sandwich.save()
 
             # 2) Sandwich 인스턴스 생성 후 Main Ingredient 저장

@@ -35,8 +35,10 @@ class SandwichSerializer(serializers.ModelSerializer):
         fields = (
             'id',
             'name',
-            'image',
-            'image3x',
+            'image_left',
+            'image3x_left',
+            'image_right',
+            'image3x_right',
             'main_ingredient',
         )
 
