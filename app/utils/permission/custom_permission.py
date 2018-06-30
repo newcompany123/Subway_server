@@ -17,7 +17,7 @@ class IsProductMakerOrReadOnly(permissions.BasePermission):
         if request.method in permissions.SAFE_METHODS:
             return True
 
-        return obj.product_maker == request.user
+        return obj.inventor == request.user
 
 
 class IsSuperUserOrReadOnly(permissions.BasePermission):
