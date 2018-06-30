@@ -11,6 +11,7 @@ class Sandwich(models.Model):
         help_text='100자까지 Sandwich의 이름을 저장합니다.'
     )
     image = models.FilePathField(path='sandwich', max_length=255)
+    image3x = models.FilePathField(path='sandwich', max_length=255)
 
     # image = models.ImageField(blank=True)
     # -> ImageField에 image의 url을 저장할 경우 아래와 같은 문제가 발생
