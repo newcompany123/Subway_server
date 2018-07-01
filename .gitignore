@@ -4,6 +4,16 @@
 /.secrets
 .vscode/
 
+# static
+bread
+cheese
+main_ingredient
+sandwich
+sauces
+toppings
+vegetables
+
+
 # Elastic Beanstalk Files
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
