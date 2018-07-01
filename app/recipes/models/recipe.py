@@ -45,17 +45,14 @@ class Recipe(models.Model):
     )
     vegetables = models.ManyToManyField(
         'Vegetables',
-        blank=True,
         verbose_name='야채',
     )
     toppings = models.ManyToManyField(
         Toppings,
-        blank=True,
         verbose_name='토핑',
     )
     sauces = models.ManyToManyField(
         Sauces,
-        blank=True,
         verbose_name='소스',
     )
     toasting = models.BooleanField(default=False)
