@@ -310,7 +310,7 @@ class RecipeSerializer(serializers.ModelSerializer):
                     status_code=status.HTTP_400_BAD_REQUEST
                 )
 
-            # 2) recipe recipe's uniqueness validation
+            # 2) recipe's uniqueness validation
             sandwich = attrs.get('sandwich')
             if recipe.sandwich == sandwich:
 
@@ -322,14 +322,14 @@ class RecipeSerializer(serializers.ModelSerializer):
                     if recipe.cheese == cheese:
 
                         vegetable_list = attrs.get('vegetables')
-                        # print(f'{list(recipe.vegetables.all())} {veg_list}')
-                        if list(recipe.vegetables.all()) == vegetable_list:
+                        # print(f'{list(recipe.vegetables.all())} {vegetable_list}')
+                        if list(recipe.vegetables.all()) == (vegetable_list if vegetable_list is not None else []):
 
                             topping_list = attrs.get('toppings')
-                            if list(recipe.toppings.all()) == topping_list:
+                            if list(recipe.toppings.all()) == (topping_list if topping_list is not None else []):
 
                                 sauce_list = attrs.get('sauces')
-                                if list(recipe.sauces.all()) == sauce_list:
+                                if list(recipe.sauces.all()) == (sauce_list if sauce_list is not None else []):
 
                                     raise CustomException(
                                         detail='Same sandwich recipe already exists!',
