@@ -43,19 +43,20 @@ class Recipe(models.Model):
         null=True,
         verbose_name='치즈',
     )
-    vegetables = models.ManyToManyField(
-        'Vegetables',
-        verbose_name='야채',
-    )
+    toasting = models.BooleanField(default=False)
+
     toppings = models.ManyToManyField(
         Toppings,
         verbose_name='토핑',
+    )
+    vegetables = models.ManyToManyField(
+        'Vegetables',
+        verbose_name='야채',
     )
     sauces = models.ManyToManyField(
         Sauces,
         verbose_name='소스',
     )
-    toasting = models.BooleanField(default=False)
 
     inventor = models.ForeignKey(
         settings.AUTH_USER_MODEL,

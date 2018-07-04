@@ -81,6 +81,15 @@ class Command(BaseCommand):
                        'shrewd_cheese',
                        ]
 
+        topping_list = ['american_cheese',
+                        'avocado',
+                        'bacon',
+                        'double_up',
+                        'egg_mayo',
+                        'omelet',
+                        'shrewd_cheese',
+                        ]
+
         vegetable_list = ['cucumbers',
                           'jalapenos',
                           'lettuce',
@@ -91,15 +100,6 @@ class Command(BaseCommand):
                           'tomatoes',
                           # 'avocado',
                           ]
-
-        topping_list = ['american_cheese',
-                        'avocado',
-                        'bacon',
-                        'double_up',
-                        'egg_mayo',
-                        'omelet',
-                        'shrewd_cheese',
-                        ]
 
         sauce_list = ['black_pepper',
                       'chipotle',
@@ -161,8 +161,8 @@ class Command(BaseCommand):
 
         get_or_create(Bread, 'bread/', bread_list)
         get_or_create(Cheese, 'cheese/', cheese_list)
-        get_or_create(Vegetables, 'vegetables/', vegetable_list)
         get_or_create(Toppings, 'toppings/', topping_list)
+        get_or_create(Vegetables, 'vegetables/', vegetable_list)
         get_or_create(Sauces, 'sauces/', sauce_list)
 
         for name in sandwich_list:

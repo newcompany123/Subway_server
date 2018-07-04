@@ -63,15 +63,15 @@ class CheeseSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class VegetablesSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Vegetables
-        fields = '__all__'
-
-
 class ToppingsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Toppings
+        fields = '__all__'
+
+
+class VegetablesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Vegetables
         fields = '__all__'
 
 
@@ -139,6 +139,19 @@ class CheeseRelatedField(serializers.RelatedField):
         return cheese
 
 
+class ToppingsRelatedField(serializers.RelatedField):
+    queryset = Toppings.objects.all()
+
+    def to_representation(self, value):
+        serializer = ToppingsSerializer(value)
+        return serializer.data
+
+    def to_internal_value(self, data):
+        topping_name = data.get('name')
+        topping = get_object_or_404_customed(Toppings, name=topping_name)
+        return topping
+
+
 class VegetablesRelatedField(serializers.RelatedField):
     queryset = Vegetables.objects.all()
 
@@ -160,19 +173,6 @@ class VegetablesRelatedField(serializers.RelatedField):
             vegetable.quantity = quantity_text
             vegetable.save()
         return vegetable
-
-
-class ToppingsRelatedField(serializers.RelatedField):
-    queryset = Toppings.objects.all()
-
-    def to_representation(self, value):
-        serializer = ToppingsSerializer(value)
-        return serializer.data
-
-    def to_internal_value(self, data):
-        topping_name = data.get('name')
-        topping = get_object_or_404_customed(Toppings, name=topping_name)
-        return topping
 
 
 class SaucesRelatedField(serializers.RelatedField):
@@ -225,8 +225,8 @@ class RecipeSerializer(serializers.ModelSerializer):
     sandwich = SandwichRelatedField()
     bread = BreadRelatedField()
     cheese = CheeseRelatedField(required=False)
-    vegetables = VegetablesRelatedField(many=True, required=False)
     toppings = ToppingsRelatedField(many=True, required=False)
+    vegetables = VegetablesRelatedField(many=True, required=False)
     sauces = SaucesRelatedField(many=True, required=False)
     inventor = InventorRelatedField()
 
@@ -244,10 +244,10 @@ class RecipeSerializer(serializers.ModelSerializer):
             'sandwich',
             'bread',
             'cheese',
-            'vegetables',
             'toppings',
-            'sauces',
             'toasting',
+            'vegetables',
+            'sauces',
             'inventor',
 
             'auth_user_like_state',
@@ -321,20 +321,28 @@ class RecipeSerializer(serializers.ModelSerializer):
                     cheese = attrs.get('cheese')
                     if recipe.cheese == cheese:
 
-                        vegetable_list = attrs.get('vegetables')
-                        # print(f'{list(recipe.vegetables.all())} {vegetable_list}')
-                        if list(recipe.vegetables.all()) == (vegetable_list if vegetable_list is not None else []):
+                        toasting = attrs.get('toasting')
+                        if recipe.toasting == toasting:
 
                             topping_list = attrs.get('toppings')
+                            # print(f'{list(recipe.toppings.all())} {topping_list}')
                             if list(recipe.toppings.all()) == (topping_list if topping_list is not None else []):
 
-                                sauce_list = attrs.get('sauces')
-                                if list(recipe.sauces.all()) == (sauce_list if sauce_list is not None else []):
+                                vegetable_list = attrs.get('vegetables')
+                                print(vegetable_list)
+                                # vegetable_list = sorted(vegetable_list)
+                                print(vegetable_list)
 
-                                    raise CustomException(
-                                        detail='Same sandwich recipe already exists!',
-                                        status_code=status.HTTP_400_BAD_REQUEST
-                                    )
+                                print(f'{list(recipe.vegetables.all())} {vegetable_list}')
+                                if list(recipe.vegetables.all()) == (vegetable_list if vegetable_list is not None else []):
+
+                                    sauce_list = attrs.get('sauces')
+                                    if list(recipe.sauces.all()) == (sauce_list if sauce_list is not None else []):
+
+                                        raise CustomException(
+                                            detail='Same sandwich recipe already exists!',
+                                            status_code=status.HTTP_400_BAD_REQUEST
+                                        )
 
         # attrs을 return하여 validate 과정 종료
         return attrs
