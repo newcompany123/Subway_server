@@ -326,18 +326,15 @@ class RecipeSerializer(serializers.ModelSerializer):
 
                             topping_list = attrs.get('toppings')
                             # print(f'{list(recipe.toppings.all())} {topping_list}')
-                            if list(recipe.toppings.all()) == (topping_list if topping_list is not None else []):
+                            if set(recipe.toppings.all()) == (set(topping_list) if topping_list is not None else set()):
 
                                 vegetable_list = attrs.get('vegetables')
-                                print(vegetable_list)
-                                # vegetable_list = sorted(vegetable_list)
-                                print(vegetable_list)
-
-                                print(f'{list(recipe.vegetables.all())} {vegetable_list}')
-                                if list(recipe.vegetables.all()) == (vegetable_list if vegetable_list is not None else []):
+                                # print(f'{list(recipe.vegetables.all())} {vegetable_list}')
+                                # print(f'{set(recipe.vegetables.all())} {set(vegetable_list)}')
+                                if set(recipe.vegetables.all()) == (set(vegetable_list) if vegetable_list is not None else set()):
 
                                     sauce_list = attrs.get('sauces')
-                                    if list(recipe.sauces.all()) == (sauce_list if sauce_list is not None else []):
+                                    if set(recipe.sauces.all()) == (set(sauce_list) if sauce_list is not None else set()):
 
                                         raise CustomException(
                                             detail='Same sandwich recipe already exists!',
