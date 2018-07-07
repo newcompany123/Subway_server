@@ -50,15 +50,16 @@ class RecipeListCreateView(generics.ListCreateAPIView):
         permissions.IsAuthenticatedOrReadOnly,
     )
 
-    # filtering
     filter_backends = (DjangoFilterBackend, OrderingFilter, SearchFilter)
+
+    # filtering
     # filter_fields = ('sandwich',)
     # DjangoFilterBackends에 multiple id를 사용하기 위해
     # filter_class와 ListFilter를 활용하여 Custom
     filter_class = RecipeFilter
 
     # ordering
-    ordering_fields = ('id', 'like_count', 'bookmark_count',)
+    ordering_fields = ('id', 'like_count', 'bookmark_count', 'created_date',)
     ordering = ('-like_bookmark_count', '-bookmark_count', '-like_count',)
 
     # searching
