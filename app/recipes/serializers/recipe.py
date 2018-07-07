@@ -232,7 +232,13 @@ class RecipeSerializer(serializers.ModelSerializer):
     name = RecipeNameRelatedField()
     sandwich = SandwichRelatedField()
     bread = BreadRelatedField()
-    cheese = CheeseRelatedField(required=False)
+
+    # 1) serializer default 설정할 경우
+    # CHEESE_DEFAULT = Cheese.objects.get(name='no_cheese')
+    # cheese = CheeseRelatedField(default=CHEESE_DEFAULT)
+
+    # 2) cheese 무조건 입력
+    cheese = CheeseRelatedField()
     toppings = ToppingsRelatedField(many=True, required=False)
     vegetables = VegetablesRelatedField(many=True, required=False)
     sauces = SaucesRelatedField(many=True, required=False)
