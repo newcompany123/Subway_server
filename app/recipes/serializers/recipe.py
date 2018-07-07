@@ -330,7 +330,7 @@ class RecipeSerializer(serializers.ModelSerializer):
                     cheese = attrs.get('cheese')
                     if recipe.cheese == cheese:
 
-                        toasting = attrs.get('toasting')
+                        toasting = attrs.get('toasting', False)
                         if recipe.toasting == toasting:
 
                             topping_list = attrs.get('toppings')
