@@ -236,7 +236,7 @@ class RecipeSerializer(serializers.ModelSerializer):
     toppings = ToppingsRelatedField(many=True, required=False)
     vegetables = VegetablesRelatedField(many=True, required=False)
     sauces = SaucesRelatedField(many=True, required=False)
-    inventor = InventorRelatedField()
+    # inventor = InventorRelatedField()
 
     auth_user_like_state = serializers.SerializerMethodField(read_only=True)
     auth_user_bookmark_state = serializers.SerializerMethodField(read_only=True)
