@@ -6,7 +6,7 @@ from rest_framework import serializers, status
 from users.serializers import UserSerializer
 from utils.exceptions.custom_exception import CustomException
 from utils.exceptions.get_object_or_404 import get_object_or_404_customed
-from ..models import Recipe, Bread, Vegetables, RecipeName, Sandwich, Cheese, Toppings, Sauces, MainIngredient
+from ..models import Recipe, Bread, Vegetables, RecipeName, Sandwich, Cheese, Toppings, Sauces, MainIngredient, Category
 
 User = get_user_model()
 
@@ -27,8 +27,15 @@ class MainIngredientSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class CategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = '__all__'
+
+
 class SandwichSerializer(serializers.ModelSerializer):
     main_ingredient = MainIngredientSerializer(many=True, read_only=True)
+    category = CategorySerializer(many=True, read_only=True)
 
     class Meta:
         model = Sandwich
@@ -40,6 +47,7 @@ class SandwichSerializer(serializers.ModelSerializer):
             'image_right',
             'image3x_right',
             'main_ingredient',
+            'category',
         )
 
     # def to_representation(self, instance):
@@ -255,6 +263,7 @@ class RecipeSerializer(serializers.ModelSerializer):
             'like_count',
             'bookmark_count',
             'like_bookmark_count',
+            'created_date',
         )
 
     def validate(self, attrs):
@@ -330,7 +339,6 @@ class RecipeSerializer(serializers.ModelSerializer):
 
                                 vegetable_list = attrs.get('vegetables')
                                 # print(f'{list(recipe.vegetables.all())} {vegetable_list}')
-                                # print(f'{set(recipe.vegetables.all())} {set(vegetable_list)}')
                                 if set(recipe.vegetables.all()) == (set(vegetable_list) if vegetable_list is not None else set()):
 
                                     sauce_list = attrs.get('sauces')
