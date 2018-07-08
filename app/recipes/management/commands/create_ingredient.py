@@ -13,6 +13,11 @@ class Command(BaseCommand):
                             'sandwich3',
                             'sandwich4',
                             'sandwich5',
+                            'sandwich6',
+                            'sandwich7',
+                            'sandwich8',
+                            'sandwich9',
+                            'sandwich10',
                             ]
 
         sandwich_list = ['b_l_t',

@@ -30,7 +30,9 @@ class MainIngredientSerializer(serializers.ModelSerializer):
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = '__all__'
+        fields = (
+            'name',
+        )
 
 
 class SandwichSerializer(serializers.ModelSerializer):
@@ -196,30 +198,6 @@ class SaucesRelatedField(serializers.RelatedField):
         return sauce
 
 
-class InventorRelatedField(serializers.RelatedField):
-    queryset = User.objects.all()
-
-    def to_representation(self, value):
-        serializer = UserSerializer(value)
-
-        # Recipe Response에서 Productmaker의 token값 제거
-        result = serializer.data
-        del result['token']
-        return result
-
-    def to_internal_value(self, data):
-        user_name = data.get('username')
-        user = get_object_or_404_customed(User, username=user_name)
-        # try:
-        #     user = User.objects.get(username=user_name)
-        # except User.DoesNotExist:
-        #     raise CustomException(
-        #         detail='User matching query does not exist.',
-        #         status_code=status.HTTP_400_BAD_REQUEST
-        #     )
-        return user
-
-
 class RecipeSerializer(serializers.ModelSerializer):
 
     # NestedSerializer로 사용하면 해당 Serializer에서 전달된 json 객체를
@@ -242,7 +220,7 @@ class RecipeSerializer(serializers.ModelSerializer):
     toppings = ToppingsRelatedField(many=True, required=False)
     vegetables = VegetablesRelatedField(many=True, required=False)
     sauces = SaucesRelatedField(many=True, required=False)
-    # inventor = InventorRelatedField()
+    inventor = UserSerializer(read_only=True)
 
     auth_user_like_state = serializers.SerializerMethodField(read_only=True)
     auth_user_bookmark_state = serializers.SerializerMethodField(read_only=True)
@@ -412,3 +390,9 @@ class RecipeSerializer(serializers.ModelSerializer):
             return 'True'
         else:
             return 'False'
+
+    def to_representation(self, obj):
+        ret = super().to_representation(obj)
+        del ret['inventor']['email']
+        del ret['inventor']['token']
+        return ret

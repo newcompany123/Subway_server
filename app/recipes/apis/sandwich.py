@@ -14,8 +14,8 @@ class CustomFilter(Filter):
     def filter(self, qs, value):
         if not value:
             return qs
-
-        obj = get_object_or_404_customed(Category, name=value)
+        uppercase_value = value.upper()
+        obj = get_object_or_404_customed(Category, name=uppercase_value)
         return super().filter(qs, obj)
 
 
