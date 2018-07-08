@@ -1,6 +1,6 @@
 from django.db import models
 
-from recipes.models import MainIngredient
+from recipes.models import MainIngredient, Category
 
 
 class Sandwich(models.Model):
@@ -31,6 +31,10 @@ class Sandwich(models.Model):
         blank=True,
         verbose_name='구성재료'
     )
+    category = models.ManyToManyField(
+        Category,
+        verbose_name='카테고리'
+    )
 
     def __str__(self):
         return f'{self.pk})_{self.name}'
@@ -42,7 +46,7 @@ class Bread(models.Model):
     """
     name = models.CharField(
         max_length=100,
-        # unique=True,
+        unique=True,
         help_text='100자까지 Bread 이름을 저장합니다.',
     )
     image = models.FilePathField(max_length=255)
@@ -61,14 +65,14 @@ class Cheese(models.Model):
     """
     name = models.CharField(
         max_length=100,
-        # unique=True,
+        unique=True,
         help_text='100자까지 Cheese 이름을 저장합니다.',
     )
     image = models.FilePathField(max_length=255)
     image3x = models.FilePathField(max_length=255)
 
     class Meta:
-        verbose_name_plural = 'bread'
+        verbose_name_plural = 'cheese'
 
     def __str__(self):
         return f'{self.pk}_{self.name}'

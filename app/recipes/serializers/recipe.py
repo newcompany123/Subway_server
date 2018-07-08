@@ -6,7 +6,7 @@ from rest_framework import serializers, status
 from users.serializers import UserSerializer
 from utils.exceptions.custom_exception import CustomException
 from utils.exceptions.get_object_or_404 import get_object_or_404_customed
-from ..models import Recipe, Bread, Vegetables, RecipeName, Sandwich, Cheese, Toppings, Sauces, MainIngredient
+from ..models import Recipe, Bread, Vegetables, RecipeName, Sandwich, Cheese, Toppings, Sauces, MainIngredient, Category
 
 User = get_user_model()
 
@@ -27,8 +27,17 @@ class MainIngredientSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class CategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = (
+            'name',
+        )
+
+
 class SandwichSerializer(serializers.ModelSerializer):
     main_ingredient = MainIngredientSerializer(many=True, read_only=True)
+    category = CategorySerializer(many=True, read_only=True)
 
     class Meta:
         model = Sandwich
@@ -40,6 +49,7 @@ class SandwichSerializer(serializers.ModelSerializer):
             'image_right',
             'image3x_right',
             'main_ingredient',
+            'category',
         )
 
     # def to_representation(self, instance):
@@ -63,15 +73,15 @@ class CheeseSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class VegetablesSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Vegetables
-        fields = '__all__'
-
-
 class ToppingsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Toppings
+        fields = '__all__'
+
+
+class VegetablesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Vegetables
         fields = '__all__'
 
 
@@ -139,6 +149,19 @@ class CheeseRelatedField(serializers.RelatedField):
         return cheese
 
 
+class ToppingsRelatedField(serializers.RelatedField):
+    queryset = Toppings.objects.all()
+
+    def to_representation(self, value):
+        serializer = ToppingsSerializer(value)
+        return serializer.data
+
+    def to_internal_value(self, data):
+        topping_name = data.get('name')
+        topping = get_object_or_404_customed(Toppings, name=topping_name)
+        return topping
+
+
 class VegetablesRelatedField(serializers.RelatedField):
     queryset = Vegetables.objects.all()
 
@@ -162,19 +185,6 @@ class VegetablesRelatedField(serializers.RelatedField):
         return vegetable
 
 
-class ToppingsRelatedField(serializers.RelatedField):
-    queryset = Toppings.objects.all()
-
-    def to_representation(self, value):
-        serializer = ToppingsSerializer(value)
-        return serializer.data
-
-    def to_internal_value(self, data):
-        topping_name = data.get('name')
-        topping = get_object_or_404_customed(Toppings, name=topping_name)
-        return topping
-
-
 class SaucesRelatedField(serializers.RelatedField):
     queryset = Sauces.objects.all()
 
@@ -186,30 +196,6 @@ class SaucesRelatedField(serializers.RelatedField):
         sauce_name = data.get('name')
         sauce = get_object_or_404_customed(Sauces, name=sauce_name)
         return sauce
-
-
-class InventorRelatedField(serializers.RelatedField):
-    queryset = User.objects.all()
-
-    def to_representation(self, value):
-        serializer = UserSerializer(value)
-
-        # Recipe Response에서 Productmaker의 token값 제거
-        result = serializer.data
-        del result['token']
-        return result
-
-    def to_internal_value(self, data):
-        user_name = data.get('username')
-        user = get_object_or_404_customed(User, username=user_name)
-        # try:
-        #     user = User.objects.get(username=user_name)
-        # except User.DoesNotExist:
-        #     raise CustomException(
-        #         detail='User matching query does not exist.',
-        #         status_code=status.HTTP_400_BAD_REQUEST
-        #     )
-        return user
 
 
 class RecipeSerializer(serializers.ModelSerializer):
@@ -224,11 +210,17 @@ class RecipeSerializer(serializers.ModelSerializer):
     name = RecipeNameRelatedField()
     sandwich = SandwichRelatedField()
     bread = BreadRelatedField()
+
+    # 1) serializer default 설정할 경우
+    # CHEESE_DEFAULT = Cheese.objects.get(name='no_cheese')
+    # cheese = CheeseRelatedField(default=CHEESE_DEFAULT)
+
+    # 2) cheese 무조건 입력
     cheese = CheeseRelatedField()
-    vegetables = VegetablesRelatedField(many=True)
-    toppings = ToppingsRelatedField(many=True)
-    sauces = SaucesRelatedField(many=True)
-    inventor = InventorRelatedField()
+    toppings = ToppingsRelatedField(many=True, required=False)
+    vegetables = VegetablesRelatedField(many=True, required=False)
+    sauces = SaucesRelatedField(many=True, required=False)
+    inventor = UserSerializer(read_only=True)
 
     auth_user_like_state = serializers.SerializerMethodField(read_only=True)
     auth_user_bookmark_state = serializers.SerializerMethodField(read_only=True)
@@ -244,10 +236,10 @@ class RecipeSerializer(serializers.ModelSerializer):
             'sandwich',
             'bread',
             'cheese',
-            'vegetables',
             'toppings',
-            'sauces',
             'toasting',
+            'vegetables',
+            'sauces',
             'inventor',
 
             'auth_user_like_state',
@@ -255,6 +247,7 @@ class RecipeSerializer(serializers.ModelSerializer):
             'like_count',
             'bookmark_count',
             'like_bookmark_count',
+            'created_date',
         )
 
     def validate(self, attrs):
@@ -310,7 +303,7 @@ class RecipeSerializer(serializers.ModelSerializer):
                     status_code=status.HTTP_400_BAD_REQUEST
                 )
 
-            # 2) recipe recipe's uniqueness validation
+            # 2) recipe's uniqueness validation
             sandwich = attrs.get('sandwich')
             if recipe.sandwich == sandwich:
 
@@ -321,20 +314,24 @@ class RecipeSerializer(serializers.ModelSerializer):
                     cheese = attrs.get('cheese')
                     if recipe.cheese == cheese:
 
-                        vegetable_list = attrs.get('vegetables')
-                        # print(f'{list(recipe.vegetables.all())} {veg_list}')
-                        if list(recipe.vegetables.all()) == vegetable_list:
+                        toasting = attrs.get('toasting', False)
+                        if recipe.toasting == toasting:
 
                             topping_list = attrs.get('toppings')
-                            if list(recipe.toppings.all()) == topping_list:
+                            # print(f'{list(recipe.toppings.all())} {topping_list}')
+                            if set(recipe.toppings.all()) == (set(topping_list) if topping_list is not None else set()):
 
-                                sauce_list = attrs.get('sauces')
-                                if list(recipe.sauces.all()) == sauce_list:
+                                vegetable_list = attrs.get('vegetables')
+                                # print(f'{list(recipe.vegetables.all())} {vegetable_list}')
+                                if set(recipe.vegetables.all()) == (set(vegetable_list) if vegetable_list is not None else set()):
 
-                                    raise CustomException(
-                                        detail='Same sandwich recipe already exists!',
-                                        status_code=status.HTTP_400_BAD_REQUEST
-                                    )
+                                    sauce_list = attrs.get('sauces')
+                                    if set(recipe.sauces.all()) == (set(sauce_list) if sauce_list is not None else set()):
+
+                                        raise CustomException(
+                                            detail='Same sandwich recipe already exists!',
+                                            status_code=status.HTTP_400_BAD_REQUEST
+                                        )
 
         # attrs을 return하여 validate 과정 종료
         return attrs
@@ -393,3 +390,9 @@ class RecipeSerializer(serializers.ModelSerializer):
             return 'True'
         else:
             return 'False'
+
+    def to_representation(self, obj):
+        ret = super().to_representation(obj)
+        del ret['inventor']['email']
+        del ret['inventor']['token']
+        return ret

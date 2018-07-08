@@ -43,22 +43,20 @@ class Recipe(models.Model):
         null=True,
         verbose_name='치즈',
     )
-    vegetables = models.ManyToManyField(
-        'Vegetables',
-        blank=True,
-        verbose_name='야채',
-    )
+    toasting = models.BooleanField(default=False)
+
     toppings = models.ManyToManyField(
         Toppings,
-        blank=True,
         verbose_name='토핑',
+    )
+    vegetables = models.ManyToManyField(
+        'Vegetables',
+        verbose_name='야채',
     )
     sauces = models.ManyToManyField(
         Sauces,
-        blank=True,
         verbose_name='소스',
     )
-    toasting = models.BooleanField(default=False)
 
     inventor = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -77,6 +75,9 @@ class Recipe(models.Model):
         related_name='bookmarked_recipe',
         through='RecipeBookmark',
     )
+    created_date = models.DateTimeField(auto_now_add=True)
+    modified_date = models.DateTimeField(auto_now=True)
+
     # [ Shoveling log ]
     # 이곳이 아닌 sandwich에서 url을 설정하게 되면 매번 recipe를 생성할 때 마다 image 생성 작업을
     # 불필요하게 하지 않아도 됨.
