@@ -1,5 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
+from django.db.models import Q, Count
+from django.forms import model_to_dict
 
 from rest_framework import serializers, status
 
@@ -293,45 +295,105 @@ class RecipeSerializer(serializers.ModelSerializer):
         #     raise APIException("'name' field(recipe name) is required.")
         # ------------------------------------------------------------
 
-        for recipe in Recipe.objects.all():
+        # 1) recipe name's uniqueness validation
 
-            # 1) recipe name's uniqueness validation
-            name = attrs.get('name')
-            if recipe.name == name:
-                raise CustomException(
-                    detail='Same sandwich name already exists!',
-                    status_code=status.HTTP_400_BAD_REQUEST
-                )
+        # O(log n)
+        if Recipe.objects.filter(name=attrs.get('name')):
+            raise CustomException(
+                detail='Same sandwich name already exists!',
+                status_code=status.HTTP_400_BAD_REQUEST
+            )
 
-            # 2) recipe's uniqueness validation
-            sandwich = attrs.get('sandwich')
-            if recipe.sandwich == sandwich:
+        # [shoveling log]
+        # O(n)
+        # for recipe in Recipe.objects.all():
+        #
+        #     # 1) recipe name's uniqueness validation
+        #     name = attrs.get('name')
+        #     if recipe.name == name:
+        #         raise CustomException(
+        #             detail='Same sandwich name already exists!',
+        #             status_code=status.HTTP_400_BAD_REQUEST
+        #         )
 
-                bread = attrs.get('bread')
-                # print(f'{recipe.bread} {bread_obj}')
-                if recipe.bread == bread:
+        # 2) recipe ingredients' uniqueness validation
 
-                    cheese = attrs.get('cheese')
-                    if recipe.cheese == cheese:
+        # O(log n) - Time: 100~150ms
+        recipe_filtered_list = Recipe.objects.filter(
+                sandwich=attrs.get('sandwich')
+        ).filter(
+            bread=attrs.get('bread')
+        ).filter(
+            cheese=attrs.get('cheese')
+        ).filter(
+            toasting=attrs.get('toasting', False)
 
-                        toasting = attrs.get('toasting', False)
-                        if recipe.toasting == toasting:
+            # toppings
+        ).filter(
+            toppings__in=attrs.get('toppings')
+        ).annotate(
+            num_toppings=Count('toppings', distinct=True)
+        ).filter(
+            num_toppings=len(attrs.get('toppings'))
 
-                            topping_list = attrs.get('toppings')
-                            # print(f'{list(recipe.toppings.all())} {topping_list}')
-                            if set(recipe.toppings.all()) == (set(topping_list) if topping_list is not None else set()):
+            # vegetables
+        ).filter(
+            vegetables__in=attrs.get('vegetables')
+        ).annotate(
+            num_vegetables=Count('vegetables', distinct=True)
+        ).filter(
+            num_vegetables=len(attrs.get('vegetables'))
 
-                                vegetable_list = attrs.get('vegetables')
-                                # print(f'{list(recipe.vegetables.all())} {vegetable_list}')
-                                if set(recipe.vegetables.all()) == (set(vegetable_list) if vegetable_list is not None else set()):
+            # sauces
+        ).filter(
+            sauces__in=attrs.get('sauces')
+        ).annotate(
+            num_sauces=Count('sauces', distinct=True)
+        ).filter(
+            num_sauces=len(attrs.get('sauces'))
+        )
 
-                                    sauce_list = attrs.get('sauces')
-                                    if set(recipe.sauces.all()) == (set(sauce_list) if sauce_list is not None else set()):
+        # print(recipe_filtered_list)
+        # for recipe in recipe_filtered_list:
+        #     print(model_to_dict(recipe))
 
-                                        raise CustomException(
-                                            detail='Same sandwich recipe already exists!',
-                                            status_code=status.HTTP_400_BAD_REQUEST
-                                        )
+        if recipe_filtered_list:
+            raise CustomException(
+                detail='Same sandwich recipe already exists!',
+                status_code=status.HTTP_400_BAD_REQUEST
+            )
+        # [shoveling log]
+        # O(n) - Time: 150~200ms
+        # for recipe in Recipe.objects.all():
+        #
+        #     sandwich = attrs.get('sandwich')
+        #     if recipe.sandwich == sandwich:
+        #
+        #         bread = attrs.get('bread')
+        #         # print(f'{recipe.bread} {bread_obj}')
+        #         if recipe.bread == bread:
+        #
+        #             cheese = attrs.get('cheese')
+        #             if recipe.cheese == cheese:
+        #
+        #                 toasting = attrs.get('toasting', False)
+        #                 if recipe.toasting == toasting:
+        #
+        #                     topping_list = attrs.get('toppings')
+        #                     # print(f'{list(recipe.toppings.all())} {topping_list}')
+        #                     if set(recipe.toppings.all()) == (set(topping_list) if topping_list is not None else set()):
+        #
+        #                         vegetable_list = attrs.get('vegetables')
+        #                         # print(f'{list(recipe.vegetables.all())} {vegetable_list}')
+        #                         if set(recipe.vegetables.all()) == (set(vegetable_list) if vegetable_list is not None else set()):
+        #
+        #                             sauce_list = attrs.get('sauces')
+        #                             if set(recipe.sauces.all()) == (set(sauce_list) if sauce_list is not None else set()):
+        #
+        #                                 raise CustomException(
+        #                                     detail='Same sandwich recipe already exists!',
+        #                                     status_code=status.HTTP_400_BAD_REQUEST
+        #                                 )
 
         # attrs을 return하여 validate 과정 종료
         return attrs
