@@ -95,6 +95,10 @@ class Command(BaseCommand):
                        'shrewd_cheese',
                        ]
 
+        toasting_list = ['torching',
+                         'no_torching',
+                         ]
+
         vegetable_list = ['cucumbers',
                           'jalapenos',
                           'lettuce',
@@ -176,6 +180,7 @@ class Command(BaseCommand):
         get_or_create(Bread, 'bread/', bread_list)
         get_or_create(Toppings, 'toppings/', topping_list)
         get_or_create(Cheese, 'cheese/', cheese_list)
+        get_or_create(Toasting, 'toasting/', toasting_list)
         get_or_create(Vegetables, 'vegetables/', vegetable_list)
         get_or_create(Sauces, 'sauces/', sauce_list)
 

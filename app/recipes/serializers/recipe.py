@@ -1,26 +1,20 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
-from django.db.models import Q, Count
-from django.forms import model_to_dict
+from django.db.models import Count
 
 from rest_framework import serializers, status
 
 from users.serializers import UserSerializer
 from utils.exceptions.custom_exception import CustomException
 from utils.exceptions.get_object_or_404 import get_object_or_404_customed
-from ..models import Recipe, Bread, Vegetables, RecipeName, Sandwich, Cheese, Toppings, Sauces, MainIngredient, Category
+from ..models import Recipe, Bread, Vegetables, RecipeName, Sandwich, Cheese, Toppings, Sauces, MainIngredient, \
+    Category, Toasting
 
 User = get_user_model()
 
 __all__ = (
     'RecipeSerializer',
 )
-
-
-class RecipeNameSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = RecipeName
-        fields = '__all__'
 
 
 class MainIngredientSerializer(serializers.ModelSerializer):
@@ -63,6 +57,12 @@ class SandwichSerializer(serializers.ModelSerializer):
     #     return ret
 
 
+class RecipeNameSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RecipeName
+        fields = '__all__'
+
+
 class BreadSerializer(serializers.ModelSerializer):
     class Meta:
         model = Bread
@@ -72,6 +72,12 @@ class BreadSerializer(serializers.ModelSerializer):
 class CheeseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Bread
+        fields = '__all__'
+
+
+class ToastingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Toasting
         fields = '__all__'
 
 
@@ -151,6 +157,19 @@ class CheeseRelatedField(serializers.RelatedField):
         return cheese
 
 
+class ToastingRelatedField(serializers.RelatedField):
+    queryset = Toasting.objects.all()
+
+    def to_representation(self, value):
+        serializer = ToastingSerializer(value)
+        return serializer.data
+
+    def to_internal_value(self, data):
+        toasting_name = data.get('name')
+        toasting = get_object_or_404_customed(Toasting, name=toasting_name)
+        return toasting
+
+
 class ToppingsRelatedField(serializers.RelatedField):
     queryset = Toppings.objects.all()
 
@@ -219,6 +238,7 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     # 2) cheese 무조건 입력
     cheese = CheeseRelatedField()
+    toasting = ToastingRelatedField()
     toppings = ToppingsRelatedField(many=True, required=False)
     vegetables = VegetablesRelatedField(many=True, required=False)
     sauces = SaucesRelatedField(many=True, required=False)
@@ -237,8 +257,8 @@ class RecipeSerializer(serializers.ModelSerializer):
             'name',
             'sandwich',
             'bread',
-            'cheese',
             'toppings',
+            'cheese',
             'toasting',
             'vegetables',
             'sauces',
@@ -326,7 +346,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         ).filter(
             cheese=attrs.get('cheese')
         ).filter(
-            toasting=attrs.get('toasting', False)
+            toasting=attrs.get('toasting')
 
             # toppings
         ).filter(
