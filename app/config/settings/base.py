@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     # Thirdparty app
     'rest_framework',
     'rest_framework.authtoken',
+    'rest_framework_swagger',
 
     # Custom app
     'users',
