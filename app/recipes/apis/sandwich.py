@@ -1,4 +1,3 @@
-
 # from django_filters import FilterSet
 from django_filters.rest_framework import DjangoFilterBackend, FilterSet, Filter
 from rest_framework.filters import OrderingFilter

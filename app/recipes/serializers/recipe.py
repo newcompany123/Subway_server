@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
 from django.db.models import Count
+from django.forms import model_to_dict
 
 from rest_framework import serializers, status
 
@@ -339,43 +340,63 @@ class RecipeSerializer(serializers.ModelSerializer):
         # 2) recipe ingredients' uniqueness validation
 
         # O(log n) - Time: 100~150ms
-        recipe_filtered_list = Recipe.objects.filter(
-                sandwich=attrs.get('sandwich')
-        ).filter(
-            bread=attrs.get('bread')
-        ).filter(
-            cheese=attrs.get('cheese')
-        ).filter(
-            toasting=attrs.get('toasting')
+        recipe_filtered_list = Recipe.objects\
+            .filter(sandwich=attrs.get('sandwich'))\
+            .filter(bread=attrs.get('bread'))\
+            .filter(cheese=attrs.get('cheese'))\
+            .filter(toasting=attrs.get('toasting'))
 
-            # toppings
-        ).filter(
-            toppings__in=attrs.get('toppings')
-        ).annotate(
-            num_toppings=Count('toppings', distinct=True)
-        ).filter(
-            num_toppings=len(attrs.get('toppings'))
+        # toppings
+        topping_pk_list = []
+        for topping in attrs.get('toppings', []):
+            topping_pk_list.append(topping.pk)
 
-            # vegetables
-        ).filter(
-            vegetables__in=attrs.get('vegetables')
-        ).annotate(
-            num_vegetables=Count('vegetables', distinct=True)
-        ).filter(
-            num_vegetables=len(attrs.get('vegetables'))
+        if recipe_filtered_list:
+            if attrs.get('toppings'):
+                recipe_filtered_list = recipe_filtered_list\
+                    .filter(toppings__in=attrs.get('toppings')).distinct()\
+                    .annotate(num_toppings=Count('toppings', distinct=True))\
+                    .filter(num_toppings=len(attrs.get('toppings')))\
+                    .exclude(toppings__in=Toppings.objects.exclude(pk__in=topping_pk_list))
+            else:
+                recipe_filtered_list\
+                    .filter(toppings__isnull=True)
 
-            # sauces
-        ).filter(
-            sauces__in=attrs.get('sauces')
-        ).annotate(
-            num_sauces=Count('sauces', distinct=True)
-        ).filter(
-            num_sauces=len(attrs.get('sauces'))
-        )
+        # vegetables
+        vegetable_pk_list = []
+        for vegetable in attrs.get('vegetables', []):
+            vegetable_pk_list.append(vegetable.pk)
 
-        # print(recipe_filtered_list)
-        # for recipe in recipe_filtered_list:
-        #     print(model_to_dict(recipe))
+        if recipe_filtered_list:
+            if attrs.get('vegetables'):
+                recipe_filtered_list = recipe_filtered_list\
+                    .filter(vegetables__in=attrs.get('vegetables')).distinct()\
+                    .annotate(num_vegetables=Count('vegetables', distinct=True))\
+                    .filter(num_vegetables=len(attrs.get('vegetables')))\
+                    .exclude(vegetables__in=Vegetables.objects.exclude(pk__in=vegetable_pk_list))
+            else:
+                recipe_filtered_list\
+                    .filter(vegetables__isnull=True)
+
+        # sauces
+        sauce_pk_list = []
+        for sauce in attrs.get('sauces', []):
+            sauce_pk_list.append(sauce.pk)
+
+        if recipe_filtered_list:
+            if attrs.get('sauces'):
+                recipe_filtered_list = recipe_filtered_list\
+                    .filter(sauces__in=attrs.get('sauces')).distinct()\
+                    .annotate(num_sauces=Count('sauces', distinct=True))\
+                    .filter(num_sauces=len(attrs.get('sauces')))\
+                    .exclude(sauces__in=Sauces.objects.exclude(pk__in=sauce_pk_list))
+            else:
+                recipe_filtered_list\
+                    .filter(sauces__isnull=True)
+
+        print(recipe_filtered_list)
+        for recipe in recipe_filtered_list:
+            print(model_to_dict(recipe))
 
         if recipe_filtered_list:
             raise CustomException(
