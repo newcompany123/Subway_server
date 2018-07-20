@@ -47,6 +47,7 @@ class SandwichSerializer(serializers.ModelSerializer):
             'image3x_right',
             'main_ingredient',
             'category',
+            'ordering_num',
         )
 
     # def to_representation(self, instance):

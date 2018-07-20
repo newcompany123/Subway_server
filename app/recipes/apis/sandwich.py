@@ -44,4 +44,5 @@ class SandwichListCreateView(generics.ListCreateAPIView):
     filter_class = SandwichFilter
 
     # ordering
-    ordering_fields = ('id', 'category_new', 'category_event',)
+    ordering_fields = ('id', 'ordering_num', 'category_new', 'category_event',)
+    ordering = ('ordering_num',)
