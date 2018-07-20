@@ -35,6 +35,7 @@ class Sandwich(models.Model):
         Category,
         verbose_name='카테고리'
     )
+    ordering_num = models.IntegerField(blank=True, null=True)
 
     def __str__(self):
         return f'{self.pk})_{self.name}'
