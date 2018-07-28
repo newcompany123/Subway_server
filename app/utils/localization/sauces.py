@@ -1,0 +1,18 @@
+sauces_dict = {
+    "후추": "black_pepper",
+    "사우스_웨스트": "chipotle",
+    "허니_머스터드": "honey_mustard",
+    "디종홀스래디쉬": "horseradish",
+    "핫_칠리": "hot_chilli",
+    "이탈리안_드레싱": "italian_dressing",
+    "마요네즈": "mayonnaise",
+    "올리브_오일": "olive_oil",
+    "랜치드레싱": "ranch",
+    "레드와인식초": "red_wine_vinaigrette",
+    "소금": "salt",
+    "스모크_바비큐": "smoke_bbq",
+    "스위트_칠리": "sweet_chilli",
+    "스위트_어니언": "sweet_onion",
+    "사우전_아일랜드": "thousand_island",
+    "머스타드": "yellow_mustard",
+}
