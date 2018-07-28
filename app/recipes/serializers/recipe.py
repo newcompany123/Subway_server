@@ -196,7 +196,7 @@ class VegetablesRelatedField(serializers.RelatedField):
         vegetable_name = data.get('name')
         vegetable = get_object_or_404_customed(Vegetables, name=vegetable_name)
         quantity_text = data.get('quantity')
-        if not quantity_text in ['LE', 'NO', 'MO'] \
+        if quantity_text not in ['조금', '보통', '많이'] \
                 or quantity_text is None:
             raise CustomException(
                 detail='Input correct vegetable quantity option!',

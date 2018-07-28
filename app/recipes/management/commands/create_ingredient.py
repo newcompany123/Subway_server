@@ -20,33 +20,32 @@ class Command(BaseCommand):
                             'sandwich9',
                             'sandwich10',
                             ]
-
-        sandwich_list = ['b_l_t',
-                         'bacon_egg_cheese',
-                         'black_forest_ham_egg_cheese',
-                         'chicken_bacon_ranch',
-                         'chicken_teriyaki',
-                         'egg_mayo',
-                         'ham',
-                         'italian_b_m_t',
-                         'meatball',
-                         'pulled_pork',
-                         'roasted_beef',
-                         'roasted_chicken',
-                         'rotisserie_chicken',
-                         'spicy_italian_avocado',
-                         'spicy_italian',
-                         'steak_cheese',
-                         'steak_egg_cheese',
-                         'subway_club',
-                         'subway_melt',
-                         'tuna',
+        sandwich_list = ['spicy_italian_avocado',
                          'turkey_bacon_avocado',
-                         'turkey_bacon',
-                         'turkey',
                          'veggie_avocado',
+                         'pulled_pork',
+                         'egg_mayo',
+                         'italian_b_m_t',
+                         'b_l_t',
+                         'meatball',
+                         'ham',
+                         'tuna',
+                         'rotisserie_chicken',
+                         'roasted_chicken',
+                         'roasted_beef',
+                         'subway_club',
+                         'turkey',
                          'veggie_delite',
-                         'western_egg_cheese',
+                         'steak_and_cheese',
+                         'chicken_bacon_ranch',
+                         'subway_melt',
+                         'turkey_bacon',
+                         'spicy_italian',
+                         'chicken_teriyaki',
+                         'black_forest_ham_and_egg,cheese',
+                         'western_egg_and_cheese',
+                         'bacon_egg_and_cheese',
+                         'steak_egg_and_cheese',
                          ]
 
         # main_ingredients는 get_or_create를 사용하지 않고,
@@ -58,7 +57,7 @@ class Command(BaseCommand):
                                  'chicken_strip',
                                  'chicken_teriyaki',
                                  'ham',
-                                 'meat_ball',
+                                 'meatball',
                                  'pepperoni',
                                  'pulled_pork',
                                  'roast_beef',
@@ -92,7 +91,7 @@ class Command(BaseCommand):
 
         cheese_list = ['american_cheese',
                        'no_cheese',
-                       'shrewd_cheese',
+                       'shredded_cheese',
                        ]
 
         toasting_list = ['torching',
@@ -568,7 +567,7 @@ class Command(BaseCommand):
                 )
                 sandwich.ordering_num = 22
 
-            elif sandwich.name == 'black_forest_ham_egg_cheese':
+            elif sandwich.name == 'black_forest_ham_and_egg_cheese':
                 omelet = get_or_create_for_main_ingredient('omelet', '1_slice')
                 ham = get_or_create_for_main_ingredient('ham', '2_slice')
                 cheese = get_or_create_for_main_ingredient('cheese', '2_slice')
@@ -583,7 +582,7 @@ class Command(BaseCommand):
                 )
                 sandwich.ordering_num = 23
 
-            elif sandwich.name == 'western_egg_cheese':
+            elif sandwich.name == 'western_egg_and_cheese':
                 omelet = get_or_create_for_main_ingredient('omelet', '1_slice')
                 ham = get_or_create_for_main_ingredient('ham', '1_slice')
                 cheese = get_or_create_for_main_ingredient('cheese', '2_slice')
@@ -598,7 +597,7 @@ class Command(BaseCommand):
                 )
                 sandwich.ordering_num = 24
 
-            elif sandwich.name == 'bacon_egg_cheese':
+            elif sandwich.name == 'bacon_egg_and_cheese':
                 omelet = get_or_create_for_main_ingredient('omelet', '1_slice')
                 bacon = get_or_create_for_main_ingredient('bacon', '2_slice')
                 cheese = get_or_create_for_main_ingredient('cheese', '2_slice')
@@ -613,7 +612,7 @@ class Command(BaseCommand):
                 )
                 sandwich.ordering_num = 25
 
-            elif sandwich.name == 'steak_egg_cheese':
+            elif sandwich.name == 'steak_egg_and_cheese':
                 steak = get_or_create_for_main_ingredient('steak', '1_scoop')
                 omelet = get_or_create_for_main_ingredient('omelet', '1_scoop')
                 cheese = get_or_create_for_main_ingredient('cheese', '2_slice')
@@ -629,4 +628,3 @@ class Command(BaseCommand):
                 sandwich.ordering_num = 26
 
             sandwich.save()
-
