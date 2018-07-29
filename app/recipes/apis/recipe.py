@@ -1,3 +1,5 @@
+import urllib
+
 from django.contrib.auth import get_user_model
 from django.db.models import Count
 from django_filters import FilterSet, Filter
@@ -24,9 +26,12 @@ class ListFilter(Filter):
             return qs
 
         self.lookup_expr = 'in'
+        value = urllib.parse.unquote_plus(value)
+        value = value.replace(', ', '_ ')
         values_text = value.split(',')
         values = []
         for value in values_text:
+            value = value.replace('_ ', ', ')
             obj = Sandwich.objects.get(name=value)
             values.append(obj.id)
         return super().filter(qs, values)
