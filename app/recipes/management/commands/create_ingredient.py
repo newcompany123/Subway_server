@@ -2,7 +2,8 @@ from django.conf import settings
 from django.core.management import BaseCommand
 from django.utils.module_loading import import_string
 
-from ...models import Vegetables, Bread, RecipeName, Sandwich, Cheese, Toppings, Sauces, MainIngredient, Category
+from ...models import Vegetables, Bread, RecipeName, Sandwich, Cheese, Toppings, Sauces, MainIngredient, Category, \
+    Toasting
 
 
 class Command(BaseCommand):
@@ -19,43 +20,44 @@ class Command(BaseCommand):
                             'sandwich9',
                             'sandwich10',
                             ]
-
-        sandwich_list = ['b_l_t',
-                         'bacon_egg_cheese',
-                         'black_forest_ham_egg_cheese',
-                         'chicken_bacon_ranch',
-                         'chicken_teriyaki',
-                         'egg_mayo',
-                         'ham',
-                         'italian_b_m_t',
-                         'meatball',
-                         'pulled_pork',
-                         'roasted_beef',
-                         'roasted_chicken',
-                         'rotisserie_chicken',
-                         'spicy_italian_avocado',
-                         'spicy_italian',
-                         'steak_cheese',
-                         'steak_egg_cheese',
-                         'subway_club',
-                         'subway_melt',
-                         'tuna',
+        sandwich_list = ['spicy_italian_avocado',
                          'turkey_bacon_avocado',
-                         'turkey_bacon',
-                         'turkey',
                          'veggie_avocado',
+                         'pulled_pork',
+                         'egg_mayo',
+                         'italian_b_m_t',
+                         'b_l_t',
+                         'meatball',
+                         'ham',
+                         'tuna',
+                         'rotisserie_chicken',
+                         'roasted_chicken',
+                         'roasted_beef',
+                         'subway_club',
+                         'turkey',
                          'veggie_delite',
-                         'western_egg_cheese',
+                         'steak_and_cheese',
+                         'chicken_bacon_ranch',
+                         'subway_melt',
+                         'turkey_bacon',
+                         'spicy_italian',
+                         'chicken_teriyaki',
+                         'black_forest_ham_and_egg,cheese',
+                         'western_egg_and_cheese',
+                         'bacon_egg_and_cheese',
+                         'steak_egg_and_cheese',
                          ]
 
         # main_ingredients는 get_or_create를 사용하지 않고,
         #   get_or_create_for_main_ingredient를 활용해 직접 생성
         main_ingredients_list = ['all_veggies',
+                                 'cheese',
+
                                  'chicken_breast',
                                  'chicken_strip',
                                  'chicken_teriyaki',
                                  'ham',
-                                 'meat_ball',
+                                 'meatball',
                                  'pepperoni',
                                  'pulled_pork',
                                  'roast_beef',
@@ -69,8 +71,6 @@ class Command(BaseCommand):
                                  'bacon',       # topping overlapped
                                  'egg_mayo',    # topping overlapped
                                  'omelet',      # topping overlapped
-
-                                 # 'american_cheese',
                                  ]
 
         bread_list = ['flat_bread',
@@ -81,19 +81,22 @@ class Command(BaseCommand):
                       'white',
                       ]
 
-        cheese_list = ['american_cheese',
-                       'no_cheese',
-                       'shrewd_cheese',
-                       ]
-
-        topping_list = ['american_cheese',
-                        'avocado',
+        topping_list = ['avocado',
                         'bacon',
+                        'double_cheese',
                         'double_up',
                         'egg_mayo',
                         'omelet',
-                        'shrewd_cheese',
                         ]
+
+        cheese_list = ['american_cheese',
+                       'no_cheese',
+                       'shredded_cheese',
+                       ]
+
+        toasting_list = ['torching',
+                         'no_torching',
+                         ]
 
         vegetable_list = ['cucumbers',
                           'jalapenos',
@@ -167,15 +170,16 @@ class Command(BaseCommand):
         [RecipeName.objects.get_or_create(name=name) for name in recipe_name_list]
         # [Sandwich.objects.get_or_create(name=name) for name in sandwich_list]
         # [Bread.objects.get_or_create(name=name) for name in bread_list]
+        # [Toppings.objects.get_or_create(name=name) for name in topping_list]
         # [Cheese.objects.get_or_create(name=name) for name in cheese_list]
         # [Vegetables.objects.get_or_create(name=name) for name in vegetable_list]
-        # [Toppings.objects.get_or_create(name=name) for name in topping_list]
         # [Sauces.objects.get_or_create(name=name) for name in sauce_list]
         # [Category.objects.get_or_create(name=name) for name in category_list]
 
         get_or_create(Bread, 'bread/', bread_list)
-        get_or_create(Cheese, 'cheese/', cheese_list)
         get_or_create(Toppings, 'toppings/', topping_list)
+        get_or_create(Cheese, 'cheese/', cheese_list)
+        get_or_create(Toasting, 'toasting/', toasting_list)
         get_or_create(Vegetables, 'vegetables/', vegetable_list)
         get_or_create(Sauces, 'sauces/', sauce_list)
 
@@ -230,177 +234,23 @@ class Command(BaseCommand):
             sandwich.image_right = image_url_right
             sandwich.image3x_right = image_url3x_right
 
-            sandwich.save()
+            # 하단 과정에서
+            # sandwich.save()
 
-            if sandwich.name == 'b_l_t':
-                # 2) Sandwich 인스턴스 생성 후 Main Ingredient field 저장
-                bacon = get_or_create_for_main_ingredient('bacon', '4_slice')
-                # american_cheese = get_or_create_for_main_ingredient('american_cheese', '2_slice')
-                sandwich.main_ingredient.add(
-                    bacon,
-                    # american_cheese,
-                )
-
-                # 3) Sandwich 인스턴스 생성 후 Category field 저장
-                classic, _ = Category.objects.get_or_create(name='CLASSIC')
-                sandwich.category.add(
-                    classic,
-                )
-            elif sandwich.name == 'bacon_egg_cheese':
-                omelet = get_or_create_for_main_ingredient('omelet', '1_slice')
-                bacon = get_or_create_for_main_ingredient('bacon', '2_slice')
-                # american_cheese = get_or_create_for_main_ingredient('american_cheese', '2_slice')
-                sandwich.main_ingredient.add(
-                    omelet,
-                    bacon,
-                    # american_cheese,
-                )
-                breakfast, _ = Category.objects.get_or_create(name='Breakfast')
-                sandwich.category.add(
-                    breakfast,
-                )
-            elif sandwich.name == 'black_forest_ham_egg_cheese':
-                omelet = get_or_create_for_main_ingredient('omelet', '1_slice')
-                ham = get_or_create_for_main_ingredient('ham', '2_slice')
-                # american_cheese = get_or_create_for_main_ingredient('american_cheese', '2_slice')
-                sandwich.main_ingredient.add(
-                    omelet,
-                    ham,
-                    # american_cheese,
-                )
-                breakfast, _ = Category.objects.get_or_create(name='Breakfast')
-                sandwich.category.add(
-                    breakfast,
-                )
-            elif sandwich.name == 'chicken_bacon_ranch':
-                chicken_strip = get_or_create_for_main_ingredient('chicken_strip', '1_scoop')
-                bacon = get_or_create_for_main_ingredient('bacon', '2_slice')
-                # american_cheese = get_or_create_for_main_ingredient('american_cheese', '2_slice')
-                sandwich.main_ingredient.add(
-                    chicken_strip,
-                    bacon,
-                    # american_cheese,
-                )
-                premium, _ = Category.objects.get_or_create(name='PREMIUM')
-                sandwich.category.add(
-                    premium,
-                )
-            elif sandwich.name == 'chicken_teriyaki':
-                chicken_strip = get_or_create_for_main_ingredient('chicken_teriyaki', '1_scoop')
-                # american_cheese = get_or_create_for_main_ingredient('american_cheese', '2_slice')
-                sandwich.main_ingredient.add(
-                    chicken_strip,
-                    # american_cheese,
-                )
-                premium, _ = Category.objects.get_or_create(name='PREMIUM')
-                sandwich.category.add(
-                    premium,
-                )
-            elif sandwich.name == 'egg_mayo':
-                egg_mayo = get_or_create_for_main_ingredient('egg_mayo', '2_scoop')
-                # american_cheese = get_or_create_for_main_ingredient('american_cheese', '2_slice')
-                sandwich.main_ingredient.add(
-                    egg_mayo,
-                    # american_cheese,
-                )
-                classic, _ = Category.objects.get_or_create(name='CLASSIC')
-                sandwich.category.add(
-                    classic,
-                )
-            elif sandwich.name == 'ham':
-                ham = get_or_create_for_main_ingredient('ham', '4_slice')
-                # american_cheese = get_or_create_for_main_ingredient('american_cheese', '2_slice')
-                sandwich.main_ingredient.add(
-                    ham,
-                    # american_cheese,
-                )
-                classic, _ = Category.objects.get_or_create(name='CLASSIC')
-                sandwich.category.add(
-                    classic,
-                )
-            elif sandwich.name == 'italian_b_m_t':
-                pepperoni = get_or_create_for_main_ingredient('pepperoni', '3_slice')
-                salami = get_or_create_for_main_ingredient('salami', '3_slice')
-                ham = get_or_create_for_main_ingredient('ham', '2_slice')
-                # american_cheese = get_or_create_for_main_ingredient('american_cheese', '2_slice')
-                sandwich.main_ingredient.add(
-                    pepperoni,
-                    salami,
-                    ham,
-                    # american_cheese,
-                )
-                classic, _ = Category.objects.get_or_create(name='CLASSIC')
-                sandwich.category.add(
-                    classic,
-                )
-            elif sandwich.name == 'meatball':
-                meat_ball = get_or_create_for_main_ingredient('meat_ball', '4_piece')
-                # american_cheese = get_or_create_for_main_ingredient('american_cheese', '2_slice')
-                sandwich.main_ingredient.add(
-                    meat_ball,
-                    # american_cheese,
-                )
-                classic, _ = Category.objects.get_or_create(name='CLASSIC')
-                sandwich.category.add(
-                    classic,
-                )
-            elif sandwich.name == 'pulled_pork':
-                pulled_pork = get_or_create_for_main_ingredient('pulled_pork', '1_scoop')
-                # american_cheese = get_or_create_for_main_ingredient('american_cheese', '2_slice')
-                sandwich.main_ingredient.add(
-                    pulled_pork,
-                    # american_cheese,
-                )
-                new, _ = Category.objects.get_or_create(name='NEW')
-                premium, _ = Category.objects.get_or_create(name='PREMIUM')
-                sandwich.category.add(
-                    new,
-                    premium,
-                )
-            elif sandwich.name == 'roasted_beef':
-                roast_beef = get_or_create_for_main_ingredient('roast_beef', '3_slice')
-                # american_cheese = get_or_create_for_main_ingredient('american_cheese', '2_slice')
-                sandwich.main_ingredient.add(
-                    roast_beef,
-                    # american_cheese,
-                )
-                fresh_and_light, _ = Category.objects.get_or_create(name='FRESH_AND_LIGHT')
-                sandwich.category.add(
-                    fresh_and_light,
-                )
-            elif sandwich.name == 'roasted_chicken':
-                chicken_breast = get_or_create_for_main_ingredient('chicken_breast', '1_slice')
-                # american_cheese = get_or_create_for_main_ingredient('american_cheese', '2_slice')
-                sandwich.main_ingredient.add(
-                    chicken_breast,
-                    # american_cheese,
-                )
-                fresh_and_light, _ = Category.objects.get_or_create(name='FRESH_AND_LIGHT')
-                sandwich.category.add(
-                    fresh_and_light,
-                )
-            elif sandwich.name == 'rotisserie_chicken':
-                rotisserie_chicken = get_or_create_for_main_ingredient('rotisserie_chicken', '1_scoop')
-                # american_cheese = get_or_create_for_main_ingredient('american_cheese', '2_slice')
-                sandwich.main_ingredient.add(
-                    rotisserie_chicken,
-                    # american_cheese,
-                )
-                fresh_and_light, _ = Category.objects.get_or_create(name='FRESH_AND_RIGHT')
-                sandwich.category.add(
-                    fresh_and_light,
-                )
-            elif sandwich.name == 'spicy_italian_avocado':
+            if sandwich.name == 'spicy_italian_avocado':
                 pepperoni = get_or_create_for_main_ingredient('pepperoni', '5_slice')
                 salami = get_or_create_for_main_ingredient('salami', '5_slice')
                 avocado = get_or_create_for_main_ingredient('avocado', '1_scoop')
-                # american_cheese = get_or_create_for_main_ingredient('american_cheese', '2_slice')
+                cheese = get_or_create_for_main_ingredient('cheese', '2_slice')
+
+                # 2) Sandwich 인스턴스 생성 후 Main Ingredient field 저장
                 sandwich.main_ingredient.add(
                     pepperoni,
                     salami,
                     avocado,
-                    # american_cheese
+                    cheese
                 )
+                # 3) Sandwich 인스턴스 생성 후 Category field 저장
                 new, _ = Category.objects.get_or_create(name='NEW')
                 event, _ = Category.objects.get_or_create(name='EVENT')
                 premium, _ = Category.objects.get_or_create(name='PREMIUM')
@@ -409,94 +259,19 @@ class Command(BaseCommand):
                     event,
                     premium,
                 )
-            elif sandwich.name == 'spicy_italian':
-                pepperoni = get_or_create_for_main_ingredient('pepperoni', '5_slice')
-                salami = get_or_create_for_main_ingredient('salami', '5_slice')
-                # american_cheese = get_or_create_for_main_ingredient('american_cheese', '2_slice')
-                sandwich.main_ingredient.add(
-                    pepperoni,
-                    salami,
-                    # american_cheese
-                )
-                premium, _ = Category.objects.get_or_create(name='PREMIUM')
-                sandwich.category.add(
-                    premium,
-                )
-            elif sandwich.name == 'steak_cheese':
-                steak = get_or_create_for_main_ingredient('steak', '1_scoop')
-                # american_cheese = get_or_create_for_main_ingredient('american_cheese', '2_slice')
-                sandwich.main_ingredient.add(
-                    steak,
-                    # american_cheese,
-                )
-                premium, _ = Category.objects.get_or_create(name='PREMIUM')
-                sandwich.category.add(
-                    premium,
-                )
-            elif sandwich.name == 'steak_egg_cheese':
-                steak = get_or_create_for_main_ingredient('steak', '1_scoop')
-                omelet = get_or_create_for_main_ingredient('omelet', '1_scoop')
-                # american_cheese = get_or_create_for_main_ingredient('american_cheese', '2_slice')
-                sandwich.main_ingredient.add(
-                    steak,
-                    omelet,
-                    # american_cheese,
-                )
-                breakfast, _ = Category.objects.get_or_create(name='Breakfast')
-                sandwich.category.add(
-                    breakfast,
-                )
-            elif sandwich.name == 'subway_club':
-                turkey = get_or_create_for_main_ingredient('turkey', '2_slice')
-                ham = get_or_create_for_main_ingredient('ham', '1_slice')
-                roast_beef = get_or_create_for_main_ingredient('roast_beef', '1_slice')
-                # american_cheese = get_or_create_for_main_ingredient('american_cheese', '2_slice')
-                sandwich.main_ingredient.add(
-                    turkey,
-                    ham,
-                    roast_beef,
-                    # american_cheese,
-                )
-                fresh_and_light, _ = Category.objects.get_or_create(name='FRESH_AND_LIGHT')
-                sandwich.category.add(
-                    fresh_and_light,
-                )
-            elif sandwich.name == 'subway_melt':
-                turkey = get_or_create_for_main_ingredient('turkey', '2_slice')
-                bacon = get_or_create_for_main_ingredient('bacon', '2_slice')
-                ham = get_or_create_for_main_ingredient('ham', '2_slice')
-                # american_cheese = get_or_create_for_main_ingredient('american_cheese', '2_slice')
-                sandwich.main_ingredient.add(
-                    turkey,
-                    bacon,
-                    ham,
-                    # american_cheese,
-                )
-                premium, _ = Category.objects.get_or_create(name='PREMIUM')
-                sandwich.category.add(
-                    premium,
-                )
-            elif sandwich.name == 'tuna':
-                tuna = get_or_create_for_main_ingredient('tuna', '2_scoop')
-                # american_cheese = get_or_create_for_main_ingredient('american_cheese', '2_slice')
-                sandwich.main_ingredient.add(
-                    tuna,
-                    # american_cheese,
-                )
-                classic, _ = Category.objects.get_or_create(name='CLASSIC')
-                sandwich.category.add(
-                    classic,
-                )
+                # 4) Sandwich 인스턴스 생성 후 ordering_num 설정
+                sandwich.ordering_num = 1
+
             elif sandwich.name == 'turkey_bacon_avocado':
                 turkey = get_or_create_for_main_ingredient('turkey', '3_slice')
                 bacon = get_or_create_for_main_ingredient('bacon', '2_slice')
                 avocado = get_or_create_for_main_ingredient('avocado', '1_scoop')
-                # american_cheese = get_or_create_for_main_ingredient('american_cheese', '2_slice')
+                cheese = get_or_create_for_main_ingredient('cheese', '2_slice')
                 sandwich.main_ingredient.add(
                     turkey,
                     bacon,
                     avocado,
-                    # american_cheese,
+                    cheese,
                 )
                 event, _ = Category.objects.get_or_create(name='EVENT')
                 premium, _ = Category.objects.get_or_create(name='PREMIUM')
@@ -504,38 +279,16 @@ class Command(BaseCommand):
                     event,
                     premium,
                 )
-            elif sandwich.name == 'turkey_bacon':
-                turkey = get_or_create_for_main_ingredient('turkey', '3_slice')
-                bacon = get_or_create_for_main_ingredient('bacon', '2_slice')
-                # american_cheese = get_or_create_for_main_ingredient('american_cheese', '2_slice')
-                sandwich.main_ingredient.add(
-                    turkey,
-                    bacon,
-                    # american_cheese,
-                )
-                premium, _ = Category.objects.get_or_create(name='PREMIUM')
-                sandwich.category.add(
-                    premium,
-                )
-            elif sandwich.name == 'turkey':
-                turkey = get_or_create_for_main_ingredient('turkey', '4_slice')
-                # american_cheese = get_or_create_for_main_ingredient('american_cheese', '2_slice')
-                sandwich.main_ingredient.add(
-                    turkey,
-                    # american_cheese,
-                )
-                fresh_and_light, _ = Category.objects.get_or_create(name='FRESH_AND_LIGHT')
-                sandwich.category.add(
-                    fresh_and_light,
-                )
+                sandwich.ordering_num = 2
+
             elif sandwich.name == 'veggie_avocado':
                 all_veggies = get_or_create_for_main_ingredient('all_veggies', '')
                 avocado = get_or_create_for_main_ingredient('avocado', '1_scoop')
-                # american_cheese = get_or_create_for_main_ingredient('american_cheese', '2_slice')
+                cheese = get_or_create_for_main_ingredient('cheese', '2_slice')
                 sandwich.main_ingredient.add(
                     all_veggies,
                     avocado,
-                    # american_cheese,
+                    cheese,
                 )
                 new, _ = Category.objects.get_or_create(name='NEW')
                 event, _ = Category.objects.get_or_create(name='EVENT')
@@ -545,27 +298,333 @@ class Command(BaseCommand):
                     event,
                     fresh_and_light,
                 )
-            elif sandwich.name == 'veggie_delite':
-                all_veggies = get_or_create_for_main_ingredient('all_veggies', '')
-                # american_cheese = get_or_create_for_main_ingredient('american_cheese', '2_slice')
+                sandwich.ordering_num = 3
+
+            elif sandwich.name == 'pulled_pork':
+                pulled_pork = get_or_create_for_main_ingredient('pulled_pork', '1_scoop')
+                cheese = get_or_create_for_main_ingredient('cheese', '2_slice')
                 sandwich.main_ingredient.add(
-                    all_veggies,
-                    # american_cheese,
+                    pulled_pork,
+                    cheese,
+                )
+                new, _ = Category.objects.get_or_create(name='NEW')
+                premium, _ = Category.objects.get_or_create(name='PREMIUM')
+                sandwich.category.add(
+                    new,
+                    premium,
+                )
+                sandwich.ordering_num = 4
+
+            elif sandwich.name == 'egg_mayo':
+                egg_mayo = get_or_create_for_main_ingredient('egg_mayo', '2_scoop')
+                cheese = get_or_create_for_main_ingredient('cheese', '2_slice')
+                sandwich.main_ingredient.add(
+                    egg_mayo,
+                    cheese,
+                )
+                classic, _ = Category.objects.get_or_create(name='CLASSIC')
+                sandwich.category.add(
+                    classic,
+                )
+                sandwich.ordering_num = 5
+
+            elif sandwich.name == 'italian_b_m_t':
+                pepperoni = get_or_create_for_main_ingredient('pepperoni', '3_slice')
+                salami = get_or_create_for_main_ingredient('salami', '3_slice')
+                ham = get_or_create_for_main_ingredient('ham', '2_slice')
+                cheese = get_or_create_for_main_ingredient('cheese', '2_slice')
+                sandwich.main_ingredient.add(
+                    pepperoni,
+                    salami,
+                    ham,
+                    cheese,
+                )
+                classic, _ = Category.objects.get_or_create(name='CLASSIC')
+                sandwich.category.add(
+                    classic,
+                )
+                sandwich.ordering_num = 6
+
+            elif sandwich.name == 'b_l_t':
+                bacon = get_or_create_for_main_ingredient('bacon', '4_slice')
+                cheese = get_or_create_for_main_ingredient('cheese', '2_slice')
+                sandwich.main_ingredient.add(
+                    bacon,
+                    cheese,
+                )
+                classic, _ = Category.objects.get_or_create(name='CLASSIC')
+                sandwich.category.add(
+                    classic,
+                )
+                sandwich.ordering_num = 7
+
+            elif sandwich.name == 'meatball':
+                meat_ball = get_or_create_for_main_ingredient('meat_ball', '4_piece')
+                cheese = get_or_create_for_main_ingredient('cheese', '2_slice')
+                sandwich.main_ingredient.add(
+                    meat_ball,
+                    cheese,
+                )
+                classic, _ = Category.objects.get_or_create(name='CLASSIC')
+                sandwich.category.add(
+                    classic,
+                )
+                sandwich.ordering_num = 8
+
+            elif sandwich.name == 'ham':
+                ham = get_or_create_for_main_ingredient('ham', '4_slice')
+                cheese = get_or_create_for_main_ingredient('cheese', '2_slice')
+                sandwich.main_ingredient.add(
+                    ham,
+                    cheese,
+                )
+                classic, _ = Category.objects.get_or_create(name='CLASSIC')
+                sandwich.category.add(
+                    classic,
+                )
+                sandwich.ordering_num = 9
+
+            elif sandwich.name == 'tuna':
+                tuna = get_or_create_for_main_ingredient('tuna', '2_scoop')
+                cheese = get_or_create_for_main_ingredient('cheese', '2_slice')
+                sandwich.main_ingredient.add(
+                    tuna,
+                    cheese,
+                )
+                classic, _ = Category.objects.get_or_create(name='CLASSIC')
+                sandwich.category.add(
+                    classic,
+                )
+                sandwich.ordering_num = 10
+
+            elif sandwich.name == 'rotisserie_chicken':
+                rotisserie_chicken = get_or_create_for_main_ingredient('rotisserie_chicken', '1_scoop')
+                cheese = get_or_create_for_main_ingredient('cheese', '2_slice')
+                sandwich.main_ingredient.add(
+                    rotisserie_chicken,
+                    cheese,
                 )
                 fresh_and_light, _ = Category.objects.get_or_create(name='FRESH_AND_RIGHT')
                 sandwich.category.add(
                     fresh_and_light,
                 )
-            elif sandwich.name == 'western_egg_cheese':
-                omelet = get_or_create_for_main_ingredient('omelet', '1_slice')
+                sandwich.ordering_num = 11
+
+            elif sandwich.name == 'roasted_chicken':
+                chicken_breast = get_or_create_for_main_ingredient('chicken_breast', '1_slice')
+                cheese = get_or_create_for_main_ingredient('cheese', '2_slice')
+                sandwich.main_ingredient.add(
+                    chicken_breast,
+                    cheese,
+                )
+                fresh_and_light, _ = Category.objects.get_or_create(name='FRESH_AND_LIGHT')
+                sandwich.category.add(
+                    fresh_and_light,
+                )
+                sandwich.ordering_num = 12
+
+            elif sandwich.name == 'roasted_beef':
+                roast_beef = get_or_create_for_main_ingredient('roast_beef', '3_slice')
+                cheese = get_or_create_for_main_ingredient('cheese', '2_slice')
+                sandwich.main_ingredient.add(
+                    roast_beef,
+                    cheese,
+                )
+                fresh_and_light, _ = Category.objects.get_or_create(name='FRESH_AND_LIGHT')
+                sandwich.category.add(
+                    fresh_and_light,
+                )
+                sandwich.ordering_num = 13
+
+            elif sandwich.name == 'subway_club':
+                turkey = get_or_create_for_main_ingredient('turkey', '2_slice')
                 ham = get_or_create_for_main_ingredient('ham', '1_slice')
-                # american_cheese = get_or_create_for_main_ingredient('american_cheese', '2_slice')
+                roast_beef = get_or_create_for_main_ingredient('roast_beef', '1_slice')
+                cheese = get_or_create_for_main_ingredient('cheese', '2_slice')
+                sandwich.main_ingredient.add(
+                    turkey,
+                    ham,
+                    roast_beef,
+                    cheese,
+                )
+                fresh_and_light, _ = Category.objects.get_or_create(name='FRESH_AND_LIGHT')
+                sandwich.category.add(
+                    fresh_and_light,
+                )
+                sandwich.ordering_num = 14
+
+            elif sandwich.name == 'turkey':
+                turkey = get_or_create_for_main_ingredient('turkey', '4_slice')
+                cheese = get_or_create_for_main_ingredient('cheese', '2_slice')
+                sandwich.main_ingredient.add(
+                    turkey,
+                    cheese,
+                )
+                fresh_and_light, _ = Category.objects.get_or_create(name='FRESH_AND_LIGHT')
+                sandwich.category.add(
+                    fresh_and_light,
+                )
+                sandwich.ordering_num = 15
+
+            elif sandwich.name == 'veggie_delite':
+                all_veggies = get_or_create_for_main_ingredient('all_veggies', '')
+                cheese = get_or_create_for_main_ingredient('cheese', '2_slice')
+                sandwich.main_ingredient.add(
+                    all_veggies,
+                    cheese,
+                )
+                fresh_and_light, _ = Category.objects.get_or_create(name='FRESH_AND_RIGHT')
+                sandwich.category.add(
+                    fresh_and_light,
+                )
+                sandwich.ordering_num = 16
+
+            elif sandwich.name == 'steak_cheese':
+                steak = get_or_create_for_main_ingredient('steak', '1_scoop')
+                cheese = get_or_create_for_main_ingredient('cheese', '2_slice')
+                sandwich.main_ingredient.add(
+                    steak,
+                    cheese,
+                )
+                premium, _ = Category.objects.get_or_create(name='PREMIUM')
+                sandwich.category.add(
+                    premium,
+                )
+                sandwich.ordering_num = 17
+
+            elif sandwich.name == 'chicken_bacon_ranch':
+                chicken_strip = get_or_create_for_main_ingredient('chicken_strip', '1_scoop')
+                bacon = get_or_create_for_main_ingredient('bacon', '2_slice')
+                cheese = get_or_create_for_main_ingredient('cheese', '2_slice')
+                sandwich.main_ingredient.add(
+                    chicken_strip,
+                    bacon,
+                    cheese,
+                )
+                premium, _ = Category.objects.get_or_create(name='PREMIUM')
+                sandwich.category.add(
+                    premium,
+                )
+                sandwich.ordering_num = 18
+
+            elif sandwich.name == 'subway_melt':
+                turkey = get_or_create_for_main_ingredient('turkey', '2_slice')
+                bacon = get_or_create_for_main_ingredient('bacon', '2_slice')
+                ham = get_or_create_for_main_ingredient('ham', '2_slice')
+                cheese = get_or_create_for_main_ingredient('cheese', '2_slice')
+                sandwich.main_ingredient.add(
+                    turkey,
+                    bacon,
+                    ham,
+                    cheese,
+                )
+                premium, _ = Category.objects.get_or_create(name='PREMIUM')
+                sandwich.category.add(
+                    premium,
+                )
+                sandwich.ordering_num = 19
+
+            elif sandwich.name == 'turkey_bacon':
+                turkey = get_or_create_for_main_ingredient('turkey', '3_slice')
+                bacon = get_or_create_for_main_ingredient('bacon', '2_slice')
+                cheese = get_or_create_for_main_ingredient('cheese', '2_slice')
+                sandwich.main_ingredient.add(
+                    turkey,
+                    bacon,
+                    cheese,
+                )
+                premium, _ = Category.objects.get_or_create(name='PREMIUM')
+                sandwich.category.add(
+                    premium,
+                )
+                sandwich.ordering_num = 20
+
+            elif sandwich.name == 'spicy_italian':
+                pepperoni = get_or_create_for_main_ingredient('pepperoni', '5_slice')
+                salami = get_or_create_for_main_ingredient('salami', '5_slice')
+                cheese = get_or_create_for_main_ingredient('cheese', '2_slice')
+                sandwich.main_ingredient.add(
+                    pepperoni,
+                    salami,
+                    cheese
+                )
+                premium, _ = Category.objects.get_or_create(name='PREMIUM')
+                sandwich.category.add(
+                    premium,
+                )
+                sandwich.ordering_num = 21
+
+            elif sandwich.name == 'chicken_teriyaki':
+                chicken_strip = get_or_create_for_main_ingredient('chicken_teriyaki', '1_scoop')
+                cheese = get_or_create_for_main_ingredient('cheese', '2_slice')
+                sandwich.main_ingredient.add(
+                    chicken_strip,
+                    cheese,
+                )
+                premium, _ = Category.objects.get_or_create(name='PREMIUM')
+                sandwich.category.add(
+                    premium,
+                )
+                sandwich.ordering_num = 22
+
+            elif sandwich.name == 'black_forest_ham_and_egg_cheese':
+                omelet = get_or_create_for_main_ingredient('omelet', '1_slice')
+                ham = get_or_create_for_main_ingredient('ham', '2_slice')
+                cheese = get_or_create_for_main_ingredient('cheese', '2_slice')
                 sandwich.main_ingredient.add(
                     omelet,
                     ham,
-                    # american_cheese,
+                    cheese,
                 )
                 breakfast, _ = Category.objects.get_or_create(name='Breakfast')
                 sandwich.category.add(
                     breakfast,
                 )
+                sandwich.ordering_num = 23
+
+            elif sandwich.name == 'western_egg_and_cheese':
+                omelet = get_or_create_for_main_ingredient('omelet', '1_slice')
+                ham = get_or_create_for_main_ingredient('ham', '1_slice')
+                cheese = get_or_create_for_main_ingredient('cheese', '2_slice')
+                sandwich.main_ingredient.add(
+                    omelet,
+                    ham,
+                    cheese,
+                )
+                breakfast, _ = Category.objects.get_or_create(name='Breakfast')
+                sandwich.category.add(
+                    breakfast,
+                )
+                sandwich.ordering_num = 24
+
+            elif sandwich.name == 'bacon_egg_and_cheese':
+                omelet = get_or_create_for_main_ingredient('omelet', '1_slice')
+                bacon = get_or_create_for_main_ingredient('bacon', '2_slice')
+                cheese = get_or_create_for_main_ingredient('cheese', '2_slice')
+                sandwich.main_ingredient.add(
+                    omelet,
+                    bacon,
+                    cheese,
+                )
+                breakfast, _ = Category.objects.get_or_create(name='Breakfast')
+                sandwich.category.add(
+                    breakfast,
+                )
+                sandwich.ordering_num = 25
+
+            elif sandwich.name == 'steak_egg_and_cheese':
+                steak = get_or_create_for_main_ingredient('steak', '1_scoop')
+                omelet = get_or_create_for_main_ingredient('omelet', '1_scoop')
+                cheese = get_or_create_for_main_ingredient('cheese', '2_slice')
+                sandwich.main_ingredient.add(
+                    steak,
+                    omelet,
+                    cheese,
+                )
+                breakfast, _ = Category.objects.get_or_create(name='Breakfast')
+                sandwich.category.add(
+                    breakfast,
+                )
+                sandwich.ordering_num = 26
+
+            sandwich.save()

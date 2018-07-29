@@ -1,24 +1,21 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
+from django.db.models import Count
+from django.forms import model_to_dict
 
 from rest_framework import serializers, status
 
 from users.serializers import UserSerializer
 from utils.exceptions.custom_exception import CustomException
 from utils.exceptions.get_object_or_404 import get_object_or_404_customed
-from ..models import Recipe, Bread, Vegetables, RecipeName, Sandwich, Cheese, Toppings, Sauces, MainIngredient, Category
+from ..models import Recipe, Bread, Vegetables, RecipeName, Sandwich, Cheese, Toppings, Sauces, MainIngredient, \
+    Category, Toasting
 
 User = get_user_model()
 
 __all__ = (
     'RecipeSerializer',
 )
-
-
-class RecipeNameSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = RecipeName
-        fields = '__all__'
 
 
 class MainIngredientSerializer(serializers.ModelSerializer):
@@ -50,6 +47,7 @@ class SandwichSerializer(serializers.ModelSerializer):
             'image3x_right',
             'main_ingredient',
             'category',
+            'ordering_num',
         )
 
     # def to_representation(self, instance):
@@ -61,6 +59,12 @@ class SandwichSerializer(serializers.ModelSerializer):
     #     return ret
 
 
+class RecipeNameSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RecipeName
+        fields = '__all__'
+
+
 class BreadSerializer(serializers.ModelSerializer):
     class Meta:
         model = Bread
@@ -70,6 +74,12 @@ class BreadSerializer(serializers.ModelSerializer):
 class CheeseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Bread
+        fields = '__all__'
+
+
+class ToastingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Toasting
         fields = '__all__'
 
 
@@ -149,6 +159,19 @@ class CheeseRelatedField(serializers.RelatedField):
         return cheese
 
 
+class ToastingRelatedField(serializers.RelatedField):
+    queryset = Toasting.objects.all()
+
+    def to_representation(self, value):
+        serializer = ToastingSerializer(value)
+        return serializer.data
+
+    def to_internal_value(self, data):
+        toasting_name = data.get('name')
+        toasting = get_object_or_404_customed(Toasting, name=toasting_name)
+        return toasting
+
+
 class ToppingsRelatedField(serializers.RelatedField):
     queryset = Toppings.objects.all()
 
@@ -173,7 +196,7 @@ class VegetablesRelatedField(serializers.RelatedField):
         vegetable_name = data.get('name')
         vegetable = get_object_or_404_customed(Vegetables, name=vegetable_name)
         quantity_text = data.get('quantity')
-        if not quantity_text in ['LE', 'NO', 'MO'] \
+        if quantity_text not in ['조금', '보통', '많이'] \
                 or quantity_text is None:
             raise CustomException(
                 detail='Input correct vegetable quantity option!',
@@ -217,6 +240,7 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     # 2) cheese 무조건 입력
     cheese = CheeseRelatedField()
+    toasting = ToastingRelatedField()
     toppings = ToppingsRelatedField(many=True, required=False)
     vegetables = VegetablesRelatedField(many=True, required=False)
     sauces = SaucesRelatedField(many=True, required=False)
@@ -235,8 +259,8 @@ class RecipeSerializer(serializers.ModelSerializer):
             'name',
             'sandwich',
             'bread',
-            'cheese',
             'toppings',
+            'cheese',
             'toasting',
             'vegetables',
             'sauces',
@@ -293,45 +317,125 @@ class RecipeSerializer(serializers.ModelSerializer):
         #     raise APIException("'name' field(recipe name) is required.")
         # ------------------------------------------------------------
 
-        for recipe in Recipe.objects.all():
+        # 1) recipe name's uniqueness validation
 
-            # 1) recipe name's uniqueness validation
-            name = attrs.get('name')
-            if recipe.name == name:
-                raise CustomException(
-                    detail='Same sandwich name already exists!',
-                    status_code=status.HTTP_400_BAD_REQUEST
-                )
+        # O(log n)
+        if Recipe.objects.filter(name=attrs.get('name')):
+            raise CustomException(
+                detail='Same sandwich name already exists!',
+                status_code=status.HTTP_400_BAD_REQUEST
+            )
 
-            # 2) recipe's uniqueness validation
-            sandwich = attrs.get('sandwich')
-            if recipe.sandwich == sandwich:
+        # [shoveling log]
+        # O(n)
+        # for recipe in Recipe.objects.all():
+        #
+        #     # 1) recipe name's uniqueness validation
+        #     name = attrs.get('name')
+        #     if recipe.name == name:
+        #         raise CustomException(
+        #             detail='Same sandwich name already exists!',
+        #             status_code=status.HTTP_400_BAD_REQUEST
+        #         )
 
-                bread = attrs.get('bread')
-                # print(f'{recipe.bread} {bread_obj}')
-                if recipe.bread == bread:
+        # 2) recipe ingredients' uniqueness validation
 
-                    cheese = attrs.get('cheese')
-                    if recipe.cheese == cheese:
+        # O(log n) - Time: 100~150ms
+        recipe_filtered_list = Recipe.objects\
+            .filter(sandwich=attrs.get('sandwich'))\
+            .filter(bread=attrs.get('bread'))\
+            .filter(cheese=attrs.get('cheese'))\
+            .filter(toasting=attrs.get('toasting'))
 
-                        toasting = attrs.get('toasting', False)
-                        if recipe.toasting == toasting:
+        # toppings
+        topping_pk_list = []
+        for topping in attrs.get('toppings', []):
+            topping_pk_list.append(topping.pk)
 
-                            topping_list = attrs.get('toppings')
-                            # print(f'{list(recipe.toppings.all())} {topping_list}')
-                            if set(recipe.toppings.all()) == (set(topping_list) if topping_list is not None else set()):
+        if recipe_filtered_list:
+            if attrs.get('toppings'):
+                recipe_filtered_list = recipe_filtered_list\
+                    .filter(toppings__in=attrs.get('toppings')).distinct()\
+                    .annotate(num_toppings=Count('toppings', distinct=True))\
+                    .filter(num_toppings=len(attrs.get('toppings')))\
+                    .exclude(toppings__in=Toppings.objects.exclude(pk__in=topping_pk_list))
+            else:
+                recipe_filtered_list\
+                    .filter(toppings__isnull=True)
 
-                                vegetable_list = attrs.get('vegetables')
-                                # print(f'{list(recipe.vegetables.all())} {vegetable_list}')
-                                if set(recipe.vegetables.all()) == (set(vegetable_list) if vegetable_list is not None else set()):
+        # vegetables
+        vegetable_pk_list = []
+        for vegetable in attrs.get('vegetables', []):
+            vegetable_pk_list.append(vegetable.pk)
 
-                                    sauce_list = attrs.get('sauces')
-                                    if set(recipe.sauces.all()) == (set(sauce_list) if sauce_list is not None else set()):
+        if recipe_filtered_list:
+            if attrs.get('vegetables'):
+                recipe_filtered_list = recipe_filtered_list\
+                    .filter(vegetables__in=attrs.get('vegetables')).distinct()\
+                    .annotate(num_vegetables=Count('vegetables', distinct=True))\
+                    .filter(num_vegetables=len(attrs.get('vegetables')))\
+                    .exclude(vegetables__in=Vegetables.objects.exclude(pk__in=vegetable_pk_list))
+            else:
+                recipe_filtered_list\
+                    .filter(vegetables__isnull=True)
 
-                                        raise CustomException(
-                                            detail='Same sandwich recipe already exists!',
-                                            status_code=status.HTTP_400_BAD_REQUEST
-                                        )
+        # sauces
+        sauce_pk_list = []
+        for sauce in attrs.get('sauces', []):
+            sauce_pk_list.append(sauce.pk)
+
+        if recipe_filtered_list:
+            if attrs.get('sauces'):
+                recipe_filtered_list = recipe_filtered_list\
+                    .filter(sauces__in=attrs.get('sauces')).distinct()\
+                    .annotate(num_sauces=Count('sauces', distinct=True))\
+                    .filter(num_sauces=len(attrs.get('sauces')))\
+                    .exclude(sauces__in=Sauces.objects.exclude(pk__in=sauce_pk_list))
+            else:
+                recipe_filtered_list\
+                    .filter(sauces__isnull=True)
+
+        print(recipe_filtered_list)
+        for recipe in recipe_filtered_list:
+            print(model_to_dict(recipe))
+
+        if recipe_filtered_list:
+            raise CustomException(
+                detail='Same sandwich recipe already exists!',
+                status_code=status.HTTP_400_BAD_REQUEST
+            )
+        # [shoveling log]
+        # O(n) - Time: 150~200ms
+        # for recipe in Recipe.objects.all():
+        #
+        #     sandwich = attrs.get('sandwich')
+        #     if recipe.sandwich == sandwich:
+        #
+        #         bread = attrs.get('bread')
+        #         # print(f'{recipe.bread} {bread_obj}')
+        #         if recipe.bread == bread:
+        #
+        #             cheese = attrs.get('cheese')
+        #             if recipe.cheese == cheese:
+        #
+        #                 toasting = attrs.get('toasting', False)
+        #                 if recipe.toasting == toasting:
+        #
+        #                     topping_list = attrs.get('toppings')
+        #                     # print(f'{list(recipe.toppings.all())} {topping_list}')
+        #                     if set(recipe.toppings.all()) == (set(topping_list) if topping_list is not None else set()):
+        #
+        #                         vegetable_list = attrs.get('vegetables')
+        #                         # print(f'{list(recipe.vegetables.all())} {vegetable_list}')
+        #                         if set(recipe.vegetables.all()) == (set(vegetable_list) if vegetable_list is not None else set()):
+        #
+        #                             sauce_list = attrs.get('sauces')
+        #                             if set(recipe.sauces.all()) == (set(sauce_list) if sauce_list is not None else set()):
+        #
+        #                                 raise CustomException(
+        #                                     detail='Same sandwich recipe already exists!',
+        #                                     status_code=status.HTTP_400_BAD_REQUEST
+        #                                 )
 
         # attrs을 return하여 validate 과정 종료
         return attrs
