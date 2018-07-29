@@ -22,48 +22,48 @@ class Command(BaseCommand):
                             '샌드위치10',
                             ]
 
-        sandwich_list = ['스파이시_이탈리안_아보카도',
-                         '터키_베이컨_아보카도',
-                         '베지_아보카도',
+        sandwich_list = ['스파이시 이탈리안 아보카도',
+                         '터키 베이컨 아보카도',
+                         '베지 아보카도',
                          '풀드포크',
                          '에그마요',
-                         '이탈리안_비엠티',
+                         '이탈리안 비엠티',
                          '비엘티',
                          '미트볼',
                          '햄',
                          '참치',
-                         '로티세리_치킨',
-                         '로스트_치킨',
-                         '로스트_비프',
-                         '써브웨이_클럽',
+                         '로티세리 치킨',
+                         '로스트 치킨',
+                         '로스트 비프',
+                         '써브웨이 클럽',
                          '터키',
                          '베지',
-                         '스테이크_앤_치즈',
-                         '치킨_베이컨_랜치',
-                         '써브웨이_멜트',
-                         '터키_베이컨',
-                         '스파이시_이탈리안',
-                         '치킨_데리야끼',
-                         '블랙_포레스트햄_앤_에그_치즈',
-                         '웨스턴_에그_앤_치즈',
-                         '베이컨_에그_앤_치즈',
-                         '스테이크_에그_앤_치즈',
+                         '스테이크 앤 치즈',
+                         '치킨 베이컨 랜치',
+                         '써브웨이 멜트',
+                         '터키 베이컨',
+                         '스파이시 이탈리안',
+                         '치킨 데리야끼',
+                         '블랙 포레스트햄 앤 에그 치즈',
+                         '웨스턴 에그 앤 치즈',
+                         '베이컨 에그 앤 치즈',
+                         '스테이크 에그 앤 치즈',
                          ]
 
         # main_ingredients는 get_or_create를 사용하지 않고,
         #   get_or_create_for_main_ingredient를 활용해 직접 생성
-        main_ingredients_list = ['각종_야채',
+        main_ingredients_list = ['각종 야채',
                                  '치즈',
 
-                                 '치킨_브레스트',
-                                 '치킨_스트립',
-                                 '치킨_데리야끼',
+                                 '치킨 브레스트',
+                                 '치킨 스트립',
+                                 '치킨 데리야끼',
                                  '햄',
                                  '미트볼',
                                  '페퍼로니',
                                  '풀드포크',
-                                 '로스트_비프',
-                                 '로티세리_치킨',
+                                 '로스트 비프',
+                                 '로티세리 치킨',
                                  '살라미',
                                  '스테이크',
                                  '참치',
@@ -78,22 +78,22 @@ class Command(BaseCommand):
         bread_list = ['플랫브래드',
                       '하티',
                       '허니오트',
-                      '파마산_오레가노',
+                      '파마산 오레가노',
                       '위트',
                       '화이트',
                       ]
 
         topping_list = ['아보카도',
                         '베이컨',
-                        '더블_치즈',
+                        '더블 치즈',
                         '더블업',
                         '에그마요',
                         '오믈렛',
                         ]
 
-        cheese_list = ['아메리칸_치즈',
+        cheese_list = ['아메리칸 치즈',
                        '치즈없음',
-                       '슈레드_치즈',
+                       '슈레드 치즈',
                        ]
 
         toasting_list = ['토스팅',
@@ -113,26 +113,26 @@ class Command(BaseCommand):
 
         sauce_list = ['랜치드레싱',
                       '마요네즈',
-                      '스위트_어니언',
-                      '허니_머스터드',
-                      '스위트_칠리',
-                      '핫_칠리',
-                      '사우스_웨스트',
+                      '스위트 어니언',
+                      '허니 머스터드',
+                      '스위트 칠리',
+                      '핫 칠리',
+                      '사우스 웨스트',
                       '머스타드',
                       '디종홀스래디쉬',
-                      '사우전_아일랜드',
-                      '이탈리안_드레싱',
-                      '올리브_오일',
+                      '사우전 아일랜드',
+                      '이탈리안 드레싱',
+                      '올리브 오일',
                       '레드와인식초',
                       '소금',
                       '후추',
-                      '스모크_바비큐',
+                      '스모크 바비큐',
                       ]
 
         category_list = ['신제품',
                          '프로모션',
                          '클래식',
-                         '프레쉬_앤_라이트',
+                         '프레쉬 앤 라이트',
                          '프리미엄',
                          '아침메뉴',
                          ]
@@ -239,7 +239,7 @@ class Command(BaseCommand):
             # 하단 과정에서
             # sandwich.save()
 
-            if sandwich.name == '스파이시_이탈리안_아보카도':
+            if sandwich.name == '스파이시 이탈리안 아보카도':
                 pepperoni = get_or_create_for_main_ingredient('페퍼로니', '5장')
                 salami = get_or_create_for_main_ingredient('살라미', '5장')
                 avocado = get_or_create_for_main_ingredient('아보카도', '1스쿱')
@@ -264,7 +264,7 @@ class Command(BaseCommand):
                 # 4) Sandwich 인스턴스 생성 후 ordering_num 설정
                 sandwich.ordering_num = 1
 
-            elif sandwich.name == '터키_베이컨_아보카도':
+            elif sandwich.name == '터키 베이컨 아보카도':
                 turkey = get_or_create_for_main_ingredient('터키', '3장')
                 bacon = get_or_create_for_main_ingredient('베이컨', '2장')
                 avocado = get_or_create_for_main_ingredient('아보카도', '1스쿱')
@@ -283,8 +283,8 @@ class Command(BaseCommand):
                 )
                 sandwich.ordering_num = 2
 
-            elif sandwich.name == '베지_아보카도':
-                all_veggies = get_or_create_for_main_ingredient('각종_야채', '')
+            elif sandwich.name == '베지 아보카도':
+                all_veggies = get_or_create_for_main_ingredient('각종 야채', '')
                 avocado = get_or_create_for_main_ingredient('아보카도', '1스쿱')
                 cheese = get_or_create_for_main_ingredient('치즈', '2장')
                 sandwich.main_ingredient.add(
@@ -294,7 +294,7 @@ class Command(BaseCommand):
                 )
                 new, _ = Category.objects.get_or_create(name='신제품')
                 event, _ = Category.objects.get_or_create(name='프로모션')
-                fresh_and_light, _ = Category.objects.get_or_create(name='프레쉬_앤_라이트')
+                fresh_and_light, _ = Category.objects.get_or_create(name='프레쉬 앤 라이트')
                 sandwich.category.add(
                     new,
                     event,
@@ -330,7 +330,7 @@ class Command(BaseCommand):
                 )
                 sandwich.ordering_num = 5
 
-            elif sandwich.name == '이탈리안_비엠티':
+            elif sandwich.name == '이탈리안 비엠티':
                 pepperoni = get_or_create_for_main_ingredient('페퍼로니', '3장')
                 salami = get_or_create_for_main_ingredient('살라미', '3장')
                 ham = get_or_create_for_main_ingredient('햄', '2장')
@@ -399,49 +399,49 @@ class Command(BaseCommand):
                 )
                 sandwich.ordering_num = 10
 
-            elif sandwich.name == '로티세리_치킨':
-                rotisserie_chicken = get_or_create_for_main_ingredient('로티세리_치킨', '1스쿱')
+            elif sandwich.name == '로티세리 치킨':
+                rotisserie_chicken = get_or_create_for_main_ingredient('로티세리 치킨', '1스쿱')
                 cheese = get_or_create_for_main_ingredient('치즈', '2장')
                 sandwich.main_ingredient.add(
                     rotisserie_chicken,
                     cheese,
                 )
-                fresh_and_light, _ = Category.objects.get_or_create(name='프레쉬_앤_라이트')
+                fresh_and_light, _ = Category.objects.get_or_create(name='프레쉬 앤 라이트')
                 sandwich.category.add(
                     fresh_and_light,
                 )
                 sandwich.ordering_num = 11
 
-            elif sandwich.name == '로스트_치킨':
-                chicken_breast = get_or_create_for_main_ingredient('치킨_브레스트', '1장')
+            elif sandwich.name == '로스트 치킨':
+                chicken_breast = get_or_create_for_main_ingredient('치킨 브레스트', '1장')
                 cheese = get_or_create_for_main_ingredient('치즈', '2장')
                 sandwich.main_ingredient.add(
                     chicken_breast,
                     cheese,
                 )
-                fresh_and_light, _ = Category.objects.get_or_create(name='프레쉬_앤_라이트')
+                fresh_and_light, _ = Category.objects.get_or_create(name='프레쉬 앤 라이트')
                 sandwich.category.add(
                     fresh_and_light,
                 )
                 sandwich.ordering_num = 12
 
-            elif sandwich.name == '로스트_비프':
-                roast_beef = get_or_create_for_main_ingredient('로스트_비프', '3장')
+            elif sandwich.name == '로스트 비프':
+                roast_beef = get_or_create_for_main_ingredient('로스트 비프', '3장')
                 cheese = get_or_create_for_main_ingredient('치즈', '2장')
                 sandwich.main_ingredient.add(
                     roast_beef,
                     cheese,
                 )
-                fresh_and_light, _ = Category.objects.get_or_create(name='프레쉬_앤_라이트')
+                fresh_and_light, _ = Category.objects.get_or_create(name='프레쉬 앤 라이트')
                 sandwich.category.add(
                     fresh_and_light,
                 )
                 sandwich.ordering_num = 13
 
-            elif sandwich.name == '써브웨이_클럽':
+            elif sandwich.name == '써브웨이 클럽':
                 turkey = get_or_create_for_main_ingredient('터키', '2장')
                 ham = get_or_create_for_main_ingredient('햄', '1장')
-                roast_beef = get_or_create_for_main_ingredient('로스트_비프', '1장')
+                roast_beef = get_or_create_for_main_ingredient('로스트 비프', '1장')
                 cheese = get_or_create_for_main_ingredient('치즈', '2장')
                 sandwich.main_ingredient.add(
                     turkey,
@@ -449,7 +449,7 @@ class Command(BaseCommand):
                     roast_beef,
                     cheese,
                 )
-                fresh_and_light, _ = Category.objects.get_or_create(name='프레쉬_앤_라이트')
+                fresh_and_light, _ = Category.objects.get_or_create(name='프레쉬 앤 라이트')
                 sandwich.category.add(
                     fresh_and_light,
                 )
@@ -462,26 +462,26 @@ class Command(BaseCommand):
                     turkey,
                     cheese,
                 )
-                fresh_and_light, _ = Category.objects.get_or_create(name='프레쉬_앤_라이트')
+                fresh_and_light, _ = Category.objects.get_or_create(name='프레쉬 앤 라이트')
                 sandwich.category.add(
                     fresh_and_light,
                 )
                 sandwich.ordering_num = 15
 
             elif sandwich.name == '베지':
-                all_veggies = get_or_create_for_main_ingredient('각종_야채', '')
+                all_veggies = get_or_create_for_main_ingredient('각종 야채', '')
                 cheese = get_or_create_for_main_ingredient('치즈', '2장')
                 sandwich.main_ingredient.add(
                     all_veggies,
                     cheese,
                 )
-                fresh_and_light, _ = Category.objects.get_or_create(name='프레쉬_앤_라이트')
+                fresh_and_light, _ = Category.objects.get_or_create(name='프레쉬 앤 라이트')
                 sandwich.category.add(
                     fresh_and_light,
                 )
                 sandwich.ordering_num = 16
 
-            elif sandwich.name == '스테이크_앤_치즈':
+            elif sandwich.name == '스테이크 앤 치즈':
                 steak = get_or_create_for_main_ingredient('스테이크', '1스쿱')
                 cheese = get_or_create_for_main_ingredient('오믈렛', '2장')
                 sandwich.main_ingredient.add(
@@ -494,8 +494,8 @@ class Command(BaseCommand):
                 )
                 sandwich.ordering_num = 17
 
-            elif sandwich.name == '치킨_베이컨_랜치':
-                chicken_strip = get_or_create_for_main_ingredient('치킨_스트립', '1스쿱')
+            elif sandwich.name == '치킨 베이컨 랜치':
+                chicken_strip = get_or_create_for_main_ingredient('치킨 스트립', '1스쿱')
                 bacon = get_or_create_for_main_ingredient('베이컨', '2장')
                 cheese = get_or_create_for_main_ingredient('치즈', '2장')
                 sandwich.main_ingredient.add(
@@ -509,7 +509,7 @@ class Command(BaseCommand):
                 )
                 sandwich.ordering_num = 18
 
-            elif sandwich.name == '써브웨이_멜트':
+            elif sandwich.name == '써브웨이 멜트':
                 turkey = get_or_create_for_main_ingredient('터키', '2장')
                 bacon = get_or_create_for_main_ingredient('베이컨', '2장')
                 ham = get_or_create_for_main_ingredient('햄', '2장')
@@ -526,7 +526,7 @@ class Command(BaseCommand):
                 )
                 sandwich.ordering_num = 19
 
-            elif sandwich.name == '터키_베이컨':
+            elif sandwich.name == '터키 베이컨':
                 turkey = get_or_create_for_main_ingredient('터키', '3장')
                 bacon = get_or_create_for_main_ingredient('베이컨', '2장')
                 cheese = get_or_create_for_main_ingredient('치즈', '2장')
@@ -541,7 +541,7 @@ class Command(BaseCommand):
                 )
                 sandwich.ordering_num = 20
 
-            elif sandwich.name == '스파이시_이탈리안':
+            elif sandwich.name == '스파이시 이탈리안':
                 pepperoni = get_or_create_for_main_ingredient('페퍼로니', '5장')
                 salami = get_or_create_for_main_ingredient('살라미', '5장')
                 cheese = get_or_create_for_main_ingredient('치즈', '2장')
@@ -556,8 +556,8 @@ class Command(BaseCommand):
                 )
                 sandwich.ordering_num = 21
 
-            elif sandwich.name == '치킨_데리야끼':
-                chicken_strip = get_or_create_for_main_ingredient('치킨_데리야끼', '1스쿱')
+            elif sandwich.name == '치킨 데리야끼':
+                chicken_strip = get_or_create_for_main_ingredient('치킨 데리야끼', '1스쿱')
                 cheese = get_or_create_for_main_ingredient('치즈', '2장')
                 sandwich.main_ingredient.add(
                     chicken_strip,
@@ -569,7 +569,7 @@ class Command(BaseCommand):
                 )
                 sandwich.ordering_num = 22
 
-            elif sandwich.name == '블랙_포레스트햄_앤_에그,치즈':
+            elif sandwich.name == '블랙 포레스트햄 앤 에그 치즈':
                 omelet = get_or_create_for_main_ingredient('오믈렛', '1장')
                 ham = get_or_create_for_main_ingredient('햄', '2장')
                 cheese = get_or_create_for_main_ingredient('치즈', '2장')
@@ -584,7 +584,7 @@ class Command(BaseCommand):
                 )
                 sandwich.ordering_num = 23
 
-            elif sandwich.name == '웨스턴_에그_앤_치즈':
+            elif sandwich.name == '웨스턴 에그 앤 치즈':
                 omelet = get_or_create_for_main_ingredient('오믈렛', '1장')
                 ham = get_or_create_for_main_ingredient('햄', '1장')
                 cheese = get_or_create_for_main_ingredient('치즈', '2장')
@@ -599,7 +599,7 @@ class Command(BaseCommand):
                 )
                 sandwich.ordering_num = 24
 
-            elif sandwich.name == '베이컨_에그_앤_치즈':
+            elif sandwich.name == '베이컨 에그 앤 치즈':
                 omelet = get_or_create_for_main_ingredient('오믈렛', '1장')
                 bacon = get_or_create_for_main_ingredient('베이컨', '2장')
                 cheese = get_or_create_for_main_ingredient('치즈', '2장')
@@ -614,7 +614,7 @@ class Command(BaseCommand):
                 )
                 sandwich.ordering_num = 25
 
-            elif sandwich.name == '스테이크_에그_앤_치즈':
+            elif sandwich.name == '스테이크 에그 앤 치즈':
                 steak = get_or_create_for_main_ingredient('스테이크', '1스쿱')
                 omelet = get_or_create_for_main_ingredient('오믈렛', '1스쿱')
                 cheese = get_or_create_for_main_ingredient('치즈', '2장')
