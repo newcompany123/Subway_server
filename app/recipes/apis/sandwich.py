@@ -1,4 +1,5 @@
 # from django_filters import FilterSet
+from django.core.cache import cache
 from django_filters.rest_framework import DjangoFilterBackend, FilterSet, Filter
 from rest_framework.filters import OrderingFilter
 from rest_framework import generics, permissions
@@ -29,8 +30,13 @@ class SandwichFilter(FilterSet):
 
 
 class SandwichListCreateView(generics.ListCreateAPIView):
-    queryset = Sandwich.objects.all()
-    serializer_class = SandwichSerializer
+    # queryset = Sandwich.objects.all()
+    # serializer_class = SandwichSerializer
+
+    def get(self, request, *args, **kwargs):
+        sandwiches = cache.get_or_set('sandwiches', Sandwich.objects.all().values())
+
+        return
 
     permission_classes = (
         permissions.IsAuthenticatedOrReadOnly,
