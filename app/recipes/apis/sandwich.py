@@ -31,12 +31,10 @@ class SandwichFilter(FilterSet):
 
 class SandwichListCreateView(generics.ListCreateAPIView):
     # queryset = Sandwich.objects.all()
-    # serializer_class = SandwichSerializer
+    serializer_class = SandwichSerializer
 
-    def get(self, request, *args, **kwargs):
-        sandwiches = cache.get_or_set('sandwiches', Sandwich.objects.all().values())
-
-        return
+    # Data caching by Redis
+    queryset = cache.get_or_set('sandwiches', Sandwich.objects.all().values(), 3600)
 
     permission_classes = (
         permissions.IsAuthenticatedOrReadOnly,

@@ -20,6 +20,12 @@ vegetables
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
 
+# Redis caching
+dump.rdb
+node_modules
+
+# Loadtest
+package-lock.json
 
 
 # Created by https://www.gitignore.io/api/git,linux,macos,django,python,sublimetext,pycharm+all
