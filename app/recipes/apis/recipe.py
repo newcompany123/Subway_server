@@ -1,6 +1,7 @@
 import urllib
 
 from django.contrib.auth import get_user_model
+from django.core.cache import cache
 from django.db.models import Count
 from django_filters import FilterSet, Filter
 from django_filters.rest_framework import DjangoFilterBackend
@@ -71,12 +72,13 @@ class RecipeListCreateView(generics.ListCreateAPIView):
     search_fields = ('name__name',)
 
     def get_queryset(self):
-        queryset = Recipe.objects.annotate(
+        value = Recipe.objects.annotate(
             like_count=Count('liker', distinct=True),
             bookmark_count=Count('bookmarker', distinct=True),
             like_bookmark_count=Count('liker', distinct=True) +
                             Count('bookmarker', distinct=True),
         )
+        queryset = cache.get_or_set('recipes_annotated', value, 3600)
         return queryset
 
     def perform_create(self, serializer):
@@ -84,8 +86,11 @@ class RecipeListCreateView(generics.ListCreateAPIView):
 
 
 class RecipeRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Recipe.objects.all()
+    # queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
+
+    # Data caching by Redis
+    queryset = cache.get_or_set('recipes', Recipe.objects.all().values, 36000)
 
     permission_classes = (
         permissions.IsAuthenticatedOrReadOnly,
