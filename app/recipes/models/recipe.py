@@ -71,12 +71,12 @@ class Recipe(models.Model):
     liker = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
         related_name='liked_recipe',
-        through='RecipeLike',
+        through='LikedRecipe',
     )
     bookmarker = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
         related_name='bookmarked_recipe',
-        through='RecipeBookmark',
+        through='BookmarkedRecipe',
     )
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now=True)

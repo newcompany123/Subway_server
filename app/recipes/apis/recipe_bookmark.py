@@ -4,15 +4,15 @@ from rest_framework.views import APIView
 
 from users.serializers import UserSerializer
 from utils.exceptions.get_object_or_404 import get_object_or_404_customed
-from ..models import Recipe, RecipeBookmark
+from ..models import Recipe, BookmarkedRecipe
 
 
-class RecipeBookmarkListCreateView(APIView):
+class BookmarkedRecipeListCreateView(APIView):
 
     def post(self, request, pk):
         user = request.user
         recipe = get_object_or_404_customed(Recipe, pk=pk)
-        instance, created = RecipeBookmark.objects.get_or_create(
+        instance, created = BookmarkedRecipe.objects.get_or_create(
             bookmarker=user,
             recipe=recipe,
         )

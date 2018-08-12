@@ -13,8 +13,8 @@ from .models import (
     Toppings,
     Sauces,
 
-    RecipeLike,
-    RecipeBookmark,
+    LikedRecipe,
+    BookmarkedRecipe,
 )
 
 admin.site.register(Recipe)
@@ -29,5 +29,5 @@ admin.site.register(Vegetables)
 admin.site.register(Toppings)
 admin.site.register(Sauces)
 
-admin.site.register(RecipeLike)
-admin.site.register(RecipeBookmark)
+admin.site.register(LikedRecipe)
+admin.site.register(BookmarkedRecipe)

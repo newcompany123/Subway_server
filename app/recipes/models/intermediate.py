@@ -2,7 +2,7 @@ from django.db import models
 from django.conf import settings
 
 
-class RecipeLike(models.Model):
+class LikedRecipe(models.Model):
     """
     Recipe와 좋아요한 User를 연결하는 intermediate model
     """
@@ -21,7 +21,7 @@ class RecipeLike(models.Model):
                f' Recipe {self.recipe} 좋아요'
 
 
-class RecipeBookmark(models.Model):
+class BookmarkedRecipe(models.Model):
     """
     Recipe와 Recipe를 북마크한 User를 연결하는 intermediate model
     """
@@ -33,6 +33,13 @@ class RecipeBookmark(models.Model):
         'Recipe',
         on_delete=models.CASCADE,
     )
+    # # Circling Import Issue
+    # collection = models.ForeignKey(
+    #     BookmarkCollection,
+    #     on_delete=models.SET_NULL,
+    #     null=True,
+    #     default=None
+    # )
     created_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
