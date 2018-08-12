@@ -13,7 +13,7 @@ class LikedRecipeListCreateView(APIView):
         user = request.user
         recipe = get_object_or_404_customed(Recipe, pk=pk)
         instance, created = LikedRecipe.objects.get_or_create(
-            liker=user,
+            user=user,
             recipe=recipe,
         )
 

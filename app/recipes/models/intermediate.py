@@ -6,7 +6,7 @@ class LikedRecipe(models.Model):
     """
     Recipe와 좋아요한 User를 연결하는 intermediate model
     """
-    liker = models.ForeignKey(
+    user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
     )
@@ -17,7 +17,7 @@ class LikedRecipe(models.Model):
     created_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f'User {self.liker}의' \
+        return f'User {self.user}의' \
                f' Recipe {self.recipe} 좋아요'
 
 
@@ -25,7 +25,7 @@ class BookmarkedRecipe(models.Model):
     """
     Recipe와 Recipe를 북마크한 User를 연결하는 intermediate model
     """
-    bookmarker = models.ForeignKey(
+    user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
     )
@@ -43,5 +43,5 @@ class BookmarkedRecipe(models.Model):
     created_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f'User {self.bookmarker}의' \
+        return f'User {self.user}의' \
                f' Recipe {self.recipe} 저장'

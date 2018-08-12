@@ -13,7 +13,7 @@ class BookmarkedRecipeListCreateView(APIView):
         user = request.user
         recipe = get_object_or_404_customed(Recipe, pk=pk)
         instance, created = BookmarkedRecipe.objects.get_or_create(
-            bookmarker=user,
+            user=user,
             recipe=recipe,
         )
 
