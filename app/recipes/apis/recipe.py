@@ -73,10 +73,10 @@ class RecipeListCreateView(generics.ListCreateAPIView):
 
     def get_queryset(self):
         value = Recipe.objects.annotate(
-            like_count=Count('user', distinct=True),
-            bookmark_count=Count('user', distinct=True),
-            like_bookmark_count=Count('user', distinct=True) +
-                            Count('user', distinct=True),
+            like_count=Count('liker', distinct=True),
+            bookmark_count=Count('bookmarker', distinct=True),
+            like_bookmark_count=Count('liker', distinct=True) +
+                            Count('bookmarker', distinct=True),
         )
         queryset = cache.get_or_set('recipes_annotated', value, 3600)
         return queryset
