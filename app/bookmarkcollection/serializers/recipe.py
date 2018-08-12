@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from bookmarkcollection.serializers.collection import BookmarkCollectionSerializer
+from ..serializers.collection import BookmarkCollectionSerializer
 from recipes.models import BookmarkedRecipe
 
 
