@@ -65,6 +65,7 @@ INSTALLED_APPS = [
     'users',
     'recipes',
     'noticeboard',
+    'bookmarkcollection',
 ]
 
 # Substituting a custom User model
