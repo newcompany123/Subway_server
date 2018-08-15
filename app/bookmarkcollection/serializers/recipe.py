@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from ..serializers.collection import BookmarkCollectionSerializer
+from ..serializers import BookmarkCollectionSerializer
 from recipes.models import BookmarkedRecipe
 
 
@@ -13,7 +13,7 @@ class BookmarkedRecipeSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         ret = super().to_representation(instance)
 
-        data = list(instance.bookmarkcollection_set.all())
+        data = instance.bookmarkcollection_set.all()
         serializer = BookmarkCollectionSerializer(data, many=True)
         ret['collection'] = serializer.data
         return ret
