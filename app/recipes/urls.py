@@ -1,7 +1,7 @@
 from django.urls import path
 
 from recipes.apis.recipe_name import RecipeNameListCreateView
-from recipes.apis.sandwich import SandwichListCreateView
+from sandwichingredients.apis.sandwich import SandwichListCreateView
 from .apis.recipe_bookmark import BookmarkedRecipeListCreateView
 from .apis.recipe_like import LikedRecipeListCreateView
 from .apis.recipe import RecipeListCreateView, RecipeRetrieveUpdateDestroyView
