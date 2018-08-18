@@ -5,8 +5,8 @@ from django.forms import model_to_dict
 
 from rest_framework import serializers, status
 
-from sandwichingredients.models import Toppings, Vegetables, Sauces
-from sandwichingredients.serializers import SandwichRelatedField, BreadRelatedField, CheeseRelatedField, \
+from ingredients.models import Toppings, Vegetables, Sauces
+from ingredients.serializers import SandwichRelatedField, BreadRelatedField, CheeseRelatedField, \
     ToastingRelatedField, ToppingsRelatedField, VegetablesRelatedField, SaucesRelatedField
 from users.serializers import UserSerializer
 from utils.exceptions.custom_exception import CustomException

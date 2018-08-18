@@ -7,6 +7,6 @@ urlpatterns = [
     path('user/', include('users.urls')),
     path('recipe/', include('recipes.urls')),
     path('noticeboard/', include('noticeboard.urls')),
-    path('ingredients/', include('sandwichingredients.urls')),
+    path('ingredients/', include('ingredients.urls')),
     path('api-docs/', schema_view),
 ]

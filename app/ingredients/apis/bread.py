@@ -1,6 +1,6 @@
 from rest_framework import generics
 
-from sandwichingredients.serializers import BreadSerializer
+from ..serializers import BreadSerializer
 from ..models import Bread
 
 

@@ -2,8 +2,8 @@ from django.conf import settings
 from django.core.management import BaseCommand
 from django.utils.module_loading import import_string
 
-from ...models import Vegetables, Bread, RecipeName, Sandwich, Cheese, Toppings, Sauces, MainIngredient, Category, \
-    Toasting
+from ...models import RecipeName
+from ingredients.models import Bread, Toppings, Cheese, Toasting, Vegetables, Sauces, Sandwich, Category, MainIngredient
 
 
 class Command(BaseCommand):

@@ -2,8 +2,8 @@ from django.conf import settings
 from django.core.management import BaseCommand
 from django.utils.module_loading import import_string
 
-from ...models import Vegetables, Bread, RecipeName, Sandwich, Cheese, Toppings, Sauces, MainIngredient, Category, \
-    Toasting
+from ...models import RecipeName
+from ingredients.models import Bread, Toppings, Cheese, Toasting, Vegetables, Sauces, Sandwich, Category, MainIngredient
 from utils.localization import *
 
 
@@ -247,8 +247,10 @@ class Command(BaseCommand):
                     cheese,
                 )
                 # 3) Sandwich 인스턴스 생성 후 Category field 저장
+                event, _ = Category.objects.get_or_create(name='프로모션')
                 fresh_and_light, _ = Category.objects.get_or_create(name='프레쉬 & 라이트')
                 sandwich.category.add(
+                    event,
                     fresh_and_light,
                 )
                 # 4) Sandwich 인스턴스 생성 후 ordering_num 설정
@@ -444,10 +446,8 @@ class Command(BaseCommand):
                     avocado,
                     cheese,
                 )
-                event, _ = Category.objects.get_or_create(name='프로모션')
                 premium, _ = Category.objects.get_or_create(name='프리미엄')
                 sandwich.category.add(
-                    event,
                     premium,
                 )
                 sandwich.ordering_num = 15

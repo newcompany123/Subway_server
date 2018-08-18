@@ -2,7 +2,7 @@ from django.conf import settings
 from django.db import models
 
 from ..models import RecipeName
-from sandwichingredients.models import Toppings, Cheese, Sauces, Toasting, Sandwich, Bread, Vegetables
+from ingredients.models import Toppings, Cheese, Sauces, Toasting, Sandwich, Bread, Vegetables
 
 
 class Recipe(models.Model):
