@@ -7,7 +7,7 @@ from rest_framework import generics, permissions
 from utils.exceptions.get_object_or_404 import get_object_or_404_customed
 from utils.permission.custom_permission import IsSuperUserOrReadOnly
 from ..serializers.recipe import SandwichSerializer
-from ..models import Sandwich, Category
+from sandwichingredients.models import Sandwich, Category
 
 
 class CustomFilter(Filter):

@@ -11,7 +11,8 @@ from rest_framework import generics, permissions
 from utils.permission.custom_permission import IsProductMakerOrReadOnly
 
 from ..serializers.recipe import RecipeSerializer
-from ..models import Recipe, Sandwich
+from ..models import Recipe
+from sandwichingredients.models import Sandwich
 
 User = get_user_model()
 

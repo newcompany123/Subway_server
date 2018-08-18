@@ -1,7 +1,8 @@
 from django.conf import settings
 from django.db import models
 
-from ..models import Toppings, Cheese, Sauces, Toasting
+from ..models import RecipeName
+from sandwichingredients.models import Toppings, Cheese, Sauces, Toasting, Sandwich, Bread, Vegetables
 
 
 class Recipe(models.Model):
@@ -20,19 +21,19 @@ class Recipe(models.Model):
     #     verbose_name='빵',
     # )
     name = models.OneToOneField(
-        'RecipeName',
+        RecipeName,
         on_delete=models.SET_NULL,
         null=True,
         verbose_name='이름',
     )
     sandwich = models.ForeignKey(
-        'Sandwich',
+        Sandwich,
         on_delete=models.SET_NULL,
         null=True,
         verbose_name='기본 샌드위치',
     )
     bread = models.ForeignKey(
-        'Bread',
+        Bread,
         on_delete=models.SET_NULL,
         null=True,
         verbose_name='빵',
@@ -54,7 +55,7 @@ class Recipe(models.Model):
         verbose_name='토핑',
     )
     vegetables = models.ManyToManyField(
-        'Vegetables',
+        Vegetables,
         verbose_name='야채',
     )
     sauces = models.ManyToManyField(

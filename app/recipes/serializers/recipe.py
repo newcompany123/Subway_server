@@ -8,8 +8,9 @@ from rest_framework import serializers, status
 from users.serializers import UserSerializer
 from utils.exceptions.custom_exception import CustomException
 from utils.exceptions.get_object_or_404 import get_object_or_404_customed
-from ..models import Recipe, Bread, Vegetables, RecipeName, Sandwich, Cheese, Toppings, Sauces, MainIngredient, \
-    Category, Toasting
+from ..models import Recipe, RecipeName
+from sandwichingredients.models import Bread, Vegetables, Sandwich, Cheese, Toppings, Sauces, MainIngredient, Category, \
+    Toasting
 
 User = get_user_model()
 
