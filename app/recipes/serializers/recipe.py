@@ -5,12 +5,14 @@ from django.forms import model_to_dict
 
 from rest_framework import serializers, status
 
+from sandwichingredients.models import Toppings, Vegetables, Sauces
+from sandwichingredients.serializers import SandwichRelatedField, BreadRelatedField, CheeseRelatedField, \
+    ToastingRelatedField, ToppingsRelatedField, VegetablesRelatedField, SaucesRelatedField
 from users.serializers import UserSerializer
 from utils.exceptions.custom_exception import CustomException
 from utils.exceptions.get_object_or_404 import get_object_or_404_customed
 from ..models import Recipe, RecipeName
-from sandwichingredients.models import Bread, Vegetables, Sandwich, Cheese, Toppings, Sauces, MainIngredient, Category, \
-    Toasting
+
 
 User = get_user_model()
 
@@ -19,86 +21,9 @@ __all__ = (
 )
 
 
-class MainIngredientSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = MainIngredient
-        fields = '__all__'
-
-
-class CategorySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Category
-        fields = (
-            'name',
-        )
-
-
-class SandwichSerializer(serializers.ModelSerializer):
-    main_ingredient = MainIngredientSerializer(many=True, read_only=True)
-    category = CategorySerializer(many=True, read_only=True)
-
-    class Meta:
-        model = Sandwich
-        fields = (
-            'id',
-            'name',
-            'image_left',
-            'image3x_left',
-            'image_right',
-            'image3x_right',
-            'main_ingredient',
-            'category',
-            'ordering_num',
-        )
-
-    # def to_representation(self, instance):
-    #     ret = super().to_representation(instance)
-    #     main_ingredient_list = ret.get('main_ingredient')
-    #     for main_ingredient in main_ingredient_list:
-    #         ...
-    #     ret['main_ingredient'] = ...
-    #     return ret
-
-
 class RecipeNameSerializer(serializers.ModelSerializer):
     class Meta:
         model = RecipeName
-        fields = '__all__'
-
-
-class BreadSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Bread
-        fields = '__all__'
-
-
-class CheeseSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Bread
-        fields = '__all__'
-
-
-class ToastingSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Toasting
-        fields = '__all__'
-
-
-class ToppingsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Toppings
-        fields = '__all__'
-
-
-class VegetablesSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Vegetables
-        fields = '__all__'
-
-
-class SaucesSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Sauces
         fields = '__all__'
 
 
@@ -119,107 +44,6 @@ class RecipeNameRelatedField(serializers.RelatedField):
         # return obj
 
         return recipe_name
-
-
-class SandwichRelatedField(serializers.RelatedField):
-    queryset = Sandwich.objects.all()
-
-    def to_representation(self, value):
-        serializer = SandwichSerializer(value)
-        return serializer.data
-
-    def to_internal_value(self, data):
-        sandwich_name = data.get('name')
-        sandwich = get_object_or_404_customed(Sandwich, name=sandwich_name)
-        return sandwich
-
-
-class BreadRelatedField(serializers.RelatedField):
-    queryset = Bread.objects.all()
-
-    def to_representation(self, value):
-        serializer = BreadSerializer(value)
-        return serializer.data
-
-    def to_internal_value(self, data):
-        bread_name = data.get('name')
-        bread = get_object_or_404_customed(Bread, name=bread_name)
-        return bread
-
-
-class CheeseRelatedField(serializers.RelatedField):
-    queryset = Bread.objects.all()
-
-    def to_representation(self, value):
-        serializer = CheeseSerializer(value)
-        return serializer.data
-
-    def to_internal_value(self, data):
-        cheese_name = data.get('name')
-        cheese = get_object_or_404_customed(Cheese, name=cheese_name)
-        return cheese
-
-
-class ToastingRelatedField(serializers.RelatedField):
-    queryset = Toasting.objects.all()
-
-    def to_representation(self, value):
-        serializer = ToastingSerializer(value)
-        return serializer.data
-
-    def to_internal_value(self, data):
-        toasting_name = data.get('name')
-        toasting = get_object_or_404_customed(Toasting, name=toasting_name)
-        return toasting
-
-
-class ToppingsRelatedField(serializers.RelatedField):
-    queryset = Toppings.objects.all()
-
-    def to_representation(self, value):
-        serializer = ToppingsSerializer(value)
-        return serializer.data
-
-    def to_internal_value(self, data):
-        topping_name = data.get('name')
-        topping = get_object_or_404_customed(Toppings, name=topping_name)
-        return topping
-
-
-class VegetablesRelatedField(serializers.RelatedField):
-    queryset = Vegetables.objects.all()
-
-    def to_representation(self, value):
-        serializer = VegetablesSerializer(value)
-        return serializer.data
-
-    def to_internal_value(self, data):
-        vegetable_name = data.get('name')
-        vegetable = get_object_or_404_customed(Vegetables, name=vegetable_name)
-        quantity_text = data.get('quantity')
-        if quantity_text not in ['조금', '보통', '많이'] \
-                or quantity_text is None:
-            raise CustomException(
-                detail='Input correct vegetable quantity option!',
-                status_code=status.HTTP_400_BAD_REQUEST
-            )
-        else:
-            vegetable.quantity = quantity_text
-            vegetable.save()
-        return vegetable
-
-
-class SaucesRelatedField(serializers.RelatedField):
-    queryset = Sauces.objects.all()
-
-    def to_representation(self, value):
-        serializer = SaucesSerializer(value)
-        return serializer.data
-
-    def to_internal_value(self, data):
-        sauce_name = data.get('name')
-        sauce = get_object_or_404_customed(Sauces, name=sauce_name)
-        return sauce
 
 
 class RecipeSerializer(serializers.ModelSerializer):
