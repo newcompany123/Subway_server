@@ -187,6 +187,9 @@ class Command(BaseCommand):
             sandwich, _ = Sandwich.objects.get_or_create(name=name)
 
             # 1) Sandwich 인스턴스 생성 후 image url path 저장
+            image_path_full = 'sandwich/full/' + sandwich_dict[name] + '.png'
+            image_path3x_full = 'sandwich/full/' + sandwich_dict[name] + '@3x.png'
+
             image_path_left = 'sandwich/left/' + sandwich_dict[name] + '.png'
             image_path3x_left = 'sandwich/left/' + sandwich_dict[name] + '@3x.png'
 
@@ -223,6 +226,11 @@ class Command(BaseCommand):
             #          캐싱을 하는 의미가 없이 새로 앱을 작동시킬 때마다
             #          이미지를 다시 받아오는 문제가 있어서 다시 이 방법으로 회귀
             #          (* 클라이언트에서 이미지 캐싱은 url 주소로 판단한다고 함)
+
+            image_url_full = static_storage.url(image_path_full)
+            image_url3x_full = static_storage.url(image_path3x_full)
+            sandwich.image_full = image_url_full
+            sandwich.image3x_full = image_url3x_full
 
             image_url_left = static_storage.url(image_path_left)
             image_url3x_left = static_storage.url(image_path3x_left)

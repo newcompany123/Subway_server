@@ -12,6 +12,9 @@ class Sandwich(models.Model):
         unique=True,
         help_text='100자까지 Sandwich의 이름을 저장합니다.'
     )
+    image_full = models.FilePathField(path='sandwich', max_length=255)
+    image3x_full = models.FilePathField(path='sandwich', max_length=255)
+
     image_left = models.FilePathField(path='sandwich', max_length=255)
     image3x_left = models.FilePathField(path='sandwich', max_length=255)
 

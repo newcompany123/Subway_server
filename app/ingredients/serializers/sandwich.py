@@ -14,10 +14,14 @@ class SandwichSerializer(serializers.ModelSerializer):
         fields = (
             'id',
             'name',
+
+            'image_full',
+            'image3x_full',
             'image_left',
             'image3x_left',
             'image_right',
             'image3x_right',
+
             'main_ingredient',
             'category',
 
