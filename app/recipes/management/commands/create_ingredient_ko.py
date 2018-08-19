@@ -253,7 +253,14 @@ class Command(BaseCommand):
                     event,
                     fresh_and_light,
                 )
-                # 4) Sandwich 인스턴스 생성 후 ordering_num 설정
+                # 4) Sandwich Nutrition Information 설정
+                sandwich.serving_size = 247
+                sandwich.calories = 350
+                sandwich.sugars = 7
+                sandwich.protein = 29
+                sandwich.saturated_fat = 1.5
+                sandwich.sodium = 660
+                # 5) Sandwich 인스턴스 생성 후 ordering_num 설정
                 sandwich.ordering_num = 1
 
             elif sandwich.name == '풀드포크':
@@ -269,6 +276,13 @@ class Command(BaseCommand):
                     new,
                     premium,
                 )
+                sandwich.serving_size = 276
+                sandwich.calories = 420
+                sandwich.sugars = 24
+                sandwich.protein = 23
+                sandwich.saturated_fat = 2
+                sandwich.sodium = 980
+
                 sandwich.ordering_num = 2
 
             elif sandwich.name == '에그마요':
@@ -282,6 +296,13 @@ class Command(BaseCommand):
                 sandwich.category.add(
                     classic,
                 )
+                sandwich.serving_size = 247
+                sandwich.calories = 480
+                sandwich.sugars = 7
+                sandwich.protein = 17
+                sandwich.saturated_fat = 6
+                sandwich.sodium = 450
+
                 sandwich.ordering_num = 3
 
             elif sandwich.name == '이탈리안 비엠티':
@@ -299,6 +320,13 @@ class Command(BaseCommand):
                 sandwich.category.add(
                     classic,
                 )
+                sandwich.serving_size = 226
+                sandwich.calories = 410
+                sandwich.sugars = 8
+                sandwich.protein = 20
+                sandwich.saturated_fat = 6
+                sandwich.sodium = 1260
+
                 sandwich.ordering_num = 4
 
             elif sandwich.name == '비엘티':
@@ -312,6 +340,13 @@ class Command(BaseCommand):
                 sandwich.category.add(
                     classic,
                 )
+                sandwich.serving_size = 165
+                sandwich.calories = 380
+                sandwich.sugars = 7
+                sandwich.protein = 20
+                sandwich.saturated_fat = 4
+                sandwich.sodium = 1130
+
                 sandwich.ordering_num = 5
 
             elif sandwich.name == '미트볼':
@@ -325,6 +360,13 @@ class Command(BaseCommand):
                 sandwich.category.add(
                     classic,
                 )
+                sandwich.serving_size = 301
+                sandwich.calories = 480
+                sandwich.sugars = 12
+                sandwich.protein = 21
+                sandwich.saturated_fat = 7
+                sandwich.sodium = 1000
+
                 sandwich.ordering_num = 6
 
             elif sandwich.name == '햄':
@@ -338,6 +380,13 @@ class Command(BaseCommand):
                 sandwich.category.add(
                     classic,
                 )
+                sandwich.serving_size = 219
+                sandwich.calories = 290
+                sandwich.sugars = 8
+                sandwich.protein = 18
+                sandwich.saturated_fat = 1
+                sandwich.sodium = 800
+
                 sandwich.ordering_num = 7
 
             elif sandwich.name == '참치':
@@ -351,6 +400,13 @@ class Command(BaseCommand):
                 sandwich.category.add(
                     classic,
                 )
+                sandwich.serving_size = 237
+                sandwich.calories = 480
+                sandwich.sugars = 7
+                sandwich.protein = 20
+                sandwich.saturated_fat = 4.5
+                sandwich.sodium = 580
+
                 sandwich.ordering_num = 8
 
             elif sandwich.name == '로스트 치킨':
@@ -364,6 +420,13 @@ class Command(BaseCommand):
                 sandwich.category.add(
                     fresh_and_light,
                 )
+                sandwich.serving_size = 233
+                sandwich.calories = 320
+                sandwich.sugars = 8
+                sandwich.protein = 23
+                sandwich.saturated_fat = 1.5
+                sandwich.sodium = 610
+
                 sandwich.ordering_num = 9
 
             elif sandwich.name == '로스트 비프':
@@ -377,6 +440,13 @@ class Command(BaseCommand):
                 sandwich.category.add(
                     fresh_and_light,
                 )
+                sandwich.serving_size = 233
+                sandwich.calories = 320
+                sandwich.sugars = 7
+                sandwich.protein = 25
+                sandwich.saturated_fat = 1.5
+                sandwich.sodium = 660
+
                 sandwich.ordering_num = 10
 
             elif sandwich.name == '써브웨이 클럽':
@@ -394,6 +464,13 @@ class Command(BaseCommand):
                 sandwich.category.add(
                     fresh_and_light,
                 )
+                sandwich.serving_size = 240
+                sandwich.calories = 310
+                sandwich.sugars = 8
+                sandwich.protein = 23
+                sandwich.saturated_fat = 1.5
+                sandwich.sodium = 840
+
                 sandwich.ordering_num = 11
 
             elif sandwich.name == '터키':
@@ -407,6 +484,13 @@ class Command(BaseCommand):
                 sandwich.category.add(
                     fresh_and_light,
                 )
+                sandwich.serving_size = 219
+                sandwich.calories = 280
+                sandwich.sugars = 7
+                sandwich.protein = 18
+                sandwich.saturated_fat = 1
+                sandwich.sodium = 760
+
                 sandwich.ordering_num = 12
 
             elif sandwich.name == '베지':
@@ -420,6 +504,13 @@ class Command(BaseCommand):
                 sandwich.category.add(
                     fresh_and_light,
                 )
+                sandwich.serving_size = 162
+                sandwich.calories = 230
+                sandwich.sugars = 7
+                sandwich.protein = 8
+                sandwich.saturated_fat = 0.5
+                sandwich.sodium = 280
+
                 sandwich.ordering_num = 13
 
             elif sandwich.name == '스테이크 & 치즈':
@@ -433,6 +524,13 @@ class Command(BaseCommand):
                 sandwich.category.add(
                     premium,
                 )
+                sandwich.serving_size = 245
+                sandwich.calories = 380
+                sandwich.sugars = 9
+                sandwich.protein = 26
+                sandwich.saturated_fat = 4.5
+                sandwich.sodium = 1030
+
                 sandwich.ordering_num = 14
 
             elif sandwich.name == '터키 베이컨 아보카도':
@@ -450,6 +548,13 @@ class Command(BaseCommand):
                 sandwich.category.add(
                     premium,
                 )
+                sandwich.serving_size = 270
+                sandwich.calories = 420
+                sandwich.sugars = 8
+                sandwich.protein = 24
+                sandwich.saturated_fat = 3.5
+                sandwich.sodium = 1190
+
                 sandwich.ordering_num = 15
 
             elif sandwich.name == '치킨 베이컨 랜치':
@@ -465,6 +570,13 @@ class Command(BaseCommand):
                 sandwich.category.add(
                     premium,
                 )
+                sandwich.serving_size = 298
+                sandwich.calories = 610
+                sandwich.sugars = 8
+                sandwich.protein = 38
+                sandwich.saturated_fat = 10
+                sandwich.sodium = 1290
+
                 sandwich.ordering_num = 16
 
             elif sandwich.name == '써브웨이 멜트':
@@ -482,6 +594,13 @@ class Command(BaseCommand):
                 sandwich.category.add(
                     premium,
                 )
+                sandwich.serving_size = 246
+                sandwich.calories = 410
+                sandwich.sugars = 9
+                sandwich.protein = 26
+                sandwich.saturated_fat = 5
+                sandwich.sodium = 1410
+
                 sandwich.ordering_num = 17
 
             elif sandwich.name == '터키 베이컨':
@@ -497,6 +616,13 @@ class Command(BaseCommand):
                 sandwich.category.add(
                     premium,
                 )
+                sandwich.serving_size = 234
+                sandwich.calories = 360
+                sandwich.sugars = 8
+                sandwich.protein = 23
+                sandwich.saturated_fat = 3
+                sandwich.sodium = 1190
+
                 sandwich.ordering_num = 18
 
             elif sandwich.name == '스파이시 이탈리안':
@@ -512,6 +638,13 @@ class Command(BaseCommand):
                 sandwich.category.add(
                     premium,
                 )
+                sandwich.serving_size = 222
+                sandwich.calories = 480
+                sandwich.sugars = 8
+                sandwich.protein = 20
+                sandwich.saturated_fat = 9
+                sandwich.sodium = 1490
+
                 sandwich.ordering_num = 19
 
             elif sandwich.name == '치킨 데리야끼':
@@ -525,6 +658,13 @@ class Command(BaseCommand):
                 sandwich.category.add(
                     premium,
                 )
+                sandwich.serving_size = 269
+                sandwich.calories = 370
+                sandwich.sugars = 16
+                sandwich.protein = 25
+                sandwich.saturated_fat = 1
+                sandwich.sodium = 770
+
                 sandwich.ordering_num = 20
 
             elif sandwich.name == '블랙 포레스트햄 & 에그, 치즈':
@@ -540,6 +680,13 @@ class Command(BaseCommand):
                 sandwich.category.add(
                     breakfast,
                 )
+                sandwich.serving_size = 203
+                sandwich.calories = 400
+                sandwich.sugars = 6
+                sandwich.protein = 24
+                sandwich.saturated_fat = 5
+                sandwich.sodium = 1150
+
                 sandwich.ordering_num = 21
 
             elif sandwich.name == '웨스턴, 에그 & 치즈':
@@ -555,6 +702,13 @@ class Command(BaseCommand):
                 sandwich.category.add(
                     breakfast,
                 )
+                sandwich.serving_size = 174
+                sandwich.calories = 370
+                sandwich.sugars = 5
+                sandwich.protein = 19
+                sandwich.saturated_fat = 4.5
+                sandwich.sodium = 880
+
                 sandwich.ordering_num = 22
 
             elif sandwich.name == '베이컨, 에그 & 치즈':
@@ -570,6 +724,13 @@ class Command(BaseCommand):
                 sandwich.category.add(
                     breakfast,
                 )
+                sandwich.serving_size = 190
+                sandwich.calories = 450
+                sandwich.sugars = 6
+                sandwich.protein = 25
+                sandwich.saturated_fat = 7
+                sandwich.sodium = 1310
+
                 sandwich.ordering_num = 23
 
             elif sandwich.name == '스테이크, 에그 & 치즈':
@@ -585,6 +746,13 @@ class Command(BaseCommand):
                 sandwich.category.add(
                     breakfast,
                 )
+                sandwich.serving_size = 217
+                sandwich.calories = 440
+                sandwich.sugars = 6
+                sandwich.protein = 28
+                sandwich.saturated_fat = 6
+                sandwich.sodium = 1210
+
                 sandwich.ordering_num = 24
 
             sandwich.save()

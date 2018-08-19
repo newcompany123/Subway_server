@@ -37,5 +37,13 @@ class Sandwich(models.Model):
     )
     ordering_num = models.IntegerField(blank=True, null=True)
 
+    # Nutrition Information
+    serving_size = models.SmallIntegerField(blank=True, null=True)
+    calories = models.SmallIntegerField(blank=True, null=True)
+    sugars = models.SmallIntegerField(blank=True, null=True)
+    protein = models.SmallIntegerField(blank=True, null=True)
+    saturated_fat = models.SmallIntegerField(blank=True, null=True)
+    sodium = models.SmallIntegerField(blank=True, null=True)
+
     def __str__(self):
         return f'{self.pk})_{self.name}'

@@ -20,6 +20,14 @@ class SandwichSerializer(serializers.ModelSerializer):
             'image3x_right',
             'main_ingredient',
             'category',
+
+            'serving_size',
+            'calories',
+            'sugars',
+            'protein',
+            'saturated_fat',
+            'sodium',
+
             'ordering_num',
         )
 
