@@ -20,6 +20,14 @@ class SandwichSerializer(serializers.ModelSerializer):
             'image3x_right',
             'main_ingredient',
             'category',
+
+            'serving_size',
+            'calories',
+            'sugars',
+            'protein',
+            'saturated_fat',
+            'sodium',
+
             'ordering_num',
         )
 
@@ -43,4 +51,3 @@ class SandwichRelatedField(serializers.RelatedField):
         sandwich_name = data.get('name')
         sandwich = get_object_or_404_customed(Sandwich, name=sandwich_name)
         return sandwich
-

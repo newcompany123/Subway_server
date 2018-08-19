@@ -35,6 +35,14 @@ class Sandwich(models.Model):
         Category,
         verbose_name='카테고리'
     )
+    # Nutrition Information
+    serving_size = models.SmallIntegerField(blank=True, null=True)
+    calories = models.SmallIntegerField(blank=True, null=True)
+    sugars = models.SmallIntegerField(blank=True, null=True)
+    protein = models.SmallIntegerField(blank=True, null=True)
+    saturated_fat = models.SmallIntegerField(blank=True, null=True)
+    sodium = models.SmallIntegerField(blank=True, null=True)
+
     ordering_num = models.IntegerField(blank=True, null=True)
 
     def __str__(self):
