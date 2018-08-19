@@ -63,7 +63,7 @@ class RecipeSerializer(serializers.ModelSerializer):
     # CHEESE_DEFAULT = Cheese.objects.get(name='no_cheese')
     # cheese = CheeseRelatedField(default=CHEESE_DEFAULT)
 
-    # 2) cheese 무조건 입력
+    # 2) cheese,toasting 무조건 입력
     cheese = CheeseRelatedField()
     toasting = ToastingRelatedField()
     toppings = ToppingsRelatedField(many=True, required=False)

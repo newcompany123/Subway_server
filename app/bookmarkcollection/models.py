@@ -15,4 +15,5 @@ class BookmarkCollection(models.Model):
     bookmarked_recipe = models.ManyToManyField(
         BookmarkedRecipe,
         verbose_name='북마크 콜렉션',
+        blank=True
     )
