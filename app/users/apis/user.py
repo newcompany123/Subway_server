@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from django.core.cache import cache
 from rest_framework import generics, permissions
 
-from utils.permission.custom_permission import IsOwnerOrReadOnly
+from utils.permission.custom_permission import IsOneselfOrReadOnly
 from ..serializers.user import UserSerializer
 
 User = get_user_model()
@@ -30,5 +30,5 @@ class UserRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
 
     permission_classes = (
         permissions.IsAuthenticatedOrReadOnly,
-        IsOwnerOrReadOnly,
+        IsOneselfOrReadOnly,
     )
