@@ -83,6 +83,7 @@ AUTHENTICATION_BACKENDS = [
 CORS_ORIGIN_WHITELIST = (
     'localhost:8000',
     'localhost:7000',
+    'localhost:3000',
     'subway-eb.ap-northeast-2.elasticbeanstalk.com',
 )
 
