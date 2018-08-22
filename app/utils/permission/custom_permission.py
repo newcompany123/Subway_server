@@ -9,6 +9,7 @@ User = get_user_model()
 
 
 class IsOneselfOrReadOnly(permissions.BasePermission):
+    # UserRetrieveUpdateDestroyView
     def has_object_permission(self, request, view, obj):
         if request.method in permissions.SAFE_METHODS:
             return True
@@ -17,22 +18,26 @@ class IsOneselfOrReadOnly(permissions.BasePermission):
 
 
 class IsOwnerOrReadOnly(permissions.BasePermission):
+    # BookmarkCollectionUpdateDestroyView
     def has_object_permission(self, request, view, obj):
         if request.method in permissions.SAFE_METHODS:
             return True
+        return obj.user == request.user
+
+    # BookmarkCollectionListCreateView
+    def has_permission(self, request, view):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        # POST Method 인 경우 request.user 와 requst uri의 user의 동일 여부 확인
         path = request._request.path
         result = re.search(r'.+?(\d+).+?', path)
         pk = result.group(1)
         user = get_object_or_404_customed(User, pk=pk)
-        # 1) obj.user == request.user
-        #   BookmarkedRecipe를 한 user와 Authenticated user가 동일한지 비교
-        # 2) user == request.user
-        #   parameter에서 {{HOST}}/user/<user_num>/collection/<bookmarkedrecipe_num>/
-        #   <user_num> 과 Authenticated user가 동일한지 비교
-        return obj.user == request.user and user == request.user
+        return user == request.user
 
 
 class IsProductMakerOrReadOnly(permissions.BasePermission):
+    # RecipeRetrieveUpdateDestroyView
     def has_object_permission(self, request, view, obj):
         if request.method in permissions.SAFE_METHODS:
             return True
@@ -41,7 +46,8 @@ class IsProductMakerOrReadOnly(permissions.BasePermission):
 
 
 class IsSuperUserOrReadOnly(permissions.BasePermission):
-    def has_object_permission(self, request, view, obj):
+    # NoticeboardListCreateView
+    def has_permission(self, request, view):
         if request.method in permissions.SAFE_METHODS:
             return True
 

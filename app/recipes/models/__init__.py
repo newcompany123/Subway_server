@@ -1,4 +1,4 @@
 from .bookmarkedrecipe import *
 from .likedrecipe import *
-from .onetoone import *
+from .recipename import *
 from .recipe import *

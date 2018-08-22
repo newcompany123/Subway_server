@@ -1,7 +1,10 @@
-from django.contrib.auth import get_user_model
-from rest_framework import generics, permissions
+import re
 
-from utils.permission.custom_permission import IsOwnerOrReadOnly, IsOneselfOrReadOnly
+from django.contrib.auth import get_user_model
+from rest_framework import generics, permissions, status
+
+from utils.exceptions.custom_exception import CustomException
+from utils.permission.custom_permission import IsOwnerOrReadOnly
 from ..models import BookmarkCollection
 from ..serializers.collection import BookmarkCollectionSerializer
 
@@ -39,5 +42,14 @@ class BookmarkCollectionUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView)
     )
 
     def get_queryset(self):
+        path = self.request._request.path
+        result = re.search(r'.+?(\d+).+?', path)
+        pk = result.group(1)
+        user = get_object_or_404_customed(User, pk=pk)
+        if not user == self.request.user:
+            raise CustomException(
+                detail="Authenticated user and user from request uri do not match",
+                status_code=status.HTTP_400_BAD_REQUEST,
+            )
         value = BookmarkCollection.objects.all().filter(user=self.request.user)
         return value
