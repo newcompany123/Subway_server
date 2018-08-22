@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'rest_framework_swagger',
+    'corsheaders',
 
     # Custom app
     'users',
@@ -78,6 +79,12 @@ AUTHENTICATION_BACKENDS = [
     'users.backends.APIFacebookBackend',
     'users.backends.APIKakaoBackend'
 ]
+
+CORS_ORIGIN_WHITELIST = (
+    'localhost:8000',
+    'localhost:7000',
+    'subway-eb.ap-northeast-2.elasticbeanstalk.com',
+)
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -102,6 +109,8 @@ CACHES = {
 }
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
+
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
