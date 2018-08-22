@@ -3,6 +3,7 @@ Django<2.1
 django-filter<1.2
 django-json-secrets<0.2
 django-storages<1.7
+django-cors-headers<2.5
 django-redis<4.10
 django-rest-swagger<2.3
 djangorestframework<3.9
