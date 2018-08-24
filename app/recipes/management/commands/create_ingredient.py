@@ -95,8 +95,8 @@ class Command(BaseCommand):
                        'Shredded Cheese',
                        ]
 
-        toasting_list = ['Torching',
-                         'No Torching',
+        toasting_list = ['Toasting',
+                         'No Toasting',
                          ]
 
         vegetable_list = ['Cucumbers',
