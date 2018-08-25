@@ -6,7 +6,8 @@ ALLOWED_HOSTS = [
     'localhost',
     '.elasticbeanstalk.com',
     '.amazonaws.com',
-    '.smallbee.kr'
+    '.smallbee.kr',
+    '.my-subway.com',
 ]
 WSGI_APPLICATION = 'config.wsgi.prod.application'
 
