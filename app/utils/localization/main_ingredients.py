@@ -12,7 +12,7 @@ main_ingredient_dict = {
     "오믈렛": "omelet",
     "페퍼로니": "pepperoni",
     "풀드포크": "pulled_pork",
-    "로스트 비프": "roast_beef",
+    "로스트 비프": "roasted_beef",
     "로티세리 치킨": "rotisserie_chicken",
     "살라미": "salami",
     "스테이크": "steak",
