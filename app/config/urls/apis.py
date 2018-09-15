@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.urls import path, include
 from rest_framework_swagger.views import get_swagger_view
 
@@ -10,3 +11,9 @@ urlpatterns = [
     path('ingredients/', include('ingredients.urls')),
     path('api-docs/', schema_view),
 ]
+
+if settings.DEBUG:
+    import debug_toolbar
+    urlpatterns += [
+        path('__debug__/', include(debug_toolbar.urls)),
+    ]
