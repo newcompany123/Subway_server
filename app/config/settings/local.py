@@ -27,7 +27,7 @@ CACHES = {
 if DEBUG:
     INSTALLED_APPS += ['debug_toolbar']
     INTERNAL_IPS = ['127.0.0.1', 'localhost']
-    # MIDDLEWARE += ['debug_toolbar.middleware.DebugToolbarMiddleware']
+    MIDDLEWARE += ['debug_toolbar.middleware.DebugToolbarMiddleware']
     DEBUG_TOOLBAR_PANELS = (
         'debug_toolbar.panels.versions.VersionsPanel',
         'debug_toolbar.panels.timer.TimerPanel',
@@ -42,8 +42,8 @@ if DEBUG:
         'debug_toolbar.panels.logging.LoggingPanel',
         'debug_toolbar.panels.redirects.RedirectsPanel',
     )
-    # DEBUG_TOOLBAR_CONFIG = {
-    #     'INTERCEPT_REDIRECTS': False,
-    # }
+    DEBUG_TOOLBAR_CONFIG = {
+        'INTERCEPT_REDIRECTS': False,
+    }
 
 import_secrets()
