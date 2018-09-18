@@ -72,12 +72,15 @@ class RecipeListCreateView(generics.ListCreateAPIView):
     search_fields = ('name__name',)
 
     def get_queryset(self):
-        value = Recipe.objects.annotate(
-            like_count=Count('liker', distinct=True),
-            bookmark_count=Count('bookmarker', distinct=True),
-            like_bookmark_count=Count('liker', distinct=True) +
-                            Count('bookmarker', distinct=True),
-        )
+        value = Recipe.objects \
+            .select_related('name', 'sandwich', 'bread', 'cheese', 'toasting', 'inventor') \
+            .prefetch_related('toppings', 'vegetables', 'sauces', 'sandwich__main_ingredient', 'sandwich__category') \
+            .annotate(
+                    like_count=Count('liker', distinct=True),
+                    bookmark_count=Count('bookmarker', distinct=True),
+                    like_bookmark_count=Count('liker', distinct=True)
+                                        + Count('bookmarker', distinct=True),
+            )
 
         return value
 
