@@ -92,7 +92,9 @@ class RecipeListCreateView(generics.ListCreateAPIView):
 
 
 class RecipeRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Recipe.objects.all()
+    queryset = Recipe.objects \
+        .select_related('sandwich', 'bread', 'cheese', 'toasting', 'inventor') \
+        .prefetch_related('toppings', 'vegetables', 'sauces', 'sandwich__main_ingredient', 'sandwich__category')
     serializer_class = RecipeSerializer
 
     # Data caching by Redis
