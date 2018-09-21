@@ -72,27 +72,33 @@ class RecipeListCreateView(generics.ListCreateAPIView):
     search_fields = ('name__name',)
 
     def get_queryset(self):
-        value = Recipe.objects.annotate(
-            like_count=Count('liker', distinct=True),
-            bookmark_count=Count('bookmarker', distinct=True),
-            like_bookmark_count=Count('liker', distinct=True) +
-                            Count('bookmarker', distinct=True),
-        )
-        # return value
+        value = Recipe.objects \
+            .select_related('name', 'sandwich', 'bread', 'cheese', 'toasting', 'inventor') \
+            .prefetch_related('toppings', 'vegetables', 'sauces', 'sandwich__main_ingredient', 'sandwich__category') \
+            .annotate(
+                    like_count=Count('liker', distinct=True),
+                    bookmark_count=Count('bookmarker', distinct=True),
+                    like_bookmark_count=Count('liker', distinct=True)
+                                        + Count('bookmarker', distinct=True),
+            )
 
-        queryset = cache.get_or_set('recipes_annotated', value, 3600)
-        return queryset
+        return value
+
+        # queryset = cache.get_or_set('recipes_annotated', value, 3600)
+        # return queryset
 
     def perform_create(self, serializer):
         serializer.save(inventor=self.request.user)
 
 
 class RecipeRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
-    # queryset = Recipe.objects.all()
+    queryset = Recipe.objects \
+        .select_related('sandwich', 'bread', 'cheese', 'toasting', 'inventor') \
+        .prefetch_related('toppings', 'vegetables', 'sauces', 'sandwich__main_ingredient', 'sandwich__category')
     serializer_class = RecipeSerializer
 
     # Data caching by Redis
-    queryset = cache.get_or_set('recipes', Recipe.objects.all().values, 36000)
+    # queryset = cache.get_or_set('recipes', Recipe.objects.all().values(), 3600)
 
     permission_classes = (
         permissions.IsAuthenticatedOrReadOnly,
