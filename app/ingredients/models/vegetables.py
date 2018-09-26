@@ -33,5 +33,7 @@ class Vegetables(models.Model):
     image = models.FilePathField(max_length=255)
     image3x = models.FilePathField(max_length=255)
 
+    calories = models.SmallIntegerField(blank=True, null=True)
+
     def __str__(self):
         return f'{self.pk}_{self.name}'

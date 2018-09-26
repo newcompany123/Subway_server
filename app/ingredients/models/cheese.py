@@ -13,6 +13,8 @@ class Cheese(models.Model):
     image = models.FilePathField(max_length=255)
     image3x = models.FilePathField(max_length=255)
 
+    calories = models.SmallIntegerField(blank=True, null=True)
+
     class Meta:
         verbose_name_plural = 'cheese'
 
