@@ -30,6 +30,8 @@ class APIFacebookBackend:
         response = requests.get('https://graph.facebook.com/v2.12/me', params)
         # 요청에 성공했을 때 (정상 응답)만 진행, 아닐경우 None반환
 
+        print(response)
+
         if response.status_code == status.HTTP_200_OK:
             response_dict = response.json()
 
@@ -48,13 +50,21 @@ class APIFacebookBackend:
             try:
                 user = User.objects.get(oauthid__facebook_id=facebook_id)
             except User.DoesNotExist:
-                user = User.objects.create_user(
-                    username=first_name,
-                    email=email,
-                )
+                if not User.objects.filter(username=first_name):
+                    user = User.objects.create_user(
+                        username=first_name,
+                        email=email,
+                    )
+                else:
+                    user = User.objects.create_user(
+                        username=facebook_id,
+                        email=email,
+                    )
                 obj = UserOAuthID.objects.create(user=user)
                 obj.facebook_id = facebook_id
                 obj.save()
+
+            print(user)
             return user
 
     def get_user(self, user_id):
@@ -98,10 +108,16 @@ class APIKakaoBackend:
             try:
                 user = User.objects.get(oauthid__kakao_id=kakao_id)
             except User.DoesNotExist:
-                user = User.objects.create_user(
-                    username=nick_name,
-                    email=email
-                )
+                if not User.objects.filter(username=nick_name):
+                    user = User.objects.create_user(
+                        username=nick_name,
+                        email=email,
+                    )
+                else:
+                    user = User.objects.create_user(
+                        username=kakao_id,
+                        email=email,
+                    )
                 obj = UserOAuthID.objects.create(user=user)
                 obj.kakao_id = kakao_id
                 obj.save()
