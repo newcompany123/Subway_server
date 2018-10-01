@@ -88,6 +88,9 @@ class Recipe(models.Model):
     # image = models.ImageField(blank=True)
     # image2x = models.ImageField(blank=True)
 
+    class Meta:
+        ordering = ['-created_date']
+
     def __str__(self):
         return f'{self.pk} {self.name} ' \
                f'[ {self.sandwich} {self.bread}, {list(self.vegetables.all().values_list("name", flat=True))} ]'

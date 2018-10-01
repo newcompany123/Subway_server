@@ -11,7 +11,12 @@ from .models import (
     Sauces,
 )
 
-admin.site.register(Sandwich)
+
+class SandwichAdmin(admin.ModelAdmin):
+    list_display = ('name', 'ordering_num')
+
+
+admin.site.register(Sandwich, SandwichAdmin)
 admin.site.register(MainIngredient)
 admin.site.register(Bread)
 admin.site.register(Cheese)
