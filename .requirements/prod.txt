@@ -1,5 +1,5 @@
 boto3<1.8
-Django<2.1
+Django<2.2
 django-filter<1.2
 django-json-secrets<0.2
 django-storages<1.7
