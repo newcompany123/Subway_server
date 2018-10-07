@@ -31,6 +31,8 @@ ROOT_DIR = os.path.dirname(BASE_DIR)
 # 2) 'django-json-secrets' package 활용
 #     https://github.com/LeeHanYeong/django-json-secrets
 SECRETS_DIR = os.path.join(ROOT_DIR, '.secrets')
+
+PRINT_JSON_SETTINGS = False
 import_secrets()
 # * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
