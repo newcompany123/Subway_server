@@ -73,13 +73,20 @@ class Command(BaseCommand):
                                  '오믈렛',      # topping overlapped
                                  ]
 
-        bread_list = ['플랫브래드',
-                      '하티',
-                      '허니오트',
-                      '파마산 오레가노',
-                      '위트',
-                      '화이트',
-                      ]
+        # bread_list = ['플랫브래드',
+        #               '하티',
+        #               '허니오트',
+        #               '파마산 오레가노',
+        #               '위트',
+        #               '화이트',
+        #               ]
+        bread_dict = {'플랫브래드': 230,
+                      '하티': 210,
+                      '허니오트': 230,
+                      '파마산 오레가노': 210,
+                      '위트': 210,
+                      '화이트': 200,
+                      }
 
         topping_list = ['아보카도',
                         '베이컨',
@@ -89,43 +96,75 @@ class Command(BaseCommand):
                         '오믈렛',
                         ]
 
-        cheese_list = ['아메리칸 치즈',
-                       '치즈없음',
-                       '슈레드 치즈',
-                       ]
+        # cheese_list = ['아메리칸 치즈',
+        #                '치즈없음',
+        #                '슈레드 치즈',
+        #                ]
+        cheese_dict = {'아메리칸 치즈': 40,
+                       '치즈없음': None,
+                       '슈레드 치즈': 50,
+                       }
 
         toasting_list = ['토스팅',
                          '토스팅없음',
                          ]
 
-        vegetable_list = ['오이',
-                          '할라피뇨',
-                          '양상추',
-                          '올리브',
-                          '피망',
-                          '피클',
-                          '양파',
-                          '토마토',
-                          # '아보카도',
-                          ]
+        # vegetable_list = ['오이',
+        #                   '할라피뇨',
+        #                   '양상추',
+        #                   '올리브',
+        #                   '피망',
+        #                   '피클',
+        #                   '양파',
+        #                   '토마토',
+        #                   # '아보카도',
+        #                   ]
+        vegetable_dict = {'오이': 5,
+                          '할라피뇨': 5,
+                          '양상추': 5,
+                          '올리브': 5,
+                          '피망': 5,
+                          '피클': 5,
+                          '양파': 5,
+                          '토마토': 5,
+                           # '아보카도': 60,
+                          }
 
-        sauce_list = ['랜치드레싱',
-                      '마요네즈',
-                      '스위트 어니언',
-                      '허니 머스터드',
-                      '스위트 칠리',
-                      '핫 칠리',
-                      '사우스 웨스트',
-                      '머스타드',
-                      '디종홀스래디쉬',
-                      '사우전 아일랜드',
-                      '이탈리안 드레싱',
-                      '올리브 오일',
-                      '레드와인식초',
-                      '소금',
-                      '후추',
-                      '스모크 바비큐',
-                      ]
+        # sauce_list = ['랜치드레싱',
+        #               '마요네즈',
+        #               '스위트 어니언',
+        #               '허니 머스터드',
+        #               '스위트 칠리',
+        #               '핫 칠리',
+        #               '사우스 웨스트',
+        #               '머스타드',
+        #               '디종홀스래디쉬',
+        #               '사우전 아일랜드',
+        #               '이탈리안 드레싱',
+        #               '올리브 오일',
+        #               '레드와인식초',
+        #               '소금',
+        #               '후추',
+        #               '스모크 바비큐',
+        #               ]
+        sauce_dict = {'리치시저': 100,
+                      '랜치드레싱': 110,
+                      '마요네즈': 110,
+                      '스위트 어니언': 40,
+                      '허니 머스터드': 30,
+                      '스위트 칠리': 30,
+                      '핫 칠리': 40,
+                      '사우스 웨스트': 100,
+                      '머스타드': 5,
+                      '디종홀스래디쉬': 110,
+                      '사우전 아일랜드': 80,
+                      '이탈리안 드레싱': 80,
+                      '올리브 오일': 45,
+                      '레드와인식초': 45,
+                      '소금': None,
+                      '후추': None,
+                      '스모크 바비큐': 35,
+        }
 
         category_list = ['신제품',
                          '프로모션',
@@ -149,6 +188,24 @@ class Command(BaseCommand):
                 image_url3x = static_storage.url(image_path3x)
                 obj.image = image_url
                 obj.image3x = image_url3x
+                obj.save()
+
+        def get_or_create_with_calories(class_name, folder_name, obj_name_dict):
+            for obj_name in obj_name_dict:
+                obj, _ = class_name.objects.get_or_create(name=obj_name)
+
+                image_path = folder_name + '/' + eval(folder_name + '_dict')[obj_name] + '.png'
+                image_path3x = folder_name + '/' + eval(folder_name + '_dict')[obj_name] + '@3x.png'
+
+                static_storage_class = import_string(settings.STATICFILES_STORAGE)
+                static_storage = static_storage_class()
+
+                image_url = static_storage.url(image_path)
+                image_url3x = static_storage.url(image_path3x)
+                obj.image = image_url
+                obj.image3x = image_url3x
+
+                obj.calories = obj_name_dict[obj_name]
                 obj.save()
 
         def get_or_create_for_main_ingredient(obj_name, obj_quantity):
@@ -176,12 +233,17 @@ class Command(BaseCommand):
         # [Sauces.objects.get_or_create(name=name) for name in sauce_list]
         # [Category.objects.get_or_create(name=name) for name in category_list]
 
-        get_or_create(Bread, 'bread', bread_list)
+        # get_or_create(Bread, 'bread', bread_list)
         get_or_create(Toppings, 'toppings', topping_list)
-        get_or_create(Cheese, 'cheese', cheese_list)
+        # get_or_create(Cheese, 'cheese', cheese_list)
         get_or_create(Toasting, 'toasting', toasting_list)
-        get_or_create(Vegetables, 'vegetables', vegetable_list)
-        get_or_create(Sauces, 'sauces', sauce_list)
+        # get_or_create(Vegetables, 'vegetables', vegetable_list)
+        # get_or_create(Sauces, 'sauces', sauce_list)
+
+        get_or_create_with_calories(Bread, 'bread', bread_dict)
+        get_or_create_with_calories(Cheese, 'cheese', cheese_dict)
+        get_or_create_with_calories(Vegetables, 'vegetables', vegetable_dict)
+        get_or_create_with_calories(Sauces, 'sauces', sauce_dict)
 
         for name in sandwich_list:
             sandwich, _ = Sandwich.objects.get_or_create(name=name)

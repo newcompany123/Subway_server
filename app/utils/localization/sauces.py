@@ -15,4 +15,5 @@ sauces_dict = {
     "스위트 어니언": "sweet_onion",
     "사우전 아일랜드": "thousand_island",
     "머스타드": "yellow_mustard",
+    "리치시저": "rich_caesar"
 }

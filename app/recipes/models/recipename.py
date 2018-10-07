@@ -11,5 +11,8 @@ class RecipeName(models.Model):
         help_text='255자까지 Recipe의 이름을 저장합니다.'
     )
 
+    class Meta:
+        ordering = ['-pk']
+
     def __str__(self):
         return f'{self.pk}_{self.name}'

@@ -7,7 +7,16 @@ from .models import (
     BookmarkedRecipe,
 )
 
-admin.site.register(Recipe)
-admin.site.register(RecipeName)
+
+class RecipeAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'sandwich', 'inventor', 'created_date', 'modified_date')
+
+
+class RecipeNameAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name',)
+
+
+admin.site.register(Recipe, RecipeAdmin)
+admin.site.register(RecipeName, RecipeNameAdmin)
 admin.site.register(LikedRecipe)
 admin.site.register(BookmarkedRecipe)
