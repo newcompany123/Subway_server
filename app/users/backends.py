@@ -10,7 +10,7 @@ User = get_user_model()
 
 class APIFacebookBackend:
 
-    def authenticate(self, access_token):
+    def authenticate(self, request, access_token):
         """
         Facebook access_token을 사용해서
         GraphAPI의 'User'항목을 리턴
@@ -75,7 +75,7 @@ class APIFacebookBackend:
 
 
 class APIKakaoBackend:
-    def authenticate(self, access_token):
+    def authenticate(self, request, access_token):
         """
         Kakao access_token을 사용해서
         사용자의 nickname 및 email을 가져옴
