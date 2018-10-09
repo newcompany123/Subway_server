@@ -23,13 +23,14 @@ class BookmarkCollectionSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         ret = super().to_representation(instance)
 
-        bookmarked_recipe_list = []
-        for i in ret['bookmarked_recipe']:
-            # nested 구조로 serializer가 데이터를 받지 않아서 아래 주석처리
-            # object = Recipe.objects.get(pk=i['recipe'])
-            object = Recipe.objects.get(pk=i)
-            bookmarked_recipe_list.append(object)
+        # bookmarked_recipe_list = []
+        # for i in ret['bookmarked_recipe']:
+        #     # nested 구조로 serializer가 데이터를 받지 않아서 아래 주석처리
+        #     # object = Recipe.objects.get(pk=i['recipe'])
+        #     object = Recipe.objects.get(pk=i)
+        #     bookmarked_recipe_list.append(object)
 
+        bookmarked_recipe_list = Recipe.objects.filter(pk__in=ret['bookmarked_recipe'])
         serializer = RecipeSerializer(bookmarked_recipe_list, many=True)
 
         del ret['bookmarked_recipe']
