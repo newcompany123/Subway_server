@@ -301,32 +301,22 @@ class RecipeSerializer(serializers.ModelSerializer):
     #     return ret
 
     def get_auth_user_like_state(self, obj):
-
-        if self._kwargs:
-            user = self._kwargs['context']['request'].user
-
-            if type(user) is AnonymousUser:
-                return 'None'
-            if obj in user.liked_recipe.all():
-                return 'True'
-            else:
-                return 'False'
+        user = self.context['request'].user
+        if type(user) is AnonymousUser:
+            return 'None'
+        if obj in user.liked_recipe.all():
+            return 'True'
         else:
-            pass
+            return 'False'
 
     def get_auth_user_bookmark_state(self, obj):
-
-        if self._kwargs:
-            user = self._kwargs['context']['request'].user
-
-            if type(user) is AnonymousUser:
-                return 'None'
-            if obj in user.bookmarked_recipe.all():
-                return 'True'
-            else:
-                return 'False'
+        user = self.context['request'].user
+        if type(user) is AnonymousUser:
+            return 'None'
+        if obj in user.bookmarked_recipe.all():
+            return 'True'
         else:
-            pass
+            return 'False'
 
     def to_representation(self, obj):
         ret = super().to_representation(obj)

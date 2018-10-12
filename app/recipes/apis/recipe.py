@@ -1,6 +1,7 @@
 import urllib
 
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import AnonymousUser
 from django.core.cache import cache
 from django.db.models import Count
 from django_filters import FilterSet, Filter
@@ -86,6 +87,13 @@ class RecipeListCreateView(generics.ListCreateAPIView):
 
         # queryset = cache.get_or_set('recipes_annotated', value, 3600)
         # return queryset
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+
+        # get_serializer_context 작동 테스트 코드
+        # context['request'].user = AnonymousUser()
+        return context
 
     def perform_create(self, serializer):
         serializer.save(inventor=self.request.user)

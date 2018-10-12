@@ -33,6 +33,10 @@ class BookmarkCollectionSerializer(serializers.ModelSerializer):
         bookmarked_recipe_list = Recipe.objects.filter(pk__in=ret['bookmarked_recipe'])
         serializer = RecipeSerializer(bookmarked_recipe_list, many=True)
 
+        serializer._context = self.context
+        # 아래코드로는 AttributeError: can't set attribute 발생
+        # serializer.context = self.context
+
         del ret['bookmarked_recipe']
         ret['bookmarked_recipe'] = serializer.data
         return ret
