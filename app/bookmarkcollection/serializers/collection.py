@@ -41,8 +41,9 @@ class BookmarkCollectionSerializer(serializers.ModelSerializer):
         # serializer.context = self.context
 
         # 방법 2) formal way
-        context = self.context
-        serializer = RecipeSerializer(bookmarked_recipe_list, many=True, context=context)
+        # context = self.context
+        # serializer = RecipeSerializer(bookmarked_recipe_list, many=True, context=context)
+        serializer = RecipeSerializer(bookmarked_recipe_list, many=True)
 
         del ret['bookmarked_recipe']
         ret['bookmarked_recipe'] = serializer.data
