@@ -1,4 +1,3 @@
-import os
 from django.conf import settings
 from django.urls import path, include
 from rest_framework_swagger.views import get_swagger_view
@@ -14,10 +13,7 @@ urlpatterns = [
     path('api-docs/', schema_view),
 ]
 
-# if settings.DEBUG:
-SETTINGS_MODULE = os.environ.get('DJANGO_SETTINGS_MODULE')
-if SETTINGS_MODULE == 'config.settings.local':
-
+if settings.DEBUG_TOOLBAR_TURN_ON:
     import debug_toolbar
     urlpatterns += [
         path('__debug__/', include(debug_toolbar.urls)),

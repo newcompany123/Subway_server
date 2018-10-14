@@ -75,7 +75,8 @@ class RecipeListCreateView(generics.ListCreateAPIView):
     def get_queryset(self):
         value = Recipe.objects \
             .select_related('name', 'sandwich', 'bread', 'cheese', 'toasting', 'inventor') \
-            .prefetch_related('toppings', 'vegetables', 'sauces', 'sandwich__main_ingredient', 'sandwich__category') \
+            .prefetch_related('toppings', 'vegetables', 'sauces',
+                              'sandwich__main_ingredient', 'sandwich__category') \
             .annotate(
                     like_count=Count('liker', distinct=True),
                     bookmark_count=Count('bookmarker', distinct=True),
@@ -103,6 +104,7 @@ class RecipeRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Recipe.objects \
         .select_related('name', 'sandwich', 'bread', 'cheese', 'toasting', 'inventor') \
         .prefetch_related('toppings', 'vegetables', 'sauces', 'sandwich__main_ingredient', 'sandwich__category')
+
     serializer_class = RecipeSerializer
 
     # Data caching by Redis
