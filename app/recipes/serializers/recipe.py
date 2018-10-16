@@ -225,8 +225,10 @@ class RecipeSerializer(serializers.ModelSerializer):
             print(model_to_dict(recipe))
 
         if recipe_filtered_list:
+            # pk = recipe_filtered_list.values('pk')[0]['pk']
+            pk = recipe_filtered_list.values_list('pk', flat=True)[0]
             raise CustomException(
-                detail='Same sandwich recipe already exists!',
+                detail=f'Same sandwich recipe (pk:{pk}) already exists!',
                 status_code=status.HTTP_400_BAD_REQUEST
             )
         # [shoveling log]
