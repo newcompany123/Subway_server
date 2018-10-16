@@ -313,11 +313,14 @@ class RecipeSerializer(serializers.ModelSerializer):
             pass
 
     def get_auth_user_bookmark_state(self, obj):
-        user = self.context['request'].user
-        if type(user) is AnonymousUser:
-            return 'None'
-        if obj in user.bookmarked_recipe.all():
-            return 'True'
+        if self.context:
+            user = self.context['request'].user
+            if type(user) is AnonymousUser:
+                return 'None'
+            if obj in user.bookmarked_recipe.all():
+                return 'True'
+            else:
+                return 'False'
         else:
             pass
 
