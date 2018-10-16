@@ -16,11 +16,18 @@ class Bookmark(models.Model):
         'Recipe',
         on_delete=models.CASCADE,
     )
-    collection = models.OneToOneField(
+    # collection = models.OneToOneField(
+    #     BookmarkCollection,
+    #     on_delete=models.SET_NULL,
+    #     null=True,
+    #     default=None
+    # )
+    collection = models.ForeignKey(
         BookmarkCollection,
-        on_delete=models.SET_NULL,
+        on_delete=models.CASCADE,
+        blank=True,
         null=True,
-        default=None
+        default=None,
     )
 
     created_date = models.DateTimeField(auto_now_add=True)
