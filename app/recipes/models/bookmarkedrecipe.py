@@ -1,6 +1,8 @@
 from django.db import models
 from django.conf import settings
 
+from bookmarkcollection.models import BookmarkCollection
+
 
 class BookmarkedRecipe(models.Model):
     """
@@ -14,13 +16,13 @@ class BookmarkedRecipe(models.Model):
         'Recipe',
         on_delete=models.CASCADE,
     )
-    # # Circling Import Issue
-    # collection = models.ForeignKey(
-    #     BookmarkCollection,
-    #     on_delete=models.SET_NULL,
-    #     null=True,
-    #     default=None
-    # )
+    collection = models.OneToOneField(
+        BookmarkCollection,
+        on_delete=models.SET_NULL,
+        null=True,
+        default=None
+    )
+
     created_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
