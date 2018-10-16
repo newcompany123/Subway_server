@@ -2,7 +2,7 @@ from django.db import models
 from django.conf import settings
 
 
-class LikedRecipe(models.Model):
+class Like(models.Model):
     """
     Recipe와 좋아요한 User를 연결하는 intermediate model
     """

@@ -16,14 +16,14 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='BookmarkedRecipe',
+            name='Bookmark',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('created_date', models.DateTimeField(auto_now_add=True)),
             ],
         ),
         migrations.CreateModel(
-            name='LikedRecipe',
+            name='Like',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('created_date', models.DateTimeField(auto_now_add=True)),
@@ -35,11 +35,11 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('created_date', models.DateTimeField(auto_now_add=True)),
                 ('modified_date', models.DateTimeField(auto_now=True)),
-                ('bookmarker', models.ManyToManyField(related_name='bookmarked_recipe', through='recipes.BookmarkedRecipe', to=settings.AUTH_USER_MODEL)),
+                ('bookmarker', models.ManyToManyField(related_name='bookmarked_recipe', through='recipes.Bookmark', to=settings.AUTH_USER_MODEL)),
                 ('bread', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='ingredients.Bread', verbose_name='빵')),
                 ('cheese', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='ingredients.Cheese', verbose_name='치즈')),
                 ('inventor', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='made_recipe', to=settings.AUTH_USER_MODEL, verbose_name='레시피 제작자')),
-                ('liker', models.ManyToManyField(related_name='liked_recipe', through='recipes.LikedRecipe', to=settings.AUTH_USER_MODEL)),
+                ('liker', models.ManyToManyField(related_name='liked_recipe', through='recipes.Like', to=settings.AUTH_USER_MODEL)),
             ],
         ),
         migrations.CreateModel(
@@ -80,22 +80,22 @@ class Migration(migrations.Migration):
             field=models.ManyToManyField(to='ingredients.Vegetables', verbose_name='야채'),
         ),
         migrations.AddField(
-            model_name='likedrecipe',
+            model_name='like',
             name='recipe',
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='recipes.Recipe'),
         ),
         migrations.AddField(
-            model_name='likedrecipe',
+            model_name='like',
             name='user',
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL),
         ),
         migrations.AddField(
-            model_name='bookmarkedrecipe',
+            model_name='bookmark',
             name='recipe',
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='recipes.Recipe'),
         ),
         migrations.AddField(
-            model_name='bookmarkedrecipe',
+            model_name='bookmark',
             name='user',
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL),
         ),

@@ -4,7 +4,7 @@ from django.conf import settings
 from bookmarkcollection.models import BookmarkCollection
 
 
-class BookmarkedRecipe(models.Model):
+class Bookmark(models.Model):
     """
     Recipe와 Recipe를 북마크한 User를 연결하는 intermediate model
     """

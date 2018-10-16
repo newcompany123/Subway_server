@@ -13,6 +13,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='bookmarkcollection',
             name='bookmarked_recipe',
-            field=models.ManyToManyField(blank=True, to='recipes.BookmarkedRecipe', verbose_name='북마크 콜렉션'),
+            field=models.ManyToManyField(blank=True, to='recipes.Bookmark', verbose_name='북마크 콜렉션'),
         ),
     ]

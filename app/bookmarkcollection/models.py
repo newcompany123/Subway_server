@@ -11,7 +11,7 @@ class BookmarkCollection(models.Model):
     name = models.CharField(max_length=255)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     # bookmarked_recipe = models.ManyToManyField(
-    #     BookmarkedRecipe,
+    #     Bookmark,
     #     verbose_name='북마크 콜렉션',
     #     blank=True
     # )

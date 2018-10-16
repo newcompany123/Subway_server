@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AddField(
-            model_name='bookmarkedrecipe',
+            model_name='bookmark',
             name='collection',
             field=models.OneToOneField(default=None, null=True, on_delete=django.db.models.deletion.SET_NULL, to='bookmarkcollection.BookmarkCollection'),
         ),

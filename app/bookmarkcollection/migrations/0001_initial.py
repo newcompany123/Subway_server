@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=255)),
-                ('bookmarked_recipe', models.ManyToManyField(to='recipes.BookmarkedRecipe', verbose_name='북마크 콜렉션')),
+                ('bookmarked_recipe', models.ManyToManyField(to='recipes.Bookmark', verbose_name='북마크 콜렉션')),
                 ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
         ),
