@@ -8,10 +8,12 @@ from rest_framework import serializers, status
 from ingredients.models import Toppings, Vegetables, Sauces
 from ingredients.serializers import SandwichRelatedField, BreadRelatedField, CheeseRelatedField, \
     ToastingRelatedField, ToppingsRelatedField, VegetablesRelatedField, SaucesRelatedField
+from recipe_name.models import RecipeName
+from recipe_name.serializers import RecipeNameSerializer
 from users.serializers import UserSerializer
 from utils.exceptions.custom_exception import CustomException
 from utils.exceptions.get_object_or_404 import get_object_or_404_customed
-from ..models import Recipe, RecipeName
+from ..models import Recipe
 
 
 User = get_user_model()
@@ -19,12 +21,6 @@ User = get_user_model()
 __all__ = (
     'RecipeSerializer',
 )
-
-
-class RecipeNameSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = RecipeName
-        fields = '__all__'
 
 
 class RecipeNameRelatedField(serializers.RelatedField):

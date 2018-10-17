@@ -1,8 +1,8 @@
 from django.conf import settings
 from django.db import models
 
-from ..models import RecipeName
 from ingredients.models import Toppings, Cheese, Sauces, Toasting, Sandwich, Bread, Vegetables
+from recipe_name.models import RecipeName
 
 
 class Recipe(models.Model):
