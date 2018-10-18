@@ -1,8 +1,8 @@
 from django.contrib import admin
 
+from recipe_name.models import RecipeName
 from .models import (
     Recipe,
-    RecipeName,
     Like,
     Bookmark,
 )
