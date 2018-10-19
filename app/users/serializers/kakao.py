@@ -1,6 +1,10 @@
 from rest_framework import serializers
 from rest_framework.compat import authenticate
 
+__all__ = (
+    'KakaoAccessTokenSerializer',
+)
+
 
 class KakaoAccessTokenSerializer(serializers.Serializer):
 

@@ -1,5 +1,6 @@
 from rest_framework import serializers
 
+from recipes.models import Recipe
 from recipes.serializers import RecipeSerializer
 from users.serializers import UserSerializer
 from ..models import BookmarkCollection
@@ -13,7 +14,7 @@ class BookmarkCollectionSerializer(serializers.ModelSerializer):
     #   required=False가 설정되도록 함.
 
     user = UserSerializer(read_only=True)
-    # bookmarked_recipe = BookmarkedRecipeSerializer(many=True, read_only=True)
+    # bookmarked_recipe = BookmarkSerializer(many=True, read_only=True)
 
     class Meta:
         model = BookmarkCollection
@@ -22,9 +23,15 @@ class BookmarkCollectionSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         ret = super().to_representation(instance)
 
-        bookmarked_recipe_list = []
-        for i in instance.bookmark_set.all():
-            bookmarked_recipe_list.append(i.recipe)
+        # bookmarked_recipe_list = []
+        # for i in ret['bookmarked_recipe']:
+        #     # nested 구조로 serializer가 데이터를 받지 않아서 아래 주석처리
+        #     # object = Recipe.objects.get(pk=i['recipe'])
+        #     object = Recipe.objects.get(pk=i)
+        #     bookmarked_recipe_list.append(object)
+
+        # 위 4줄 -> 1줄 축약
+        bookmarked_recipe_list = Recipe.objects.filter(pk__in=ret['bookmarked_recipe'])
 
         # 방법 1) informal way
         # serializer = RecipeSerializer(bookmarked_recipe_list, many=True)
@@ -42,6 +49,14 @@ class BookmarkCollectionSerializer(serializers.ModelSerializer):
         # iOS 요청으로 일단 auth_user_like_state, auth_user_bookmark_state를
         # null로 표시되도록 임시 변경
         serializer = RecipeSerializer(bookmarked_recipe_list, many=True)
-        ret['bookmarked_recipe'] = serializer.data
 
+        del ret['bookmarked_recipe']
+        ret['bookmarked_recipe'] = serializer.data
         return ret
+
+    # bookmarkcollection.models.BookmarkCollection에서
+    # ManyToManyField (bookmarked_recipe)를 삭제하기 전의
+    # legacy 코드
+
+    # (특히 Serializer에 context data를 넣는 방법을 찾는 과정이
+    #  의미있었기에 남겨둠.)

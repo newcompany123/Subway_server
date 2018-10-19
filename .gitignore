@@ -3,6 +3,7 @@
 /.static
 /.secrets
 .vscode/
+*.json
 
 # static
 bread

@@ -1,8 +1,12 @@
 from django.conf import settings
 from django.db import models
 
-from ..models import RecipeName
 from ingredients.models import Toppings, Cheese, Sauces, Toasting, Sandwich, Bread, Vegetables
+from recipe_name.models import RecipeName
+
+__all__ = (
+    'Recipe',
+)
 
 
 class Recipe(models.Model):
@@ -72,12 +76,12 @@ class Recipe(models.Model):
     liker = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
         related_name='liked_recipe',
-        through='LikedRecipe',
+        through='Like',
     )
     bookmarker = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
         related_name='bookmarked_recipe',
-        through='BookmarkedRecipe',
+        through='Bookmark',
     )
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now=True)

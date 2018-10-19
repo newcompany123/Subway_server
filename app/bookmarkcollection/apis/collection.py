@@ -28,11 +28,13 @@ class BookmarkCollectionListCreateView(generics.ListCreateAPIView):
         return value
 
     def perform_create(self, serializer):
-        user = get_object_or_404_customed(User, pk=self.kwargs['pk'])
+        # user = get_object_or_404_customed(User, pk=self.kwargs['pk'])
+        # serializer.save(user=user)
+        user = self.request.user
         serializer.save(user=user)
 
 
-class BookmarkCollectionUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+class BookmarkCollectionRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     # queryset = BookmarkCollection.objects.all()
     serializer_class = BookmarkCollectionSerializer
 

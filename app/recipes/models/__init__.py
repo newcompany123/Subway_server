@@ -1,4 +1,3 @@
-from .bookmarkedrecipe import *
-from .likedrecipe import *
-from .recipename import *
+from .bookmark import *
+from .like import *
 from .recipe import *

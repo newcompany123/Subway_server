@@ -8,10 +8,12 @@ from rest_framework import serializers, status
 from ingredients.models import Toppings, Vegetables, Sauces
 from ingredients.serializers import SandwichRelatedField, BreadRelatedField, CheeseRelatedField, \
     ToastingRelatedField, ToppingsRelatedField, VegetablesRelatedField, SaucesRelatedField
+from recipe_name.models import RecipeName
+from recipe_name.serializers import RecipeNameSerializer
 from users.serializers import UserSerializer
 from utils.exceptions.custom_exception import CustomException
 from utils.exceptions.get_object_or_404 import get_object_or_404_customed
-from ..models import Recipe, RecipeName
+from ..models import Recipe
 
 
 User = get_user_model()
@@ -19,12 +21,6 @@ User = get_user_model()
 __all__ = (
     'RecipeSerializer',
 )
-
-
-class RecipeNameSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = RecipeName
-        fields = '__all__'
 
 
 class RecipeNameRelatedField(serializers.RelatedField):
@@ -225,8 +221,10 @@ class RecipeSerializer(serializers.ModelSerializer):
             print(model_to_dict(recipe))
 
         if recipe_filtered_list:
+            # pk = recipe_filtered_list.values('pk')[0]['pk']
+            pk = recipe_filtered_list.values_list('pk', flat=True)[0]
             raise CustomException(
-                detail='Same sandwich recipe already exists!',
+                detail=f'Same sandwich recipe (pk:{pk}) already exists!',
                 status_code=status.HTTP_400_BAD_REQUEST
             )
         # [shoveling log]
@@ -302,9 +300,8 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     def get_auth_user_like_state(self, obj):
 
-        if self._kwargs:
-            user = self._kwargs['context']['request'].user
-
+        if self.context:
+            user = self.context['request'].user
             if type(user) is AnonymousUser:
                 return 'None'
             if obj in user.liked_recipe.all():
@@ -315,10 +312,8 @@ class RecipeSerializer(serializers.ModelSerializer):
             pass
 
     def get_auth_user_bookmark_state(self, obj):
-
-        if self._kwargs:
-            user = self._kwargs['context']['request'].user
-
+        if self.context:
+            user = self.context['request'].user
             if type(user) is AnonymousUser:
                 return 'None'
             if obj in user.bookmarked_recipe.all():

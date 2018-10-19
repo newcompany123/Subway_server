@@ -1,15 +1,15 @@
-from django.urls import path
+from django.urls import path, include
 
-from recipes.apis.recipe_name import RecipeNameListCreateView
-from .apis.recipe_bookmark import BookmarkedRecipeListCreateView
-from .apis.recipe_like import LikedRecipeListCreateView
+from recipe_name.apis import RecipeNameListCreateView, RecipeNameChoicesListAPIView
+from .apis.bookmark import BookmarkListCreateView
+from .apis.like import LikeListCreateView
 from .apis.recipe import RecipeListCreateView, RecipeRetrieveUpdateDestroyView
 
 urlpatterns = [
     path('', RecipeListCreateView.as_view()),
     path('<int:pk>/', RecipeRetrieveUpdateDestroyView.as_view()),
-    path('<int:pk>/like/', LikedRecipeListCreateView.as_view()),
-    path('<int:pk>/bookmark/', BookmarkedRecipeListCreateView.as_view()),
+    path('<int:pk>/like/', LikeListCreateView.as_view()),
+    path('<int:pk>/bookmark/', BookmarkListCreateView.as_view()),
 
-    path('name/', RecipeNameListCreateView.as_view()),
+    path('name/', include('recipe_name.urls'))
 ]

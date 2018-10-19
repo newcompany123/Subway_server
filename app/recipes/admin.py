@@ -1,10 +1,10 @@
 from django.contrib import admin
 
+from recipe_name.models import RecipeName
 from .models import (
     Recipe,
-    RecipeName,
-    LikedRecipe,
-    BookmarkedRecipe,
+    Like,
+    Bookmark,
 )
 
 
@@ -18,5 +18,5 @@ class RecipeNameAdmin(admin.ModelAdmin):
 
 admin.site.register(Recipe, RecipeAdmin)
 admin.site.register(RecipeName, RecipeNameAdmin)
-admin.site.register(LikedRecipe)
-admin.site.register(BookmarkedRecipe)
+admin.site.register(Like)
+admin.site.register(Bookmark)

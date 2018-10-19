@@ -1,6 +1,7 @@
 import urllib
 
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import AnonymousUser
 from django.core.cache import cache
 from django.db.models import Count
 from django_filters import FilterSet, Filter
@@ -8,10 +9,12 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import OrderingFilter, SearchFilter
 
 from rest_framework import generics, permissions
-from utils.permission.custom_permission import IsProductMakerOrReadOnly
+
+from ingredients.models import Sandwich
+from utils.permission.custom_permission import IsRecipeInventorOrReadOnly
 
 from ..serializers.recipe import RecipeSerializer
-from ..models import Recipe, Sandwich
+from ..models import Recipe
 
 User = get_user_model()
 
@@ -74,7 +77,8 @@ class RecipeListCreateView(generics.ListCreateAPIView):
     def get_queryset(self):
         value = Recipe.objects \
             .select_related('name', 'sandwich', 'bread', 'cheese', 'toasting', 'inventor') \
-            .prefetch_related('toppings', 'vegetables', 'sauces', 'sandwich__main_ingredient', 'sandwich__category') \
+            .prefetch_related('toppings', 'vegetables', 'sauces',
+                              'sandwich__main_ingredient', 'sandwich__category') \
             .annotate(
                     like_count=Count('liker', distinct=True),
                     bookmark_count=Count('bookmarker', distinct=True),
@@ -87,6 +91,13 @@ class RecipeListCreateView(generics.ListCreateAPIView):
         # queryset = cache.get_or_set('recipes_annotated', value, 3600)
         # return queryset
 
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+
+        # get_serializer_context 작동 테스트 코드
+        # context['request'].user = AnonymousUser()
+        return context
+
     def perform_create(self, serializer):
         serializer.save(inventor=self.request.user)
 
@@ -95,6 +106,7 @@ class RecipeRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Recipe.objects \
         .select_related('name', 'sandwich', 'bread', 'cheese', 'toasting', 'inventor') \
         .prefetch_related('toppings', 'vegetables', 'sauces', 'sandwich__main_ingredient', 'sandwich__category')
+
     serializer_class = RecipeSerializer
 
     # Data caching by Redis
@@ -102,5 +114,5 @@ class RecipeRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
 
     permission_classes = (
         permissions.IsAuthenticatedOrReadOnly,
-        IsProductMakerOrReadOnly,
+        IsRecipeInventorOrReadOnly,
     )
