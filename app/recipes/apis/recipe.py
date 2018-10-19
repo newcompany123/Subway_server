@@ -11,7 +11,7 @@ from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework import generics, permissions
 
 from ingredients.models import Sandwich
-from utils.permission.custom_permission import IsProductMakerOrReadOnly
+from utils.permission.custom_permission import IsRecipeInventorOrReadOnly
 
 from ..serializers.recipe import RecipeSerializer
 from ..models import Recipe
@@ -114,5 +114,5 @@ class RecipeRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
 
     permission_classes = (
         permissions.IsAuthenticatedOrReadOnly,
-        IsProductMakerOrReadOnly,
+        IsRecipeInventorOrReadOnly,
     )

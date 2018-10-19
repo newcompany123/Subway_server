@@ -18,12 +18,6 @@ class IsOneselfOrReadOnly(permissions.BasePermission):
 
 
 class IsOwnerOrReadOnly(permissions.BasePermission):
-    # BookmarkCollectionUpdateDestroyView
-    def has_object_permission(self, request, view, obj):
-        if request.method in permissions.SAFE_METHODS:
-            return True
-        return obj.user == request.user
-
     # BookmarkCollectionListCreateView
     def has_permission(self, request, view):
         if request.method in permissions.SAFE_METHODS:
@@ -35,8 +29,14 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
         user = get_object_or_404_customed(User, pk=pk)
         return user == request.user
 
+    # BookmarkCollectionRetrieveUpdateDestroyView
+    def has_object_permission(self, request, view, obj):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        return obj.user == request.user
 
-class IsProductMakerOrReadOnly(permissions.BasePermission):
+
+class IsRecipeInventorOrReadOnly(permissions.BasePermission):
     # RecipeRetrieveUpdateDestroyView
     def has_object_permission(self, request, view, obj):
         if request.method in permissions.SAFE_METHODS:
@@ -53,3 +53,17 @@ class IsSuperUserOrReadOnly(permissions.BasePermission):
 
         superuser = User.objects.first()
         return superuser == request.user
+
+
+class IsRecipeNameMakerOrReadOnly(permissions.BasePermission):
+    # RecipeNameRetrieveUpdateDestroyView
+    def has_object_permission(self, request, view, obj):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+
+        return obj.user == request.user
+
+
+
+
+

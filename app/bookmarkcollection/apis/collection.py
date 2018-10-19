@@ -34,7 +34,7 @@ class BookmarkCollectionListCreateView(generics.ListCreateAPIView):
         serializer.save(user=user)
 
 
-class BookmarkCollectionUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+class BookmarkCollectionRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     # queryset = BookmarkCollection.objects.all()
     serializer_class = BookmarkCollectionSerializer
 
