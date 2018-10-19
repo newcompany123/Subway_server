@@ -299,6 +299,7 @@ class RecipeSerializer(serializers.ModelSerializer):
     #     return ret
 
     def get_auth_user_like_state(self, obj):
+
         if self.context:
             user = self.context['request'].user
             if type(user) is AnonymousUser:
