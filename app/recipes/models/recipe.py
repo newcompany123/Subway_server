@@ -4,6 +4,10 @@ from django.db import models
 from ingredients.models import Toppings, Cheese, Sauces, Toasting, Sandwich, Bread, Vegetables
 from recipe_name.models import RecipeName
 
+__all__ = (
+    'Recipe',
+)
+
 
 class Recipe(models.Model):
     """

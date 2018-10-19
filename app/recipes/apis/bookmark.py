@@ -6,6 +6,10 @@ from users.serializers import UserSerializer
 from utils.exceptions.get_object_or_404 import get_object_or_404_customed
 from ..models import Recipe, Bookmark
 
+__all__ = (
+    'BookmarkListCreateView',
+)
+
 
 class BookmarkListCreateView(APIView):
 

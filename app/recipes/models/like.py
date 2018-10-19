@@ -1,6 +1,10 @@
 from django.db import models
 from django.conf import settings
 
+__all__ = (
+    'Like',
+)
+
 
 class Like(models.Model):
     """

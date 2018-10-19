@@ -9,10 +9,12 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import OrderingFilter, SearchFilter
 
 from rest_framework import generics, permissions
+
+from ingredients.models import Sandwich
 from utils.permission.custom_permission import IsProductMakerOrReadOnly
 
 from ..serializers.recipe import RecipeSerializer
-from ..models import Recipe, Sandwich
+from ..models import Recipe
 
 User = get_user_model()
 

@@ -3,6 +3,10 @@ from rest_framework.views import APIView
 
 from ..serializers import UserSerializer, KakaoAccessTokenSerializer
 
+__all__ = (
+    'UserKakaoAccessTokenView',
+)
+
 
 class UserKakaoAccessTokenView(APIView):
     def post(self, request):

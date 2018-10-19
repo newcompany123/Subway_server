@@ -3,6 +3,10 @@ from django.conf import settings
 
 from bookmarkcollection.models import BookmarkCollection
 
+__all__ = (
+    'Bookmark',
+)
+
 
 class Bookmark(models.Model):
     """
