@@ -11,8 +11,7 @@ from ingredients.serializers import SandwichRelatedField, BreadRelatedField, Che
 from recipe_name.models import RecipeName
 from recipe_name.serializers import RecipeNameSerializer
 from users.serializers import UserSerializer
-from utils.exceptions.custom_exception import CustomException
-from utils.exceptions.get_object_or_404 import get_object_or_404_customed
+from utils.exceptions import CustomAPIException, get_object_or_404_customed
 from ..models import Recipe
 
 
@@ -147,14 +146,14 @@ class RecipeSerializer(serializers.ModelSerializer):
         #     # 1) recipe name's uniqueness validation
         #     name = attrs.get('name')
         #     if recipe.name == name:
-        #         raise CustomException(
+        #         raise CustomAPIException(
         #             detail='Same sandwich name already exists!',
         #             status_code=status.HTTP_400_BAD_REQUEST
         #         )
 
         # O(log n)
         if Recipe.objects.filter(name=attrs.get('name')):
-            raise CustomException(
+            raise CustomAPIException(
                 detail='Same sandwich name already exists!',
                 status_code=status.HTTP_400_BAD_REQUEST
             )
@@ -223,10 +222,11 @@ class RecipeSerializer(serializers.ModelSerializer):
         if recipe_filtered_list:
             # pk = recipe_filtered_list.values('pk')[0]['pk']
             pk = recipe_filtered_list.values_list('pk', flat=True)[0]
-            raise CustomException(
+            raise CustomAPIException(
                 detail=f'Same sandwich recipe (pk:{pk}) already exists!',
                 status_code=status.HTTP_400_BAD_REQUEST
             )
+
         # [shoveling log]
         # O(n) - Time: 150~200ms
         # for recipe in Recipe.objects.all():
@@ -255,7 +255,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         #                             sauce_list = attrs.get('sauces')
         #                             if set(recipe.sauces.all()) == (set(sauce_list) if sauce_list is not None else set()):
         #
-        #                                 raise CustomException(
+        #                                 raise CustomAPIException(
         #                                     detail='Same sandwich recipe already exists!',
         #                                     status_code=status.HTTP_400_BAD_REQUEST
         #                                 )

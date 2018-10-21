@@ -3,7 +3,7 @@ from django.http import Http404
 from django.shortcuts import get_object_or_404 as _get_object_or_404
 from rest_framework import status
 
-from utils.exceptions.custom_exception import CustomException
+from utils.exceptions import CustomAPIException
 
 
 def get_object_or_404_customed(queryset, *filter_args, **filter_kwargs):
@@ -18,7 +18,7 @@ def get_object_or_404_customed(queryset, *filter_args, **filter_kwargs):
     except Http404 as e:
         # print(e)
         # print(type(e))
-        raise CustomException(
+        raise CustomAPIException(
             detail=f"{queryset.__name__}'s object is not found!",
             status_code=status.HTTP_404_NOT_FOUND
         )
