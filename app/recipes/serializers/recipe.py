@@ -302,7 +302,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         if self.context:
             user = self.context['request'].user
             if type(user) is AnonymousUser:
-                return 'None'
+                return None
             if obj in user.liked_recipe.all():
                 return 'True'
             else:
@@ -314,7 +314,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         if self.context:
             user = self.context['request'].user
             if type(user) is AnonymousUser:
-                return 'None'
+                return None
             if obj in user.bookmarked_recipe.all():
                 return 'True'
             else:
