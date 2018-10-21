@@ -140,13 +140,6 @@ class RecipeSerializer(serializers.ModelSerializer):
 
         # 1) recipe name's uniqueness validation
 
-        # O(log n)
-        if Recipe.objects.filter(name=attrs.get('name')):
-            raise CustomException(
-                detail='Same sandwich name already exists!',
-                status_code=status.HTTP_400_BAD_REQUEST
-            )
-
         # [shoveling log]
         # O(n)
         # for recipe in Recipe.objects.all():
@@ -158,6 +151,13 @@ class RecipeSerializer(serializers.ModelSerializer):
         #             detail='Same sandwich name already exists!',
         #             status_code=status.HTTP_400_BAD_REQUEST
         #         )
+
+        # O(log n)
+        if Recipe.objects.filter(name=attrs.get('name')):
+            raise CustomException(
+                detail='Same sandwich name already exists!',
+                status_code=status.HTTP_400_BAD_REQUEST
+            )
 
         # 2) recipe ingredients' uniqueness validation
 
@@ -324,6 +324,15 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     def to_representation(self, obj):
         ret = super().to_representation(obj)
+
+        # To protect private user information
         del ret['inventor']['email']
         del ret['inventor']['token']
+
+        # iOS asked to make 'name' key's  value simpler
+        del ret['name']['created_date']
+        del ret['name']['modified_date']
+        del ret['name']['user']['email']
+        del ret['name']['user']['token']
+
         return ret
