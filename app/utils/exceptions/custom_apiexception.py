@@ -13,9 +13,16 @@ class CustomAPIException(APIException):
     detail = 'Invalid input.'
     default_code = 'invalid'
 
-    def __init__(self, status_code=None, detail=None):
+    # custom
+    pk = None
+
+    def __init__(self, status_code=None, detail=None, pk=None):
 
         if status_code is not None:
             self.status_code = status_code
         if detail is not None:
             self.detail = detail
+
+        # custom
+        if pk is not None:
+            self.pk = pk

@@ -11,7 +11,8 @@ from ingredients.serializers import SandwichRelatedField, BreadRelatedField, Che
 from recipe_name.models import RecipeName
 from recipe_name.serializers import RecipeNameSerializer
 from users.serializers import UserSerializer
-from utils.exceptions import CustomAPIException, get_object_or_404_customed
+from utils.exceptions import get_object_or_404_customed, \
+    CustomAPIException
 from ..models import Recipe
 
 
@@ -222,9 +223,21 @@ class RecipeSerializer(serializers.ModelSerializer):
         if recipe_filtered_list:
             # pk = recipe_filtered_list.values('pk')[0]['pk']
             pk = recipe_filtered_list.values_list('pk', flat=True)[0]
+
+            # 1) APIException
+            # raise APIException(f'Same sandwich recipe (pk:{pk}) already exists!')
+
+            # 2) CustomAPIException
+            # raise CustomAPIException(
+            #     status_code=status.HTTP_400_BAD_REQUEST,
+            #     detail=f'Same sandwich recipe (pk:{pk}) already exists!',
+            # )
+
+            # 3) CustomAPIException customed again
             raise CustomAPIException(
+                status_code=status.HTTP_400_BAD_REQUEST,
                 detail=f'Same sandwich recipe (pk:{pk}) already exists!',
-                status_code=status.HTTP_400_BAD_REQUEST
+                pk=pk,
             )
 
         # [shoveling log]
