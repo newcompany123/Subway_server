@@ -98,6 +98,8 @@ REST_FRAMEWORK = {
     # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     # 'PAGE_SIZE': 2,
     'DEFAULT_PAGINATION_CLASS': 'utils.pagination.CustomPagination',
+
+    'EXCEPTION_HANDLER': 'utils.exceptions.custom_exception_handler',
 }
 
 MIDDLEWARE = [
