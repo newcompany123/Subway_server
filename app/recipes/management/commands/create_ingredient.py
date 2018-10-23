@@ -82,13 +82,24 @@ class Command(BaseCommand):
                       '화이트': 200,
                       }
 
-        topping_list = ['아보카도',
-                        '베이컨',
-                        '더블 치즈',
-                        '더블업',
-                        '에그마요',
-                        '오믈렛',
-                        ]
+        # topping_list = ['아보카도',
+        #                 '베이컨',
+        #                 '더블 치즈',
+        #                 '더블업',
+        #                 '에그마요',
+        #                 '오믈렛',
+        #                 ]
+        topping_dict = {'아보카도': 60,
+                        '베이컨': 40,
+                        # Double cheese option's calories should be set
+                        '더블 치즈': None,
+                        '더블업': None,
+                        '에그마요': 123, # 1스쿱 from FatSecret
+                        '오믈렛': 140, # calculation
+                        # '햄 1장' : 20,
+                        # '터키 1장': 20,
+                        # '로스트비프 1장': 40,
+                        }
 
         # cheese_list = ['아메리칸 치즈',
         #                '치즈없음',
@@ -154,7 +165,7 @@ class Command(BaseCommand):
                       '사우전 아일랜드': 80,
                       '이탈리안 드레싱': 80,
                       '올리브 오일': 45,
-                      '레드와인식초': 45,
+                      '레드와인식초': 40,
                       '소금': None,
                       '후추': None,
                       '스모크 바비큐': 35,
@@ -226,11 +237,11 @@ class Command(BaseCommand):
         # [Sauces.objects.get_or_create(name=name) for name in sauce_list]
         # [Category.objects.get_or_create(name=name) for name in category_list]
 
-        # 유일하게 'get_or_create'를 사용하던 recipe_name_list도 비지니스 로직이 변경되면서 주석처리 -> 결국 get_or_create안씀
+        # 유일하게 진짜 'get_or_create'를 사용하던 recipe_name_list도 비지니스 로직이 변경되면서 주석처리 -> 결국 get_or_create안씀
         # [RecipeName.objects.get_or_create(name=name) for name in recipe_name_list]
 
         # get_or_create(Bread, 'bread', bread_list)
-        get_or_create(Toppings, 'toppings', topping_list)
+        # get_or_create(Toppings, 'toppings', topping_list)
         # get_or_create(Cheese, 'cheese', cheese_list)
         get_or_create(Toasting, 'toasting', toasting_list)
         # get_or_create(Vegetables, 'vegetables', vegetable_list)
@@ -238,6 +249,7 @@ class Command(BaseCommand):
 
         get_or_create_with_calories(Bread, 'bread', bread_dict)
         get_or_create_with_calories(Cheese, 'cheese', cheese_dict)
+        get_or_create_with_calories(Toppings, 'toppings', topping_dict)
         get_or_create_with_calories(Vegetables, 'vegetables', vegetable_dict)
         get_or_create_with_calories(Sauces, 'sauces', sauce_dict)
 
