@@ -10,10 +10,9 @@ class Cheese(models.Model):
         unique=True,
         help_text='100자까지 Cheese 이름을 저장합니다.',
     )
+    calories = models.SmallIntegerField(blank=True, null=True)
     image = models.FilePathField(max_length=255)
     image3x = models.FilePathField(max_length=255)
-
-    calories = models.SmallIntegerField(blank=True, null=True)
 
     class Meta:
         verbose_name_plural = 'cheese'

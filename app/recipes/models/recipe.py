@@ -66,6 +66,10 @@ class Recipe(models.Model):
         Sauces,
         verbose_name='소스',
     )
+    calories = models.SmallIntegerField(
+        blank=True,
+        null=True
+    )
     inventor = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,

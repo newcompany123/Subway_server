@@ -3,7 +3,7 @@ import re
 from django.contrib.auth import get_user_model
 from rest_framework import generics, permissions, status
 
-from utils.exceptions.custom_exception import CustomException
+from utils.exceptions import CustomAPIException
 from utils.permission.custom_permission import IsOwnerOrReadOnly
 from ..models import BookmarkCollection
 from ..serializers.collection import BookmarkCollectionSerializer
@@ -49,7 +49,7 @@ class BookmarkCollectionRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroy
         pk = result.group(1)
         user = get_object_or_404_customed(User, pk=pk)
         if not user == self.request.user:
-            raise CustomException(
+            raise CustomAPIException(
                 detail="Authenticated user and user from request uri do not match",
                 status_code=status.HTTP_400_BAD_REQUEST,
             )

@@ -1,6 +1,6 @@
 from rest_framework import serializers, status
 
-from utils.exceptions.custom_exception import CustomException
+from utils.exceptions import CustomAPIException
 from utils.exceptions.get_object_or_404 import get_object_or_404_customed
 from ..models import Vegetables
 
@@ -24,7 +24,7 @@ class VegetablesRelatedField(serializers.RelatedField):
         quantity_text = data.get('quantity')
         if quantity_text not in ['조금', '보통', '많이'] \
                 or quantity_text is None:
-            raise CustomException(
+            raise CustomAPIException(
                 detail='Input correct vegetable quantity option!',
                 status_code=status.HTTP_400_BAD_REQUEST
             )

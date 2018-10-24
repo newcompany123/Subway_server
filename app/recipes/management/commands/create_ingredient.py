@@ -44,28 +44,53 @@ class Command(BaseCommand):
 
         # main_ingredients는 get_or_create를 사용하지 않고,
         #   get_or_create_for_main_ingredient를 활용해 직접 생성
-        main_ingredients_list = ['각종 야채',
-                                 '치즈',
+        # main_ingredients_list = ['각종 야채',
+        #                          '치즈',
+        #
+        #                          '치킨 브레스트',
+        #                          '치킨 스트립',
+        #                          '치킨 데리야끼',
+        #                          '햄',
+        #                          '미트볼',
+        #                          '페퍼로니',
+        #                          '풀드포크',
+        #                          '로스트 비프',
+        #                          '로티세리 치킨',
+        #                          '살라미',
+        #                          '스테이크',
+        #                          '참치',
+        #                          '터키',
+        #
+        #                          '아보카도',     # topping overlapped
+        #                          '베이컨',       # topping overlapped
+        #                          '에그마요',    # topping overlapped
+        #                          '오믈렛',      # topping overlapped
+        #                          ]
+        main_ingredients_dict = {'각종 야채': 30,
+                                 '치킨 브레스트': 120,
+                                 '치킨 스트립': 330,
+                                 '치킨 데리야끼': 170,
+                                 '햄': 20,
+                                 '미트볼': 70,
+                                 '페퍼로니': 30,
+                                 '풀드포크': 220,
+                                 '로스트 비프': 40,
+                                 '로티세리 치킨': 150,
+                                 '살라미': 30,
+                                 '스테이크': 180,
+                                 '참치': 140,
+                                 '터키': 20,
 
-                                 '치킨 브레스트',
-                                 '치킨 스트립',
-                                 '치킨 데리야끼',
-                                 '햄',
-                                 '미트볼',
-                                 '페퍼로니',
-                                 '풀드포크',
-                                 '로스트 비프',
-                                 '로티세리 치킨',
-                                 '살라미',
-                                 '스테이크',
-                                 '참치',
-                                 '터키',
+                                 # topping overlapped
+                                 '아보카도': 60,
+                                 '베이컨': 40,
+                                 '에그마요': 123,
+                                 '오믈렛': 140,
 
-                                 '아보카도',     # topping overlapped
-                                 '베이컨',       # topping overlapped
-                                 '에그마요',    # topping overlapped
-                                 '오믈렛',      # topping overlapped
-                                 ]
+                                 # The calories should not be added to calories of recipe
+                                 # (* Ask the reason to creator of Subway Korea Website)
+                                 '치즈': None,
+                                 }
 
         # bread_list = ['플랫브래드',
         #               '하티',
@@ -82,13 +107,21 @@ class Command(BaseCommand):
                       '화이트': 200,
                       }
 
-        topping_list = ['아보카도',
-                        '베이컨',
-                        '더블 치즈',
-                        '더블업',
-                        '에그마요',
-                        '오믈렛',
-                        ]
+        # topping_list = ['아보카도',
+        #                 '베이컨',
+        #                 '더블 치즈',
+        #                 '더블업',
+        #                 '에그마요',
+        #                 '오믈렛',
+        #                 ]
+        topping_dict = {'아보카도': 60,
+                        '베이컨': 40,
+                        # The calories of Double cheese & Double up option should be set apart from this module.
+                        '더블 치즈': None,
+                        '더블업': None,
+                        '에그마요': 123, # 1스쿱 from FatSecret
+                        '오믈렛': 140, # calculation
+                        }
 
         # cheese_list = ['아메리칸 치즈',
         #                '치즈없음',
@@ -154,7 +187,7 @@ class Command(BaseCommand):
                       '사우전 아일랜드': 80,
                       '이탈리안 드레싱': 80,
                       '올리브 오일': 45,
-                      '레드와인식초': 45,
+                      '레드와인식초': 40,
                       '소금': None,
                       '후추': None,
                       '스모크 바비큐': 35,
@@ -215,6 +248,13 @@ class Command(BaseCommand):
             image_url3x = static_storage.url(image_path3x)
             obj.image = image_url
             obj.image3x = image_url3x
+
+            # calories counter
+            obj_name_calories = main_ingredients_dict[obj_name]
+            if obj_quantity:
+                obj_name_calories *= int(obj_quantity[0])
+            obj.calories = obj_name_calories
+
             obj.save()
             return obj
 
@@ -226,11 +266,11 @@ class Command(BaseCommand):
         # [Sauces.objects.get_or_create(name=name) for name in sauce_list]
         # [Category.objects.get_or_create(name=name) for name in category_list]
 
-        # 유일하게 'get_or_create'를 사용하던 recipe_name_list도 비지니스 로직이 변경되면서 주석처리 -> 결국 get_or_create안씀
+        # 유일하게 진짜 'get_or_create'를 사용하던 recipe_name_list도 비지니스 로직이 변경되면서 주석처리 -> 결국 get_or_create안씀
         # [RecipeName.objects.get_or_create(name=name) for name in recipe_name_list]
 
         # get_or_create(Bread, 'bread', bread_list)
-        get_or_create(Toppings, 'toppings', topping_list)
+        # get_or_create(Toppings, 'toppings', topping_list)
         # get_or_create(Cheese, 'cheese', cheese_list)
         get_or_create(Toasting, 'toasting', toasting_list)
         # get_or_create(Vegetables, 'vegetables', vegetable_list)
@@ -238,6 +278,7 @@ class Command(BaseCommand):
 
         get_or_create_with_calories(Bread, 'bread', bread_dict)
         get_or_create_with_calories(Cheese, 'cheese', cheese_dict)
+        get_or_create_with_calories(Toppings, 'toppings', topping_dict)
         get_or_create_with_calories(Vegetables, 'vegetables', vegetable_dict)
         get_or_create_with_calories(Sauces, 'sauces', sauce_dict)
 
@@ -305,12 +346,12 @@ class Command(BaseCommand):
 
             if sandwich.name == '로티세리 치킨':
                 rotisserie_chicken = get_or_create_for_main_ingredient('로티세리 치킨', '1스쿱')
-                cheese = get_or_create_for_main_ingredient('치즈', '2장')
+                # cheese = get_or_create_for_main_ingredient('치즈', '2장')
 
                 # 2) Sandwich 인스턴스 생성 후 Main Ingredient field 저장
                 sandwich.main_ingredient.add(
                     rotisserie_chicken,
-                    cheese,
+                    # cheese,
                 )
                 # 3) Sandwich 인스턴스 생성 후 Category field 저장
                 event, _ = Category.objects.get_or_create(name='프로모션')
@@ -331,10 +372,10 @@ class Command(BaseCommand):
 
             elif sandwich.name == '풀드포크':
                 pulled_pork = get_or_create_for_main_ingredient('풀드포크', '1스쿱')
-                cheese = get_or_create_for_main_ingredient('치즈', '2장')
+                # cheese = get_or_create_for_main_ingredient('치즈', '2장')
                 sandwich.main_ingredient.add(
                     pulled_pork,
-                    cheese,
+                    # cheese,
                 )
                 new, _ = Category.objects.get_or_create(name='신제품')
                 premium, _ = Category.objects.get_or_create(name='프리미엄')
@@ -348,15 +389,14 @@ class Command(BaseCommand):
                 sandwich.protein = 23
                 sandwich.saturated_fat = 2
                 sandwich.sodium = 980
-
                 sandwich.ordering_num = 2
 
             elif sandwich.name == '에그마요':
                 egg_mayo = get_or_create_for_main_ingredient('에그마요', '2스쿱')
-                cheese = get_or_create_for_main_ingredient('치즈', '2장')
+                # cheese = get_or_create_for_main_ingredient('치즈', '2장')
                 sandwich.main_ingredient.add(
                     egg_mayo,
-                    cheese,
+                    # cheese,
                 )
                 classic, _ = Category.objects.get_or_create(name='클래식')
                 sandwich.category.add(
@@ -368,19 +408,18 @@ class Command(BaseCommand):
                 sandwich.protein = 17
                 sandwich.saturated_fat = 6
                 sandwich.sodium = 450
-
                 sandwich.ordering_num = 3
 
             elif sandwich.name == '이탈리안 비엠티':
                 pepperoni = get_or_create_for_main_ingredient('페퍼로니', '3장')
                 salami = get_or_create_for_main_ingredient('살라미', '3장')
                 ham = get_or_create_for_main_ingredient('햄', '2장')
-                cheese = get_or_create_for_main_ingredient('치즈', '2장')
+                # cheese = get_or_create_for_main_ingredient('치즈', '2장')
                 sandwich.main_ingredient.add(
                     pepperoni,
                     salami,
                     ham,
-                    cheese,
+                    # cheese,
                 )
                 classic, _ = Category.objects.get_or_create(name='클래식')
                 sandwich.category.add(
@@ -392,15 +431,14 @@ class Command(BaseCommand):
                 sandwich.protein = 20
                 sandwich.saturated_fat = 6
                 sandwich.sodium = 1260
-
                 sandwich.ordering_num = 4
 
             elif sandwich.name == '비엘티':
                 bacon = get_or_create_for_main_ingredient('베이컨', '4장')
-                cheese = get_or_create_for_main_ingredient('치즈', '2장')
+                # cheese = get_or_create_for_main_ingredient('치즈', '2장')
                 sandwich.main_ingredient.add(
                     bacon,
-                    cheese,
+                    # cheese,
                 )
                 classic, _ = Category.objects.get_or_create(name='클래식')
                 sandwich.category.add(
@@ -412,15 +450,14 @@ class Command(BaseCommand):
                 sandwich.protein = 20
                 sandwich.saturated_fat = 4
                 sandwich.sodium = 1130
-
                 sandwich.ordering_num = 5
 
             elif sandwich.name == '미트볼':
                 meatball = get_or_create_for_main_ingredient('미트볼', '4개')
-                cheese = get_or_create_for_main_ingredient('치즈', '2장')
+                # cheese = get_or_create_for_main_ingredient('치즈', '2장')
                 sandwich.main_ingredient.add(
                     meatball,
-                    cheese,
+                    # cheese,
                 )
                 classic, _ = Category.objects.get_or_create(name='클래식')
                 sandwich.category.add(
@@ -432,15 +469,14 @@ class Command(BaseCommand):
                 sandwich.protein = 21
                 sandwich.saturated_fat = 7
                 sandwich.sodium = 1000
-
                 sandwich.ordering_num = 6
 
             elif sandwich.name == '햄':
                 ham = get_or_create_for_main_ingredient('햄', '4장')
-                cheese = get_or_create_for_main_ingredient('치즈', '2장')
+                # cheese = get_or_create_for_main_ingredient('치즈', '2장')
                 sandwich.main_ingredient.add(
                     ham,
-                    cheese,
+                    # cheese,
                 )
                 classic, _ = Category.objects.get_or_create(name='클래식')
                 sandwich.category.add(
@@ -452,15 +488,14 @@ class Command(BaseCommand):
                 sandwich.protein = 18
                 sandwich.saturated_fat = 1
                 sandwich.sodium = 800
-
                 sandwich.ordering_num = 7
 
             elif sandwich.name == '참치':
                 tuna = get_or_create_for_main_ingredient('참치', '2스쿱')
-                cheese = get_or_create_for_main_ingredient('치즈', '2장')
+                # cheese = get_or_create_for_main_ingredient('치즈', '2장')
                 sandwich.main_ingredient.add(
                     tuna,
-                    cheese,
+                    # cheese,
                 )
                 classic, _ = Category.objects.get_or_create(name='클래식')
                 sandwich.category.add(
@@ -472,15 +507,14 @@ class Command(BaseCommand):
                 sandwich.protein = 20
                 sandwich.saturated_fat = 4.5
                 sandwich.sodium = 580
-
                 sandwich.ordering_num = 8
 
             elif sandwich.name == '로스트 치킨':
                 chicken_breast = get_or_create_for_main_ingredient('치킨 브레스트', '1장')
-                cheese = get_or_create_for_main_ingredient('치즈', '2장')
+                # cheese = get_or_create_for_main_ingredient('치즈', '2장')
                 sandwich.main_ingredient.add(
                     chicken_breast,
-                    cheese,
+                    # cheese,
                 )
                 fresh_and_light, _ = Category.objects.get_or_create(name='프레쉬 & 라이트')
                 sandwich.category.add(
@@ -492,15 +526,14 @@ class Command(BaseCommand):
                 sandwich.protein = 23
                 sandwich.saturated_fat = 1.5
                 sandwich.sodium = 610
-
                 sandwich.ordering_num = 9
 
             elif sandwich.name == '로스트 비프':
                 roast_beef = get_or_create_for_main_ingredient('로스트 비프', '3장')
-                cheese = get_or_create_for_main_ingredient('치즈', '2장')
+                # cheese = get_or_create_for_main_ingredient('치즈', '2장')
                 sandwich.main_ingredient.add(
                     roast_beef,
-                    cheese,
+                    # cheese,
                 )
                 fresh_and_light, _ = Category.objects.get_or_create(name='프레쉬 & 라이트')
                 sandwich.category.add(
@@ -512,19 +545,18 @@ class Command(BaseCommand):
                 sandwich.protein = 25
                 sandwich.saturated_fat = 1.5
                 sandwich.sodium = 660
-
                 sandwich.ordering_num = 10
 
             elif sandwich.name == '써브웨이 클럽':
                 turkey = get_or_create_for_main_ingredient('터키', '2장')
                 ham = get_or_create_for_main_ingredient('햄', '1장')
                 roast_beef = get_or_create_for_main_ingredient('로스트 비프', '1장')
-                cheese = get_or_create_for_main_ingredient('치즈', '2장')
+                # cheese = get_or_create_for_main_ingredient('치즈', '2장')
                 sandwich.main_ingredient.add(
                     turkey,
                     ham,
                     roast_beef,
-                    cheese,
+                    # cheese,
                 )
                 fresh_and_light, _ = Category.objects.get_or_create(name='프레쉬 & 라이트')
                 sandwich.category.add(
@@ -536,15 +568,14 @@ class Command(BaseCommand):
                 sandwich.protein = 23
                 sandwich.saturated_fat = 1.5
                 sandwich.sodium = 840
-
                 sandwich.ordering_num = 11
 
             elif sandwich.name == '터키':
                 turkey = get_or_create_for_main_ingredient('터키', '4장')
-                cheese = get_or_create_for_main_ingredient('치즈', '2장')
+                # cheese = get_or_create_for_main_ingredient('치즈', '2장')
                 sandwich.main_ingredient.add(
                     turkey,
-                    cheese,
+                    # cheese,
                 )
                 fresh_and_light, _ = Category.objects.get_or_create(name='프레쉬 & 라이트')
                 sandwich.category.add(
@@ -556,15 +587,14 @@ class Command(BaseCommand):
                 sandwich.protein = 18
                 sandwich.saturated_fat = 1
                 sandwich.sodium = 760
-
                 sandwich.ordering_num = 12
 
             elif sandwich.name == '베지':
                 all_veggies = get_or_create_for_main_ingredient('각종 야채', '')
-                cheese = get_or_create_for_main_ingredient('치즈', '2장')
+                # cheese = get_or_create_for_main_ingredient('치즈', '2장')
                 sandwich.main_ingredient.add(
                     all_veggies,
-                    cheese,
+                    # cheese,
                 )
                 fresh_and_light, _ = Category.objects.get_or_create(name='프레쉬 & 라이트')
                 sandwich.category.add(
@@ -576,15 +606,14 @@ class Command(BaseCommand):
                 sandwich.protein = 8
                 sandwich.saturated_fat = 0.5
                 sandwich.sodium = 280
-
                 sandwich.ordering_num = 13
 
             elif sandwich.name == '스테이크 & 치즈':
                 steak = get_or_create_for_main_ingredient('스테이크', '1스쿱')
-                cheese = get_or_create_for_main_ingredient('오믈렛', '2장')
+                # cheese = get_or_create_for_main_ingredient('오믈렛', '2장')
                 sandwich.main_ingredient.add(
                     steak,
-                    cheese,
+                    # cheese,
                 )
                 premium, _ = Category.objects.get_or_create(name='프리미엄')
                 sandwich.category.add(
@@ -596,19 +625,18 @@ class Command(BaseCommand):
                 sandwich.protein = 26
                 sandwich.saturated_fat = 4.5
                 sandwich.sodium = 1030
-
                 sandwich.ordering_num = 14
 
             elif sandwich.name == '터키 베이컨 아보카도':
                 turkey = get_or_create_for_main_ingredient('터키', '3장')
                 bacon = get_or_create_for_main_ingredient('베이컨', '2장')
                 avocado = get_or_create_for_main_ingredient('아보카도', '1스쿱')
-                cheese = get_or_create_for_main_ingredient('치즈', '2장')
+                # cheese = get_or_create_for_main_ingredient('치즈', '2장')
                 sandwich.main_ingredient.add(
                     turkey,
                     bacon,
                     avocado,
-                    cheese,
+                    # cheese,
                 )
                 premium, _ = Category.objects.get_or_create(name='프리미엄')
                 sandwich.category.add(
@@ -620,17 +648,16 @@ class Command(BaseCommand):
                 sandwich.protein = 24
                 sandwich.saturated_fat = 3.5
                 sandwich.sodium = 1190
-
                 sandwich.ordering_num = 15
 
             elif sandwich.name == '치킨 베이컨 랜치':
                 chicken_strip = get_or_create_for_main_ingredient('치킨 스트립', '1스쿱')
                 bacon = get_or_create_for_main_ingredient('베이컨', '2장')
-                cheese = get_or_create_for_main_ingredient('치즈', '2장')
+                # cheese = get_or_create_for_main_ingredient('치즈', '2장')
                 sandwich.main_ingredient.add(
                     chicken_strip,
                     bacon,
-                    cheese,
+                    # cheese,
                 )
                 premium, _ = Category.objects.get_or_create(name='프리미엄')
                 sandwich.category.add(
@@ -642,19 +669,18 @@ class Command(BaseCommand):
                 sandwich.protein = 38
                 sandwich.saturated_fat = 10
                 sandwich.sodium = 1290
-
                 sandwich.ordering_num = 16
 
             elif sandwich.name == '써브웨이 멜트':
                 turkey = get_or_create_for_main_ingredient('터키', '2장')
                 bacon = get_or_create_for_main_ingredient('베이컨', '2장')
                 ham = get_or_create_for_main_ingredient('햄', '2장')
-                cheese = get_or_create_for_main_ingredient('치즈', '2장')
+                # cheese = get_or_create_for_main_ingredient('치즈', '2장')
                 sandwich.main_ingredient.add(
                     turkey,
                     bacon,
                     ham,
-                    cheese,
+                    # cheese,
                 )
                 premium, _ = Category.objects.get_or_create(name='프리미엄')
                 sandwich.category.add(
@@ -666,17 +692,16 @@ class Command(BaseCommand):
                 sandwich.protein = 26
                 sandwich.saturated_fat = 5
                 sandwich.sodium = 1410
-
                 sandwich.ordering_num = 17
 
             elif sandwich.name == '터키 베이컨':
                 turkey = get_or_create_for_main_ingredient('터키', '3장')
                 bacon = get_or_create_for_main_ingredient('베이컨', '2장')
-                cheese = get_or_create_for_main_ingredient('치즈', '2장')
+                # cheese = get_or_create_for_main_ingredient('치즈', '2장')
                 sandwich.main_ingredient.add(
                     turkey,
                     bacon,
-                    cheese,
+                    # cheese,
                 )
                 premium, _ = Category.objects.get_or_create(name='프리미엄')
                 sandwich.category.add(
@@ -688,17 +713,16 @@ class Command(BaseCommand):
                 sandwich.protein = 23
                 sandwich.saturated_fat = 3
                 sandwich.sodium = 1190
-
                 sandwich.ordering_num = 18
 
             elif sandwich.name == '스파이시 이탈리안':
                 pepperoni = get_or_create_for_main_ingredient('페퍼로니', '5장')
                 salami = get_or_create_for_main_ingredient('살라미', '5장')
-                cheese = get_or_create_for_main_ingredient('치즈', '2장')
+                # cheese = get_or_create_for_main_ingredient('치즈', '2장')
                 sandwich.main_ingredient.add(
                     pepperoni,
                     salami,
-                    cheese
+                    # cheese
                 )
                 premium, _ = Category.objects.get_or_create(name='프리미엄')
                 sandwich.category.add(
@@ -710,15 +734,14 @@ class Command(BaseCommand):
                 sandwich.protein = 20
                 sandwich.saturated_fat = 9
                 sandwich.sodium = 1490
-
                 sandwich.ordering_num = 19
 
             elif sandwich.name == '치킨 데리야끼':
                 chicken_strip = get_or_create_for_main_ingredient('치킨 데리야끼', '1스쿱')
-                cheese = get_or_create_for_main_ingredient('치즈', '2장')
+                # cheese = get_or_create_for_main_ingredient('치즈', '2장')
                 sandwich.main_ingredient.add(
                     chicken_strip,
-                    cheese,
+                    # cheese,
                 )
                 premium, _ = Category.objects.get_or_create(name='프리미엄')
                 sandwich.category.add(
@@ -730,17 +753,16 @@ class Command(BaseCommand):
                 sandwich.protein = 25
                 sandwich.saturated_fat = 1
                 sandwich.sodium = 770
-
                 sandwich.ordering_num = 20
 
             elif sandwich.name == '블랙 포레스트햄 & 에그, 치즈':
                 omelet = get_or_create_for_main_ingredient('오믈렛', '1장')
                 ham = get_or_create_for_main_ingredient('햄', '2장')
-                cheese = get_or_create_for_main_ingredient('치즈', '2장')
+                # cheese = get_or_create_for_main_ingredient('치즈', '2장')
                 sandwich.main_ingredient.add(
                     omelet,
                     ham,
-                    cheese,
+                    # cheese,
                 )
                 breakfast, _ = Category.objects.get_or_create(name='아침메뉴')
                 sandwich.category.add(
@@ -752,17 +774,16 @@ class Command(BaseCommand):
                 sandwich.protein = 24
                 sandwich.saturated_fat = 5
                 sandwich.sodium = 1150
-
                 sandwich.ordering_num = 21
 
             elif sandwich.name == '웨스턴, 에그 & 치즈':
                 omelet = get_or_create_for_main_ingredient('오믈렛', '1장')
                 ham = get_or_create_for_main_ingredient('햄', '1장')
-                cheese = get_or_create_for_main_ingredient('치즈', '2장')
+                # cheese = get_or_create_for_main_ingredient('치즈', '2장')
                 sandwich.main_ingredient.add(
                     omelet,
                     ham,
-                    cheese,
+                    # cheese,
                 )
                 breakfast, _ = Category.objects.get_or_create(name='아침메뉴')
                 sandwich.category.add(
@@ -774,17 +795,16 @@ class Command(BaseCommand):
                 sandwich.protein = 19
                 sandwich.saturated_fat = 4.5
                 sandwich.sodium = 880
-
                 sandwich.ordering_num = 22
 
             elif sandwich.name == '베이컨, 에그 & 치즈':
                 omelet = get_or_create_for_main_ingredient('오믈렛', '1장')
                 bacon = get_or_create_for_main_ingredient('베이컨', '2장')
-                cheese = get_or_create_for_main_ingredient('치즈', '2장')
+                # cheese = get_or_create_for_main_ingredient('치즈', '2장')
                 sandwich.main_ingredient.add(
                     omelet,
                     bacon,
-                    cheese,
+                    # cheese,
                 )
                 breakfast, _ = Category.objects.get_or_create(name='아침메뉴')
                 sandwich.category.add(
@@ -796,17 +816,16 @@ class Command(BaseCommand):
                 sandwich.protein = 25
                 sandwich.saturated_fat = 7
                 sandwich.sodium = 1310
-
                 sandwich.ordering_num = 23
 
             elif sandwich.name == '스테이크, 에그 & 치즈':
                 steak = get_or_create_for_main_ingredient('스테이크', '1스쿱')
                 omelet = get_or_create_for_main_ingredient('오믈렛', '1스쿱')
-                cheese = get_or_create_for_main_ingredient('치즈', '2장')
+                # cheese = get_or_create_for_main_ingredient('치즈', '2장')
                 sandwich.main_ingredient.add(
                     steak,
                     omelet,
-                    cheese,
+                    # cheese,
                 )
                 breakfast, _ = Category.objects.get_or_create(name='아침메뉴')
                 sandwich.category.add(
@@ -818,7 +837,6 @@ class Command(BaseCommand):
                 sandwich.protein = 28
                 sandwich.saturated_fat = 6
                 sandwich.sodium = 1210
-
                 sandwich.ordering_num = 24
 
             sandwich.save()
