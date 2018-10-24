@@ -30,10 +30,9 @@ class Vegetables(models.Model):
         choices=VEGETABLE_QUANTITY_CHOICES,
         default='보통'
     )
+    calories = models.SmallIntegerField(blank=True, null=True)
     image = models.FilePathField(max_length=255)
     image3x = models.FilePathField(max_length=255)
 
-    calories = models.SmallIntegerField(blank=True, null=True)
-
     def __str__(self):
-        return f'{self.pk}_{self.name}'
+        return f'{self.pk}_{self.name} ({self.quantity})'
