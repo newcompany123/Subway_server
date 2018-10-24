@@ -62,6 +62,7 @@ class RecipeSerializer(serializers.ModelSerializer):
     toppings = ToppingsRelatedField(many=True, required=False)
     vegetables = VegetablesRelatedField(many=True, required=False)
     sauces = SaucesRelatedField(many=True, required=False)
+    calories = serializers.SerializerMethodField(read_only=True)
     inventor = UserSerializer(read_only=True)
 
     auth_user_like_state = serializers.SerializerMethodField(read_only=True)
@@ -82,8 +83,9 @@ class RecipeSerializer(serializers.ModelSerializer):
             'toasting',
             'vegetables',
             'sauces',
-            'inventor',
+            'calories',
 
+            'inventor',
             'auth_user_like_state',
             'auth_user_bookmark_state',
             'like_count',
@@ -118,6 +120,7 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         recipe = super().create(validated_data)
+
         return recipe
 
     # def to_representation(self, instance):
@@ -175,17 +178,75 @@ class RecipeSerializer(serializers.ModelSerializer):
         else:
             pass
 
+    def get_calories(self, obj):
+
+        # 1) validated_data 이용
+        # calories = 0
+        # calories += self.validated_data.get('sandwich').calories
+        # calories += self.validated_data.get('bread').calories
+        # calories += self.validated_data.get('cheese').calories
+        # for i in self.validated_data.get('toppings'):
+        #     if i.calories:
+        #         calories += i.calories
+        # for i in self.validated_data.get('vegetables'):
+        #     if i.calories:
+        #         calories += i.calories
+        # for i in self.validated_data.get('sauces'):
+        #     if i.calories:
+        #         calories += i.calories
+
+        # self.validated_data는 serializing을 거친 값일 뿐
+        # 정말 valid한 값이 아니기 때문에 calories를 계산하는 중요한
+        # logic에서 이용할 경우 심각한 오류를 초래할 수 있음.
+        #
+        # eg. toppings에 동일한 값이 2번 이상 입력될 경우
+        #     validated_data에 그대로 중복되어 있는 값을 2번 계산하게 된다.
+        #
+        #     >> print(obj.toppings.all())
+        #     <QuerySet [<Toppings: 2_베이컨>, <Toppings: 5_에그마요>]>
+        #
+        #     >> print(self.validated_data.get('toppings'))
+        #     [<Toppings: 2_베이컨>, <Toppings: 5_에그마요>, <Toppings: 5_에그마요>]
+
+        # 2) obj 이용
+        calories = 0
+        calories += obj.sandwich.calories - 200
+        calories += obj.bread.calories
+        calories += obj.cheese.calories
+        for i in obj.toppings.all():
+            if i.calories:
+                calories += i.calories
+        for i in obj.sauces.all():
+            if i.calories:
+                calories += i.calories
+        for i in obj.vegetables.all():
+            if i.calories:
+                calories += i.calories
+
+        # double cheese process
+        if obj.toppings.filter(name='더블 치즈'):
+            calories += obj.cheese.calories
+
+        # double up process
+        if obj.toppings.filter(name='더블업'):
+            for i in obj.sandwich.main_ingredient.all():
+                if i.calories:
+                    calories += i.calories
+
+        return calories
+
     def to_representation(self, obj):
         ret = super().to_representation(obj)
 
         # To protect private user information
         del ret['inventor']['email']
         del ret['inventor']['token']
+        del ret['name']['user']['email']
+        del ret['name']['user']['token']
 
         # iOS asked to make 'name' key's  value simpler
         del ret['name']['created_date']
         del ret['name']['modified_date']
-        del ret['name']['user']['email']
-        del ret['name']['user']['token']
 
         return ret
+
