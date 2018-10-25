@@ -30,4 +30,4 @@ CACHES = {
     }
 }
 
-# import_secrets()
+import_secrets()
