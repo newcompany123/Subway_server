@@ -3,10 +3,11 @@ from django.urls import path, include, re_path
 from .apis import UserFacebookAccessTokenView, UserKakaoAccessTokenView
 from .apis.user import UserListCreateView, UserRetrieveUpdateDestroyView
 
+app_name = 'users'
 urlpatterns = [
-    path('', UserListCreateView.as_view()),
-    path('facebook-login/', UserFacebookAccessTokenView.as_view()),
-    path('kakao-login/', UserKakaoAccessTokenView.as_view()),
+    path('', UserListCreateView.as_view(), name='user-list'),
+    path('facebook-login/', UserFacebookAccessTokenView.as_view(), name='facebook-login'),
+    path('kakao-login/', UserKakaoAccessTokenView.as_view(), name='kakao-login'),
     # path('<int:pk>/', UserRetrieveUpdateDestroyView.as_view()),
     # path('<int:pk>/bookmark/', include('bookmarkcollection.urls'),
 
