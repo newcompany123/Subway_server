@@ -18,7 +18,6 @@ class FacebookLoginTest(APITestCase):
     # 1) Get Facebook Access-Token
     # 2) Signup or login by sending Access-Token
 
-
     # URL_HOST for local / staging test
     SETTINGS_MODULE = os.environ.get('DJANGO_SETTINGS_MODULE')
     if SETTINGS_MODULE == 'config.settings.prod':
@@ -28,7 +27,7 @@ class FacebookLoginTest(APITestCase):
         from config.settings import local
         URL_HOST = local.URL_HOST
 
-    URL_FACEBOOK_LOGIN = URL_HOST + reverse('users:facebook-login')
+    URL_FACEBOOK_LOGIN = URL_HOST + reverse('user:facebook-login')
     URL_ACCESS_TOKEN = 'https://graph.facebook.com/v2.12/oauth/access_token'
 
     def get_app_access_token_from_facebook(self):
@@ -93,7 +92,8 @@ class FacebookLoginTest(APITestCase):
         headers = {
             'Authorization': 'Token ' + response_data['token']
         }
-        URL_DELETE_ACCOUNT = self.URL_HOST + '/user/' + str(response_data['id'])
+        # URL_DELETE_ACCOUNT = self.URL_HOST + '/user/' + str(response_data['id'])
+        URL_DELETE_ACCOUNT = self.URL_HOST + reverse('user:user-detail', kwargs={'pk': response_data['id']})
         response = requests.delete(URL_DELETE_ACCOUNT, headers=headers)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
