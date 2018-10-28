@@ -32,5 +32,5 @@ class RecipeValidationAPIView(APIView):
         # return Response({'result': True})에서 처럼 True를 반환받는다.
 
         serializer = RecipeSerializer(data=request.data)
-        result = serializer.is_valid()
+        result = serializer.is_valid(raise_exception=True)
         return Response({'detail': result})
