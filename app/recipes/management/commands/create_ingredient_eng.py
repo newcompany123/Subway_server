@@ -3,7 +3,6 @@ from django.core.management import BaseCommand
 from django.utils.module_loading import import_string
 
 from ingredients.models import Bread, Toppings, Cheese, Toasting, Vegetables, Sauces, Sandwich, Category, MainIngredient
-from recipe_name.models import RecipeName
 
 
 class Command(BaseCommand):
@@ -168,7 +167,7 @@ class Command(BaseCommand):
             obj.save()
             return obj
 
-        [RecipeName.objects.get_or_create(name=name) for name in recipe_name_list]
+        # [RecipeName.objects.get_or_create(name=name) for name in recipe_name_list]
         # [Sandwich.objects.get_or_create(name=name) for name in sandwich_list]
         # [Bread.objects.get_or_create(name=name) for name in bread_list]
         # [Toppings.objects.get_or_create(name=name) for name in topping_list]
