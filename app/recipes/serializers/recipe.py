@@ -165,7 +165,11 @@ class RecipeSerializer(serializers.ModelSerializer):
             user = self.context['request'].user
             if type(user) is AnonymousUser:
                 return None
-            if obj in user.liked_recipe.all():
+
+            # if obj in user.liked_recipe.all():
+
+            # Code Refactoring : queryset -> filtering
+            if User.objects.filter(like__recipe__in=[obj]):
                 return 'True'
             else:
                 return 'False'
@@ -177,7 +181,8 @@ class RecipeSerializer(serializers.ModelSerializer):
             user = self.context['request'].user
             if type(user) is AnonymousUser:
                 return None
-            if obj in user.bookmarked_recipe.all():
+            # if obj in user.bookmarked_recipe.all():
+            if User.objects.filter(bookmark__recipe__in=[obj]):
                 return 'True'
             else:
                 return 'False'
