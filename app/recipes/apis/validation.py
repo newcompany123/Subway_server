@@ -1,7 +1,7 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from recipes.serializers import RecipeSerializer
+from recipes.serializers import RecipeValidationSerializer
 
 
 class RecipeValidationAPIView(APIView):
@@ -31,6 +31,6 @@ class RecipeValidationAPIView(APIView):
         # 그리고 이 is_valid에서 return 되는 값은 True인데 공교롭게도 위에서
         # return Response({'result': True})에서 처럼 True를 반환받는다.
 
-        serializer = RecipeSerializer(data=request.data)
+        serializer = RecipeValidationSerializer(data=request.data, context=request.stream.path)
         result = serializer.is_valid(raise_exception=True)
         return Response({'detail': result})

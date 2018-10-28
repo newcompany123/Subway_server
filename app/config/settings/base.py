@@ -171,8 +171,8 @@ USE_TZ = True
 
 
 # django_debug_toolbar config
-DEBUG_TOOLBAR_TURN_ON = True
-# DEBUG_TOOLBAR_TURN_ON = False
+# DEBUG_TOOLBAR_TURN_ON = True
+DEBUG_TOOLBAR_TURN_ON = False
 
 if DEBUG_TOOLBAR_TURN_ON:
     INSTALLED_APPS += ['debug_toolbar']

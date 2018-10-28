@@ -8,7 +8,7 @@ from recipes.models import Recipe
 from utils.exceptions import CustomAPIException
 
 
-def recipe_uniqueness_validator(attrs):
+def recipe_uniqueness_validator(attrs, **kwargs):
     # ------------------------------------------------------------
     # [ Shoveling log ]
     #   : hardcoding eradicated
@@ -66,11 +66,14 @@ def recipe_uniqueness_validator(attrs):
 
     # O(log n)
     print(attrs.get('name'))
-    if Recipe.objects.filter(name=attrs.get('name')):
-        raise CustomAPIException(
-            detail='Same sandwich name already exists!',
-            status_code=status.HTTP_400_BAD_REQUEST
-        )
+
+    # Do not apply to Recipe Validation API
+    if not kwargs.get('path') == '/recipe/validation/':
+        if Recipe.objects.filter(name=attrs.get('name')):
+            raise CustomAPIException(
+                detail='Same sandwich name already exists!',
+                status_code=status.HTTP_400_BAD_REQUEST
+            )
 
     # 2) recipe ingredients' uniqueness validation
 
