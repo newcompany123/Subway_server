@@ -40,7 +40,7 @@ class RecipeValidationSerializer(serializers.ModelSerializer):
         model = Recipe
         fields = (
             'id',
-            'name',
+            # 'name',
             'sandwich',
             'bread',
             'toppings',
@@ -51,8 +51,8 @@ class RecipeValidationSerializer(serializers.ModelSerializer):
             'calories',
 
             'inventor',
-            'auth_user_like_state',
-            'auth_user_bookmark_state',
+            # 'auth_user_like_state',
+            # 'auth_user_bookmark_state',
             'like_count',
             'bookmark_count',
             'like_bookmark_count',
