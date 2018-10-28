@@ -80,7 +80,7 @@ class RecipeListCreateView(generics.ListCreateAPIView):
         # value = cache.get('recipes_detail')
         # if not value:
         value = Recipe.objects \
-            .select_related('name__user', 'sandwich', 'bread', 'cheese', 'toasting', 'inventor') \
+            .select_related('sandwich', 'bread', 'cheese', 'toasting', 'inventor') \
             .prefetch_related('toppings', 'vegetables', 'sauces',
                               'sandwich__main_ingredient', 'sandwich__category',) \
             .annotate(
@@ -119,7 +119,7 @@ class RecipeRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
         # value = cache.get('recipes_detail')
         # if not value:
         value = Recipe.objects \
-            .select_related('name__user', 'sandwich', 'bread', 'cheese', 'toasting', 'inventor') \
+            .select_related('sandwich', 'bread', 'cheese', 'toasting', 'inventor') \
             .prefetch_related('toppings', 'vegetables', 'sauces',
                               'sandwich__main_ingredient', 'sandwich__category',) \
             .annotate(

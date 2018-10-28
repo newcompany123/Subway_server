@@ -5,11 +5,9 @@ from rest_framework import serializers, status
 
 from ingredients.serializers import SandwichRelatedField, BreadRelatedField, CheeseRelatedField, \
     ToastingRelatedField, ToppingsRelatedField, VegetablesRelatedField, SaucesRelatedField
-from recipe_name.models import RecipeName
-from recipe_name.serializers import RecipeNameSerializer
 from users.serializers import UserSerializer
 from utils.calories_counter import calories_counter
-from utils.exceptions import get_object_or_404_customed, CustomAPIException
+from utils.exceptions import CustomAPIException
 from utils.recipe_uniqueness_validator import recipe_uniqueness_validator
 from ..models import Recipe
 
@@ -21,23 +19,23 @@ __all__ = (
 )
 
 
-class RecipeNameRelatedField(serializers.RelatedField):
-    queryset = RecipeName.objects.all()
-
-    def to_representation(self, value):
-        serializer = RecipeNameSerializer(value)
-        return serializer.data
-
-    def to_internal_value(self, data):
-        recipe_name_name = data.get('name')
-        recipe_name = get_object_or_404_customed(RecipeName, name=recipe_name_name)
-
-        # serializer = RecipeNameSerializer(data=data)
-        # serializer.is_valid()
-        # obj = serializer.save
-        # return obj
-
-        return recipe_name
+# class RecipeNameRelatedField(serializers.RelatedField):
+#     queryset = RecipeName.objects.all()
+#
+#     def to_representation(self, value):
+#         serializer = RecipeNameSerializer(value)
+#         return serializer.data
+#
+#     def to_internal_value(self, data):
+#         recipe_name_name = data.get('name')
+#         recipe_name = get_object_or_404_customed(RecipeName, name=recipe_name_name)
+#
+#         # serializer = RecipeNameSerializer(data=data)
+#         # serializer.is_valid()
+#         # obj = serializer.save
+#         # return obj
+#
+#         return recipe_name
 
 
 class RecipeSerializer(serializers.ModelSerializer):
@@ -49,7 +47,9 @@ class RecipeSerializer(serializers.ModelSerializer):
     # bread = BreadSerializer()
     # vegetables = VegetablesSerializer(many=True)
 
-    name = RecipeNameRelatedField()
+    # 181028 'name' field modified : OneToOneField -> CharField
+    # name = RecipeNameRelatedField()
+    name = serializers.CharField()
     sandwich = SandwichRelatedField()
     bread = BreadRelatedField()
 
@@ -255,11 +255,5 @@ class RecipeSerializer(serializers.ModelSerializer):
         # To protect private user information
         del ret['inventor']['email']
         del ret['inventor']['token']
-        del ret['name']['user']['email']
-        del ret['name']['user']['token']
-
-        # iOS asked to make 'name' key's  value simpler
-        del ret['name']['created_date']
-        del ret['name']['modified_date']
 
         return ret

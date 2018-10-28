@@ -19,7 +19,7 @@ __all__ = (
 
 class RecipeValidationSerializer(serializers.ModelSerializer):
 
-    # name = RecipeNameRelatedField()
+    # name = serializers.CharField()
     sandwich = SandwichRelatedField()
     bread = BreadRelatedField()
     cheese = CheeseRelatedField()
