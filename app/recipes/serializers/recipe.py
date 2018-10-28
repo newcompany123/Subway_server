@@ -263,4 +263,3 @@ class RecipeSerializer(serializers.ModelSerializer):
         del ret['name']['modified_date']
 
         return ret
-
