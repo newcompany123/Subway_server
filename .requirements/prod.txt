@@ -9,5 +9,5 @@ django-rest-swagger<2.3
 djangorestframework<3.9
 Pillow<5.2
 psycopg2-binary<2.8
-requests<2.19
+requests<2.21
 uWSGI<2.1
