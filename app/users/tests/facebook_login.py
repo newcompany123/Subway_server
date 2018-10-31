@@ -1,4 +1,3 @@
-import ast
 import json
 
 import os
@@ -30,17 +29,6 @@ class FacebookLoginTest(APITestCase):
     URL_FACEBOOK_LOGIN = URL_HOST + reverse('user:facebook-login')
     URL_ACCESS_TOKEN = 'https://graph.facebook.com/v2.12/oauth/access_token'
 
-    def get_app_access_token_from_facebook(self):
-
-        # Facebook client_credentials access
-        params = {'client_id': settings.FACEBOOK_APP_ID,
-                  'client_secret': settings.FACEBOOK_SECRET_CODE,
-                  'grant_type': 'client_credentials'}
-        response = requests.get(self.URL_ACCESS_TOKEN, params=params)
-        dict1 = ast.literal_eval(response.text)
-        access_token = dict1['access_token']
-        return access_token
-
     def _get_json(self, response):
         try:
             response_dict = response.json()
@@ -49,6 +37,23 @@ class FacebookLoginTest(APITestCase):
         if 'error' in response_dict:
             raise CustomAPIException("Error in response: %r" % response_dict['error'])
         return response_dict
+
+    def get_app_access_token_from_facebook(self):
+
+        # Facebook client_credentials access
+        params = {'client_id': settings.FACEBOOK_APP_ID,
+                  'client_secret': settings.FACEBOOK_SECRET_CODE,
+                  'grant_type': 'client_credentials'}
+        response = requests.get(self.URL_ACCESS_TOKEN, params=params)
+
+        # [ast.literal_eval() - turn string to dict]
+        # dict1 = ast.literal_eval(response.text)
+        # access_token = dict1['access_token']
+
+        response_dict = self._get_json(response)
+        access_token = response_dict['access_token']
+
+        return access_token
 
     def get_short_term_access_token_from_facebook(self, app_access_token):
 
@@ -71,17 +76,16 @@ class FacebookLoginTest(APITestCase):
         # Facebook-login POST request
         app_access_token = self.get_app_access_token_from_facebook()
         access_token = self.get_short_term_access_token_from_facebook(app_access_token)
-        # print(access_token)
 
-        # Facebook Login
+        # Facebook Login API Test
         post_data = {
             'access_token': access_token
         }
         response = requests.post(self.URL_FACEBOOK_LOGIN, post_data)
 
-        # print(response)
-        # response_data = response.json()
-        response_data = json.loads(response.content)
+        # response_data = json.loads(response.content)
+        response_data = self._get_json(response)
+        print(response_data)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         # # self.assertEqual(response.status_code, status.HTTP_201_CREATED)
