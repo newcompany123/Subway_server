@@ -117,12 +117,101 @@ def recipe_uniqueness_validator(attrs, **kwargs):
         .filter(cheese=attrs.get('cheese')) \
         .filter(toasting=attrs.get('toasting'))
 
-    # toppings
-    topping_pk_list = []
-    for topping in attrs.get('toppings', []):
-        topping_pk_list.append(topping.pk)
+    # # Filtering test 1
+    # if attrs.get('toppings'):
+    #     recipe_filtered_list2 = Recipe.objects\
+    #         .filter(toppings__in=attrs.get('toppings'))
+    #
+    #     print(len(recipe_filtered_list2))
+    #     print(recipe_filtered_list2.values())
+    #
+    # # Filtering Test 1-2
+    # if attrs.get('toppings'):
+    #     recipe_filtered_list2 = Recipe.objects\
+    #         .filter(toppings__in=attrs.get('toppings')).distinct()
+    #
+    #     print(len(recipe_filtered_list2))
+    #     print(recipe_filtered_list2.values())
 
+    """
+    181029
+    Without '.distinct()' querysets are duplicate.
+
+    [ WIF ]
+    And what I found out from the above code is this.
+    ~.filter(<many_to_many_field>__in=[objectA, objectB, objectC]
+    If one queryset has three ManyToMany relation objects, 
+    Django evaluates '.filter' three times for each object.
+    The way to check this out is using the code above changing the
+    number of duplicate request data.
+    """
+
+    # Filtering Test 2-1
+    # if attrs.get('toppings'):
+    #     recipe_filtered_list2 = Recipe.objects\
+    #         .filter(toppings__in=attrs.get('toppings')).distinct() \
+    #         .annotate(num_toppings=Count('toppings'))
+    #     print(len(recipe_filtered_list2))
+    #     print(recipe_filtered_list2.values())
+    #     print(recipe_filtered_list2.values('toppings'))
+
+    # Filtering Test 2-2 - switch the sequence of annotate & filter().distint()
+    # if attrs.get('toppings'):
+    #     recipe_filtered_list2 = Recipe.objects \
+    #         .annotate(num_toppings=Count('toppings')) \
+    #         .filter(toppings__in=attrs.get('toppings')).distinct()
+    #     print(len(recipe_filtered_list2))
+    #     print(recipe_filtered_list2.values())
+    #     print(recipe_filtered_list2.values('toppings'))
+
+    # Filtering Test 2-3
+    # if attrs.get('toppings'):
+    #     recipe_filtered_list2 = Recipe.objects\
+    #         .filter(toppings__in=attrs.get('toppings')).distinct() \
+    #         .annotate(num_toppings=Count('toppings', distinct=True)) \
+    #         .filter(num_toppings=len(attrs.get('toppings')))
+    #     print(len(recipe_filtered_list2))
+    #     print(recipe_filtered_list2.values())
+    #     print(recipe_filtered_list2.values('toppings'))
+
+    # Filtering Test 2-4
+    # topping_pk_list = []
+    # for topping in attrs.get('toppings', []):
+    #     topping_pk_list.append(topping.pk)
+    #
+    # if attrs.get('toppings'):
+    #     recipe_filtered_list2 = Recipe.objects \
+    #         .filter(toppings__pk__in=[1, 6]).distinct() \
+    #         .annotate(num_toppings=Count('toppings', distinct=True)) \
+    #         .filter(num_toppings=len(attrs.get('toppings'))) \
+    #         .exclude(toppings__in=Toppings.objects.exclude(pk__in=topping_pk_list))
+    #         # .filter(toppings__in=attrs.get('toppings')).distinct() \
+    #     print(len(recipe_filtered_list2))
+    #     print(recipe_filtered_list2.values())
+    #     print(recipe_filtered_list2.values('toppings'))
+
+    # Filtering Test 2-5 : use exclude in a different way
+    # if attrs.get('toppings'):
+    #     recipe_filtered_list2 = Recipe.objects\
+    #         .filter(toppings__in=attrs.get('toppings')).distinct() \
+    #         .annotate(num_toppings=Count('toppings')) \
+    #         .filter(num_toppings=len(attrs.get('toppings'))) \
+    #         .exclude(pk__in=Recipe.objects
+    #                  .annotate(num_toppings=Count('toppings'))
+    #                  .filter(num_toppings__gt=len(attrs.get('toppings')))
+    #                  )
+    #
+    #     print(len(recipe_filtered_list2))
+    #     print(recipe_filtered_list2.values())
+    #     print(recipe_filtered_list2.values('toppings'))
+
+    # toppings
     if recipe_filtered_list:
+
+        topping_pk_list = []
+        for topping in attrs.get('toppings', []):
+            topping_pk_list.append(topping.pk)
+
         if attrs.get('toppings'):
             recipe_filtered_list = recipe_filtered_list \
                 .filter(toppings__in=attrs.get('toppings')).distinct() \
@@ -134,11 +223,12 @@ def recipe_uniqueness_validator(attrs, **kwargs):
                 .filter(toppings__isnull=True)
 
     # vegetables
-    vegetable_pk_list = []
-    for vegetable in attrs.get('vegetables', []):
-        vegetable_pk_list.append(vegetable.pk)
-
     if recipe_filtered_list:
+
+        vegetable_pk_list = []
+        for vegetable in attrs.get('vegetables', []):
+            vegetable_pk_list.append(vegetable.pk)
+
         if attrs.get('vegetables'):
             recipe_filtered_list = recipe_filtered_list \
                 .filter(vegetables__in=attrs.get('vegetables')).distinct() \
@@ -150,11 +240,12 @@ def recipe_uniqueness_validator(attrs, **kwargs):
                 .filter(vegetables__isnull=True)
 
     # sauces
-    sauce_pk_list = []
-    for sauce in attrs.get('sauces', []):
-        sauce_pk_list.append(sauce.pk)
-
     if recipe_filtered_list:
+
+        sauce_pk_list = []
+        for sauce in attrs.get('sauces', []):
+            sauce_pk_list.append(sauce.pk)
+
         if attrs.get('sauces'):
             recipe_filtered_list = recipe_filtered_list \
                 .filter(sauces__in=attrs.get('sauces')).distinct() \
@@ -165,9 +256,9 @@ def recipe_uniqueness_validator(attrs, **kwargs):
             recipe_filtered_list \
                 .filter(sauces__isnull=True)
 
-    print(recipe_filtered_list)
-    for recipe in recipe_filtered_list:
-        print(model_to_dict(recipe))
+    # print(recipe_filtered_list)
+    # for recipe in recipe_filtered_list:
+    #     print(model_to_dict(recipe))
 
     if recipe_filtered_list:
         # pk = recipe_filtered_list.values('pk')[0]['pk']
