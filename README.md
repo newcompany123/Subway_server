@@ -1,20 +1,22 @@
-# Subway project v 0.1
+# MySubway v1.0
+
+### Python Version : 3.6.5
+### Django Version : 2.1.2
+
+MySubway is where you can save your Subway sandwich recipe.
+You can also try a various type of sandwiches on the ranking list.
+If you go to Subway often, show your recipe in the app to a clerk.
+Then you can enjoy how your sandwich is made instead of having a long conversation with the clerk.
+
+<br>
+
+### Used Skills
+* Python, Django, Docker, Nginx
+* AWS ELB / Route53 / S3 / RDS (PostgreSQL)
 
 
-### 개발 언어
-python version : 3.6.5
-
-
-### 개발 환경 세팅
-1. pyenv를 통한 python 가상환경 설정
- $ pyenv virtualenv 3.6.5 subway
- $ pyenv local subway
- ( $ pyenv version 으로 현 프로젝트 폴더 위치에 적용된 가상환경 확인 )
-
-2. requirements 파일 통한 python 패키지 설치
- - local env:
- - dev env:
- - production env:
-
-
-
+### Used Django Packages
+* django-filter
+* django-json-secrets
+* django-debug-toolbar
+* djangorestframework
