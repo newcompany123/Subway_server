@@ -61,6 +61,16 @@ class RecipeValidationSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
 
+        """
+        181029
+        [Error found]
+        When request data are overlapped,
+        (user input two same data)
+        those data are just passed to 'recipe_uniqueness_validator
+        And every logic of recipe_uniqueness_validator will be broken.
+
+        """
+
         result = recipe_uniqueness_validator(attrs, path=self.context)
         if type(result) is int:
             raise CustomAPIException(
