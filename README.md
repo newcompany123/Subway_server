@@ -1,26 +1,44 @@
 # MySubway v1.0
 
-    * Python Version : 3.6.5
-    * Django Version : 2.1.2
+MySubway is an app that you can keep your own recipe of Subway sandwich.\
+You can also try a various type of sandwich recipes registered on the app.\
+Even when you actually visit Subway, you can make good use of the app when ordering sandwich.\
+Instead of being hesitating for yourself telling the clerk each ingredients of your sandwich, just read your saved recipe in MySubway.
 
-MySubway is an app in which you can save your own recipe of Subway sandwich.\
-You can also experience a various type of sandwich recipes registered on the app.\
-Even when you actually visit Subway shop, you can make good use of the app when ordering sandwich.\
-Instead of telling the clerk detail information of your sandwich, just show your recipe in MySubway.\
-And see how your sandwich is being made.
 
 <br>
 
-### Used Skills
-* Python, Django, Docker, Nginx
-* AWS ELB / Route53 / S3 / RDS (PostgreSQL)
+## Used Skills
+
+* Python 3.6.5
+* Django 2.1.2
+  - django-json-secrets 0.1.10
+  - django-debug-toolbar 1.10.1
+  - django-storages 1.6.6
+* Django REST framework 3.8.2
+  - django-filter 2.0.0
+* AWS
+  - Elastic Beanstalk
+  - RDS(Relational Database Service)
+  - S3
+  - Route53
+  - ACM (AWS Certificate Manager)
+* Docker, Dockerhub
+* OAuth (Web, iOS, Android)
+  - Facebook Login
+  - Kakao Login
+* Database
+  - Local(sqlite3)
+  - Production & Dev(postgresql)
+* Server
+  - Nginx
+* Git
+  - Git Organization
+  - Git Fork Repository
+* etc
+  - Sentry
 
 
-### Used Django Packages
-* django-filter
-* django-json-secrets
-* django-debug-toolbar
-* djangorestframework
 
 <br>
 <br>
@@ -40,10 +58,10 @@ It is because this test is implemented only in back-end area, not in front-end a
 Even if we make similar function with Django template, it doesn't guarantee the operation in front-end side.\
 Instead, we use special test API from Facebook developer.
 
-Shown below is a brief explanation.
+Shown below is a brief explanation of the review.
 
     1. First, get app_access_token from Facebook
-    2. With the app_access_token, we can make a test-user
+    2. With the app_access_token, make a test-user
     3. When test user is made successfully, we can get general access-token from that test-user
 
 
@@ -67,7 +85,7 @@ class FacebookLoginTest(APITestCase):
 ```
 
 Our Facebook Login API address is basic information.\
-In this code, we assume that the user divided 'app.config.settings' into three parts: local, dev and production.\
+In this code, we assume that the user divided 'app.config.settings' into three parts: local, dev and prod(production).\
 To make this test code available both in local and production environments, URL_HOST need to be set for each environment as the code above.
 
 
