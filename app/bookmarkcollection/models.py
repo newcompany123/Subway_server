@@ -1,7 +1,5 @@
-from django.contrib.auth import get_user_model
+from django.conf import settings
 from django.db import models
-
-User = get_user_model()
 
 
 class BookmarkCollection(models.Model):
@@ -9,7 +7,7 @@ class BookmarkCollection(models.Model):
     Recipes which are Bookmarked by user
     """
     name = models.CharField(max_length=255, unique=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     # bookmarked_recipe = models.ManyToManyField(
     #     Bookmark,
     #     verbose_name='북마크 콜렉션',
