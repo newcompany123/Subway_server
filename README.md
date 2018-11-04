@@ -1,10 +1,10 @@
 # MySubway v1.0
 
-MySubway is an app that you can keep your own recipe of Subway sandwich.\
-You can also try a various type of sandwich recipes registered on the app.\
-Even when you actually visit Subway, you can make good use of the app when ordering sandwich.\
-Instead of being hesitating for yourself telling the clerk each ingredients of your sandwich, just read your saved recipe in MySubway.
-
+MySubway is an app that you can keep your own recipe of Subway sandwich.
+You can also try a various type of sandwiches registered on the app.
+Even when you actually visit Subway to order sandwiches, you can make good use of the app.
+Instead of hesitating to choose every ingredient you want, just open Mysubway app and read your recipe.\
+With MySubway, your Subway life would be much simpler!
 
 <br>
 
@@ -551,21 +551,4 @@ Now, we can get the response with 'pk' data.
 }
 ```
 
-
-
-
 <br>
-
-
-
-<br>
-
----
-
-<br>
-
-# Issues
-
-### 1. when default djanog-rest-framework page doens't work
-
-### 2.
