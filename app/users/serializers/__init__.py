@@ -1,3 +1,3 @@
 from .user import *
-from .facebook import *
-from .kakao import *
+from .facebook_login import *
+from .kakao_login import *

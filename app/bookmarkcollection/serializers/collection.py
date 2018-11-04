@@ -38,10 +38,9 @@ class BookmarkCollectionSerializer(serializers.ModelSerializer):
         # context = self.context
         # serializer = RecipeSerializer(bookmarked_recipe_list, many=True, context=context)
 
-        # 변경 3)
-        # iOS 요청으로 일단 auth_user_like_state, auth_user_bookmark_state를
+        # * iOS 요청으로 일단 auth_user_like_state, auth_user_bookmark_state를
         # null로 표시되도록 임시 변경
         serializer = RecipeSerializer(bookmarked_recipe_list, many=True)
-        ret['bookmarked_recipe'] = serializer.data
 
+        ret['bookmarked_recipe'] = serializer.data
         return ret

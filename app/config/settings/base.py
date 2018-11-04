@@ -12,10 +12,14 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 
 import os
 
+import sentry_sdk
 from djs import import_secrets
+from sentry_sdk.integrations.django import DjangoIntegration
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 ROOT_DIR = os.path.dirname(BASE_DIR)
+
+DSN_ADDRESS = ''
 
 # # SECRET # #
 # * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -70,7 +74,6 @@ INSTALLED_APPS = [
     'noticeboard',
     'bookmarkcollection',
     'ingredients',
-    'recipe_name',
 ]
 
 # Substituting a custom User model
@@ -195,3 +198,8 @@ if DEBUG_TOOLBAR_TURN_ON:
     DEBUG_TOOLBAR_CONFIG = {
         'INTERCEPT_REDIRECTS': True,
     }
+
+sentry_sdk.init(
+    dsn=DSN_ADDRESS,
+    integrations=[DjangoIntegration()]
+)

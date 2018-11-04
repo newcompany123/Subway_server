@@ -2,7 +2,6 @@ from django.conf import settings
 from django.db import models
 
 from ingredients.models import Toppings, Cheese, Sauces, Toasting, Sandwich, Bread, Vegetables
-from recipe_name.models import RecipeName
 
 __all__ = (
     'Recipe',
@@ -24,10 +23,17 @@ class Recipe(models.Model):
     #     null=True,
     #     verbose_name='빵',
     # )
-    name = models.OneToOneField(
-        RecipeName,
-        on_delete=models.SET_NULL,
-        null=True,
+
+    # name = models.OneToOneField(
+    #     RecipeName,
+    #     on_delete=models.SET_NULL,
+    #     null=True,
+    #     verbose_name='이름',
+    # )
+    name = models.CharField(
+        unique=True,
+        max_length=100,
+        blank=True,
         verbose_name='이름',
     )
     sandwich = models.ForeignKey(

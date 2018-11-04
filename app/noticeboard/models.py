@@ -1,14 +1,12 @@
-from django.contrib.auth import get_user_model
+from django.conf import settings
 from django.db import models
-
-User = get_user_model()
 
 
 class Post(models.Model):
     """
     Post model on noticeboard
     """
-    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     title = models.TextField()
     content = models.TextField()
     created_date = models.DateTimeField(auto_now_add=True)

@@ -1,5 +1,6 @@
-from django.urls import path, include
+from django.urls import path
 
+from recipes.apis.recipe_name_choices import RecipeNameChoicesListAPIView
 from .apis.validation import RecipeValidationAPIView
 from .apis.bookmark import BookmarkListCreateView
 from .apis.like import LikeListCreateView
@@ -13,5 +14,5 @@ urlpatterns = [
 
     path('validation/', RecipeValidationAPIView.as_view()),
 
-    path('name/', include('recipe_name.urls')),
+    path('name-choices/', RecipeNameChoicesListAPIView.as_view()),
 ]

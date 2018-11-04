@@ -30,7 +30,7 @@ class ListFilter(Filter):
             return qs
 
         self.lookup_expr = 'in'
-        value = urllib.parse.unquote_plus(value)
+        # value = urllib.parse.unquote_plus(value)
         value = value.replace(', ', '_ ')
         values_text = value.split(',')
         values = []
@@ -52,6 +52,7 @@ class RecipeFilter(FilterSet):
 
 
 class RecipeListCreateView(generics.ListCreateAPIView):
+
     # queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
 
@@ -75,21 +76,22 @@ class RecipeListCreateView(generics.ListCreateAPIView):
     search_fields = ('name__name',)
 
     def get_queryset(self):
+
+        # value = cache.get('recipes_detail')
+        # if not value:
         value = Recipe.objects \
-            .select_related('name', 'sandwich', 'bread', 'cheese', 'toasting', 'inventor') \
+            .select_related('sandwich', 'bread', 'cheese', 'toasting', 'inventor') \
             .prefetch_related('toppings', 'vegetables', 'sauces',
-                              'sandwich__main_ingredient', 'sandwich__category') \
+                              'sandwich__main_ingredient', 'sandwich__category',) \
             .annotate(
                     like_count=Count('liker', distinct=True),
                     bookmark_count=Count('bookmarker', distinct=True),
                     like_bookmark_count=Count('liker', distinct=True)
                                         + Count('bookmarker', distinct=True),
             )
+            # value = cache.get_or_set('recipes_detail', value, 300)
 
         return value
-
-        # queryset = cache.get_or_set('recipes_annotated', value, 3600)
-        # return queryset
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
@@ -103,16 +105,29 @@ class RecipeListCreateView(generics.ListCreateAPIView):
 
 
 class RecipeRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Recipe.objects \
-        .select_related('name', 'sandwich', 'bread', 'cheese', 'toasting', 'inventor') \
-        .prefetch_related('toppings', 'vegetables', 'sauces', 'sandwich__main_ingredient', 'sandwich__category')
 
+    # queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
-
-    # Data caching by Redis
-    # queryset = cache.get_or_set('recipes', Recipe.objects.all().values(), 3600)
 
     permission_classes = (
         permissions.IsAuthenticatedOrReadOnly,
         IsRecipeInventorOrReadOnly,
     )
+
+    def get_queryset(self):
+
+        # value = cache.get('recipes_detail')
+        # if not value:
+        value = Recipe.objects \
+            .select_related('sandwich', 'bread', 'cheese', 'toasting', 'inventor') \
+            .prefetch_related('toppings', 'vegetables', 'sauces',
+                              'sandwich__main_ingredient', 'sandwich__category',) \
+            .annotate(
+                    like_count=Count('liker', distinct=True),
+                    bookmark_count=Count('bookmarker', distinct=True),
+                    like_bookmark_count=Count('liker', distinct=True)
+                                        + Count('bookmarker', distinct=True),
+            )
+            # value = cache.get_or_set('recipes_detail', value, 300)
+
+        return value
