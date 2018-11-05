@@ -13,6 +13,7 @@ class BookmarkCollectionSerializer(serializers.ModelSerializer):
     #   required=False가 설정되도록 함.
 
     user = UserSerializer(read_only=True)
+    # bookmarked_recipe = BookmarkedRecipeSerializer(many=True, read_only=True)
 
     class Meta:
         model = BookmarkCollection

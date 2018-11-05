@@ -1,12 +1,11 @@
 # MySubway v1.0
 
-[Subwaylogo](./assets/login_page.png)
-
 MySubway is an app where you can keep your own recipes of Subway sandwich.
 You can also try various types of sandwiches registered on the app.
 You can make good use of it when you actually visit Subway.
 Instead of hesitating to choose every ingredient you want, just open Mysubway and read your recipe.\
 With MySubway, your Subway life will be much simpler!
+
 
 <br>
 
