@@ -1,10 +1,11 @@
 # MySubway v1.0
 
-MySubway is an app that you can keep your own recipe of Subway sandwich.
-You can also try a various type of sandwiches registered on the app.
-Even when you actually visit Subway to order sandwiches, you can make good use of the app.
-Instead of hesitating to choose every ingredient you want, just open Mysubway app and read your recipe.\
-With MySubway, your Subway life would be much simpler!
+MySubway is an app where you can keep your own recipes of Subway sandwich.
+You can also try various types of sandwiches registered on the app.
+You can make good use of it when you actually visit Subway.
+Instead of hesitating to choose every ingredient you want, just open Mysubway and read your recipe.\
+With MySubway, your Subway life will be much simpler!
+
 
 <br>
 
@@ -38,14 +39,9 @@ With MySubway, your Subway life would be much simpler!
 * etc
   - Sentry
 
-
-
-<br>
 <br>
 
 ---
-
-
 
 # Code Review
 * In this code review, the example codes have been simplified to make it easier to understand.
@@ -55,8 +51,8 @@ With MySubway, your Subway life would be much simpler!
 ## 1. Facebook Login Test with access_token
 This code doesn't follow common OAuth process of Facebook.\
 It is because this test is implemented only in back-end area, not in front-end area.
-Even if we make similar function with Django template, it doesn't guarantee the operation in front-end side.\
-Instead, we use special test API from Facebook developer.
+Even if we create similar situation with front-end through Django template, it doesn't guarantee the normal operation in front-end side.\
+Instead, we will utilize special test API from Facebook developer.
 
 Shown below is a brief explanation of the review.
 
@@ -65,8 +61,9 @@ Shown below is a brief explanation of the review.
     3. When test user is made successfully, we can get general access-token from that test-user
 
 
-In this code, we are going to use APITestCase from rest_framework.\
-First, we need to set some necessary information.
+We are going to use APITestCase from rest_framework.\
+First, we need to set some necessary information in the local scope of FacebookLoginTest class.
+Get-access_token API(URL_ACCESS_TOKEN) and Facebook Login API (URL_FACEBOOK_LOGIN) are basic information we need.
 
 ```python
 class FacebookLoginTest(APITestCase):
@@ -84,12 +81,12 @@ class FacebookLoginTest(APITestCase):
     URL_ACCESS_TOKEN = 'https://graph.facebook.com/v2.12/oauth/access_token'
 ```
 
-Our Facebook Login API address is basic information.\
-In this code, we assume that the user divided 'app.config.settings' into three parts: local, dev and prod(production).\
-To make this test code available both in local and production environments, URL_HOST need to be set for each environment as the code above.
+URL_HOST is also needed for the specific case.
+In this code, we assume that 'app.config.settings' is divided into three parts: local, dev and prod(production).\
+To make this test code available both in local and prod environments, URL_HOST needs to be set for each environment as above.
 
 
-Now let's look at 'test_facebook_login' which is the main body of the test code.
+Now let's look at 'test_facebook_login' which is the main method of the whole test code.
 
 
 ```python
@@ -122,8 +119,7 @@ It calls get_app_access_token_from_facebook.
 ```
 
 In the get_app_access_token_from_facebook method, it sends GET request with parameters including 'grant_type'.\
-With the received response data, call _get_json.
-_get_json method was made separately for json exception handling.
+With the received response data, call _get_json method. _get_json method was made for json exception handling.
 
 ```python
     def _get_json(self, response):
@@ -145,7 +141,7 @@ The response dict looks like this.
 }
 ```
 
-With this access_token, call get_short_term_access_token_from_facebook again in  test_facebook_login method.
+With this access_token, call get_short_term_access_token_from_facebook method.
 
 ```python
     def get_short_term_access_token_from_facebook(self, app_access_token):
@@ -165,7 +161,7 @@ With this access_token, call get_short_term_access_token_from_facebook again in 
         raise CustomAPIException("Unable to find user from response.")
 ```
 
-In this code, it sends GET request with access_token parameters.\
+The method sends GET request with access_token parameters.\
 Response data looks like this.
 
 ```json
@@ -181,8 +177,8 @@ Response data looks like this.
 }
 ```
 
-Now we have normal access_token which we can test our own Facebook Login API.\
-Test Facebook Login API request with access_token. And check the response data whether API works well.
+Now we have normal access_token which we can test our own Facebook Login API with.\
+Now all we have to do is testing Facebook Login API with access_token we just got. And check the response data whether API works correctly.
 
 ```python
     def test_facebook_login(self):
@@ -214,9 +210,8 @@ Test Facebook Login API request with access_token. And check the response data w
 
 ## 2. Make Field lookup '__exact__in' available in Django
 
-### The meaning of Field lookup '__exact__in' and its usage
+### 1) The meaning of Field lookup '__exact__in' and why is is needed
 
-The model structure is this.
 
 ```python
 class Recipe(models.Model):
@@ -282,8 +277,8 @@ class Sauces(models.Model):
 
 
 In the MySubway app, each recipe object should be unique. In other words, there are not the same recipes.\
-If the Recipe model has only Foreignkey relations, the way would be much simpler.\
-Just add below code into Recipe model.
+If the Recipe model has only Foreignkey relations, the solution would be a lot simpler.\
+Just add below code into Recipe model. And that's it.
 
 ```python
     class Meta:
@@ -328,6 +323,9 @@ def recipe_uniqueness_validator(attrs, **kwargs):
 ```
 
 For the foreign key relationship, comparing the request data and ForeignKey field is everything we have to do.\
+
+`recipe_filtered_list = Recipe.objects.filter(sandwich=attrs.get('sandwich'))`
+
 But with ManyToManyFields, it needs Field lookup something like '__exact__in'.\
 If we use Field lookup '__in', returned data won't be what we want. For example, Toppings' pk in request data is [1, 3, 5].
 
@@ -336,8 +334,11 @@ If we use Field lookup '__in', returned data won't be what we want. For example,
 Filtering above will find not only toppings of [1, 3, 5], but also [1], [1, 3], [1, 3, 5, 6] ...\
 So we need to make custom ORM for this specific case.
 
+
+### 2) Make Field lookup '__exact__in'
+
 First, add an annotation with Count() for numbering of each 'toppings'.
-'toppings' doesn't mean related_query_name, but the one used in the previous filter.
+Here, 'toppings' doesn't mean related_query_name, but the one used in the previous filter.
 Filtering 'num_toppings=3' to the annotated queryset will return the data.
 
 ```python
@@ -347,11 +348,21 @@ Recipe.objects\
         .filter(num_toppings=3)
 ```
 
-The returned data is very close but not exactly the answer.
-It is something look like [1, 3, 5], [1, 3, 5, 6], [1, 2, 3, 5].
+The returned data is very close to the answer but not exactly the one.
+It is something that looks like [1, 3, 5], [1, 3, 5, 6], [1, 2, 3, 5].
 The data contains every toppings we want to find but there are some extra toppings.\
-So, the next step is counting out unnecessary data from the result queryset.
+So, the next step is counting out unnecessary data from the result queryset above.
 
+
+`
+Recipe.objects
+        .annotate(num_toppings=Count('toppings'))
+        .filter(num_toppings__gt=3)
+`
+
+This code will return the queryset that has more than 3 elements like [1, 3, 5, 6], [1, 2, 3, 5].\
+Excluding these queryset from the previous queryset will return the exact data we want.\
+So, the final solution for Field lookup '__exact__in' is this.
 
 ```python
 Recipe.objects\
@@ -364,17 +375,8 @@ Recipe.objects\
         )
 ```
 
-`
-Recipe.objects
-        .annotate(num_toppings=Count('toppings'))
-        .filter(num_toppings__gt=3)
-`
-
-This code will return the queryset that has more than 3 elements like [1, 3, 5, 6], [1, 2, 3, 5].\
-Excluding these queryset from the previous queryset will return the exact data we want.
-
-There is another way to do this.
-This way use exclude  method twice to get the result.
+In fact, there is another way to do this.
+This time, use exclude method twice to get the result.
 
 ```python
 Recipe.objects\
@@ -387,7 +389,7 @@ Recipe.objects\
 `Sauces.objects.exclude(pk__in=[1, 3, 5]`
 The code means data like [1], [1, 3], [1, 5], [3, 5] ...
 So the queryset of excluding this data doesn't contain three elements we want to find: 1, 3, 5.\
-Excluding these queryset again from the previous queryset will also return the answer.
+Excluding these queryset again from the previous queryset will also return the answer we want.
 
 
 Here is simple format for '__exact__in' in Django
@@ -408,7 +410,7 @@ Here is simple format for '__exact__in' in Django
 
 
 Second code review above covered the uniqueness of the Recipe model.
-And when the Unique Validator finds the same recipe already existing in the DATABASE, it will return the below response.
+And when the Recipe Unique Validator finds the same recipe already existing in the DATABASE, it will return the below response.
 
 ```json
 {
@@ -417,7 +419,7 @@ And when the Unique Validator finds the same recipe already existing in the DATA
 ```
 
 But, front-end developers need more than the error message.
-They also need the exact number of the duplicate recipe to let user visit the page of the recipe.
+They also need the exact number of the duplicate recipe to let user visit the page of the recipe he tried to create.
 So, the response should be something like this.
 
 ```json
@@ -447,7 +449,7 @@ class CustomAPIException(APIException):
             self.detail = detail
 ```
 
-This Custom Exception works when it is called with raise statement.
+This Custom Exception works when it is called with 'raise CustomAPIException(...)' statement.
 
 
 ```python
@@ -460,7 +462,7 @@ from rest_framework import status
             )
 ```
 
-With this Custom Exception, we cannot add extra data to the response message.
+With this Custom Exception, we cannot just add extra data to the response message.\
 In this situation, we can consider Custom Exception Handler.
 
 
@@ -477,8 +479,8 @@ def custom_exception_handler(exc, context):
     return response
 ```
 
-Every exception raised in the app go through Custom Exception Handler.
-Therefore, we need to add the data to the response When the exception from Recipe Unique Validator comes to Custom Exception Handler.
+Every exception raised in the app goes through Custom Exception Handler.
+Therefore, we need to add the data to the response when the exception from Recipe Unique Validator comes to Custom Exception Handler.
 
 To do this, we need to pass 'pk' information to Custom Exception as below.
 
@@ -507,8 +509,6 @@ class CustomAPIException(APIException):
     detail = 'Invalid input.'
     default_code = 'invalid'
 
-    pk = None
-
     def __init__(self, status_code=None, detail=None, pk=None):
 
         if status_code is not None:
@@ -521,9 +521,8 @@ class CustomAPIException(APIException):
 
 ```
 
-Assigning received 'pk' data into self.pk in __init__ method won't pass 'pk' data to Custom Exception Handler.
-'pk' should be defined in CustomAPIException as class attribute.
-And then, it can be obtained in 'exc' attribute in Custom Exception Handler.
+Assigning received 'pk' data into self.pk in __init__ method will pass the data to Custom Exception Handler.
+Then, it can be obtained in 'exc' argument in Custom Exception Handler.
 
 
 ```python
@@ -540,7 +539,7 @@ def custom_exception_handler(exc, context):
 ```
 
 Finally, put 'pk' data into response dict.
-'try ~ finally' statement is for raising an error when there is no 'pk' data, which are the case of all other exceptions.
+'try ~ finally' statement is for raising an error when there is no 'pk' data, which is for the case of all other exceptions.
 
 Now, we can get the response with 'pk' data.
 
