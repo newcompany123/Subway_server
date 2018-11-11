@@ -18,7 +18,7 @@ class BookmarkCollectionListCreateView(generics.ListCreateAPIView):
     serializer_class = BookmarkCollectionSerializer
 
     permission_classes = (
-        permissions.IsAuthenticatedOrReadOnly,
+        permissions.IsAuthenticated,
         IsOwnerOrReadOnly,
     )
 
@@ -39,7 +39,7 @@ class BookmarkCollectionRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroy
     serializer_class = BookmarkCollectionSerializer
 
     permission_classes = (
-        permissions.IsAuthenticatedOrReadOnly,
+        permissions.IsAuthenticated,
         IsOwnerOrReadOnly,
     )
 
