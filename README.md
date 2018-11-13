@@ -387,7 +387,7 @@ Recipe.objects\
 ```
 
 `Sauces.objects.exclude(pk__in=[1, 3, 5]`
-The code means data like [1], [1, 3], [1, 5], [3, 5] ...
+The code means data like [1], [1, 3], [1, 5], [3, 5] ...\
 So the queryset of excluding this data doesn't contain three elements we want to find: 1, 3, 5.\
 Excluding these queryset again from the previous queryset will also return the answer we want.
 

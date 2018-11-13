@@ -2,6 +2,7 @@ import random
 
 
 # Recipe Name Pattern a
+from recipes.models import Recipe
 
 recipe_name_a_1 = [
 
@@ -255,9 +256,9 @@ recipe_name_b_2 = [
 def create_random_num(list):
     random_num = random.randint(0, len(list)-1)
 
-    print(list)
-    print(len(list))
-    print(random_num)
+    # print(list)
+    # print(len(list))
+    # print(random_num)
 
     return random_num
 
@@ -269,13 +270,23 @@ def create_random_sentence():
 
 
 def create_recipe_name_choice():
-    sentence_pattern = create_random_sentence()
-    first_half_list = 'recipe_name_' + sentence_pattern + '_1'
-    first_half_sentence = eval(first_half_list)[create_random_num(eval(first_half_list))]
 
-    second_half_list = 'recipe_name_' + sentence_pattern + '_2'
-    second_half_sentence = eval(second_half_list)[create_random_num(eval(second_half_list))]
+    recipe_name_choices_list = []
+    while len(recipe_name_choices_list) < 5:
+        sentence_pattern = create_random_sentence()
+        first_half_list = 'recipe_name_' + sentence_pattern + '_1'
+        first_half_sentence = eval(first_half_list)[create_random_num(eval(first_half_list))]
 
-    # print(f'{first_half_sentence} {second_half_sentence}')
-    complete_sentence = first_half_sentence + ' ' + second_half_sentence
-    return complete_sentence
+        second_half_list = 'recipe_name_' + sentence_pattern + '_2'
+        second_half_sentence = eval(second_half_list)[create_random_num(eval(second_half_list))]
+
+        # print(f'{first_half_sentence} {second_half_sentence}')
+        complete_sentence = first_half_sentence + ' ' + second_half_sentence
+
+        # 181111
+        # recipe_name validation added
+        if not Recipe.objects.filter(name=complete_sentence) and complete_sentence not in recipe_name_choices_list:
+            # print(complete_sentence)
+            recipe_name_choices_list.append(complete_sentence)
+
+    return recipe_name_choices_list
