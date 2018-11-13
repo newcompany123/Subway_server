@@ -1,7 +1,8 @@
-from rest_framework import serializers
+from rest_framework import serializers, status
 
 from recipes.serializers import RecipeSerializer
 from users.serializers import UserSerializer
+from utils.exceptions import CustomAPIException
 from ..models import BookmarkCollection
 
 
@@ -18,6 +19,17 @@ class BookmarkCollectionSerializer(serializers.ModelSerializer):
     class Meta:
         model = BookmarkCollection
         fields = '__all__'
+
+    def validate_name(self, name):
+
+        request_user = self.context['request'].user
+        if request_user.bookmarkcollection_set.filter(name=name):
+            raise CustomAPIException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail='collection name already exist',
+                name=name,
+            )
+        return name
 
     def to_representation(self, instance):
         ret = super().to_representation(instance)
