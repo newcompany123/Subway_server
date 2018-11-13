@@ -28,6 +28,7 @@ class CustomAPIException(APIException):
         #     self.pk = pk
 
         # custom (2) - Any word, number can be passed to custom excepion handler
-        if kwargs is not None:
+        # if kwargs is not None:
+        if kwargs:
             self.key = list(kwargs.keys())[0]
             self.value = kwargs[self.key]
