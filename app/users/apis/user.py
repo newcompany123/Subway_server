@@ -20,6 +20,14 @@ class UserListCreateView(generics.ListCreateAPIView):
     # Data caching by Redis∂
     # queryset = cache.get_or_set('users', User.objects.all(), 3600)
 
+    # 2018.11.14
+    # Pass self.request data as context
+    # : to represent token data in to_representation
+    def get_serializer_context(self):
+        # context = super().get_serializer_context()
+        context = self.request
+        return context
+
 
 class UserRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
@@ -32,3 +40,8 @@ class UserRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
         permissions.IsAuthenticatedOrReadOnly,
         IsOneselfOrReadOnly,
     )
+
+    def get_serializer_context(self):
+        # context = super().get_serializer_context()
+        context = self.request
+        return context
