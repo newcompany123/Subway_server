@@ -1,3 +1,5 @@
+import re
+
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework.authtoken.models import Token
@@ -23,6 +25,23 @@ class UserSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         ret = super().to_representation(instance)
-        token, _ = Token.objects.get_or_create(user=instance)
-        ret['token'] = token.key
+
+        # 2018.11.14
+        # Code of showing token data Refactored
+        # : show token data only when API request is related to user
+        allowed_path = [
+            '/user/',
+            '/user/kakao-login/',
+            '/user/facebook-login/',
+        ]
+
+        try:
+            path = self.context._request.path
+            if path in allowed_path or re.search(r'/user/(\d)/$', path):
+                token, _ = Token.objects.get_or_create(user=instance)
+                ret['token'] = token.key
+        except AttributeError:
+            # delete email address if request is not related to USER API
+            del ret['email']
+
         return ret
