@@ -2,6 +2,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from bookmarkcollection.models import BookmarkCollection
 from users.serializers import UserSerializer
 from utils.exceptions.get_object_or_404 import get_object_or_404_customed
 from ..models import Recipe, Bookmark
@@ -17,9 +18,20 @@ class BookmarkListCreateView(APIView):
         user = request.user
         recipe = get_object_or_404_customed(Recipe, pk=pk)
         instance, created = Bookmark.objects.get_or_create(
-            user=user,
             recipe=recipe,
+            user=user,
         )
+
+        # 181111
+        # Get or create default collection
+        #  and connect it with bookmark instance which was newly made above
+        if created:
+            collection, _ = BookmarkCollection.objects.get_or_create(
+                name='default',
+                user=user
+            )
+            instance.collection = collection
+            instance.save()
 
         if not created:
             instance.delete()
