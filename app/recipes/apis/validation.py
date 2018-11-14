@@ -31,6 +31,9 @@ class RecipeValidationAPIView(APIView):
         # 그리고 이 is_valid에서 return 되는 값은 True인데 공교롭게도 위에서
         # return Response({'result': True})에서 처럼 True를 반환받는다.
 
+        # Pass context data into RecipeValidation
+        # : Becauase recipe_uniqueness_validator need to distinguish the requests
+        #  between Recipe Create API and Recipe Create Valiation API)
         serializer = RecipeValidationSerializer(data=request.data, context=request.stream.path)
-        result = serializer.is_valid(raise_exception=True)
-        return Response({'detail': result})
+        serializer.is_valid(raise_exception=True)
+        return Response({'detail': 'Sandwich recipe can be made with the requested data'})
