@@ -17,6 +17,8 @@ __all__ = (
 )
 
 
+# Serializer for RecipeValidation added
+#  because exisitng serializer requires name field in its validation process
 class RecipeValidationSerializer(serializers.ModelSerializer):
 
     # name = serializers.CharField()
@@ -76,6 +78,6 @@ class RecipeValidationSerializer(serializers.ModelSerializer):
             raise CustomAPIException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail=f'Same sandwich recipe (pk:{result}) already exists!',
-                pk=result,
+                duplicate_recipe_pk=result,
             )
         return attrs

@@ -114,7 +114,7 @@ class RecipeSerializer(serializers.ModelSerializer):
             raise CustomAPIException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail=f'Same sandwich recipe (pk:{result}) already exists!',
-                pk=result,
+                duplicate_recipe_pk=result,
             )
 
         # attrs을 return하여 validate 과정 종료

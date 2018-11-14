@@ -49,8 +49,8 @@ class FacebookLoginTest(APITestCase):
             app_access_token = D['access_token']
             return app_access_token
         raise CustomAPIException(
-            detail="Could not determine application access token from response: %r." % response.text,
             status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Could not determine application access token from response: %r." % response.text,
         )
 
         # value에는 access_token이 들어있음

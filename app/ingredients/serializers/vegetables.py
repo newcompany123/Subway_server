@@ -25,8 +25,8 @@ class VegetablesRelatedField(serializers.RelatedField):
         if quantity_text not in ['조금', '보통', '많이'] \
                 or quantity_text is None:
             raise CustomAPIException(
+                status_code=status.HTTP_400_BAD_REQUEST,
                 detail='Input correct vegetable quantity option!',
-                status_code=status.HTTP_400_BAD_REQUEST
             )
         else:
             vegetable.quantity = quantity_text

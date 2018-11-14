@@ -50,8 +50,9 @@ class BookmarkCollectionRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroy
         user = get_object_or_404_customed(User, pk=pk)
         if not user == self.request.user:
             raise CustomAPIException(
-                detail="Authenticated user and user from request uri do not match",
                 status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Authenticated user and user from request uri do not match",
+                request_user_pk=self.request.user.pk
             )
         value = BookmarkCollection.objects.all().filter(user=self.request.user)
         return value

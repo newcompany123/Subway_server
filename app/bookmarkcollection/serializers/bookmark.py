@@ -21,7 +21,7 @@ class BookmarkSerializer(serializers.ModelSerializer):
             raise CustomAPIException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail='collection does not belong to request user',
-                collectio=collection.pk
+                collection_pk=collection.pk
             )
         return collection
 
