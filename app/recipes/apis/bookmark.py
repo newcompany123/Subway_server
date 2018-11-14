@@ -22,7 +22,7 @@ class BookmarkListCreateView(APIView):
             user=user,
         )
 
-        # 181111
+        # 2018.11.11
         # Get or create default collection
         #  and connect it with bookmark instance which was newly made above
         if created:

@@ -283,7 +283,7 @@ def create_recipe_name_choice():
         # print(f'{first_half_sentence} {second_half_sentence}')
         complete_sentence = first_half_sentence + ' ' + second_half_sentence
 
-        # 181111
+        # 2018.11.11
         # recipe_name validation added
         if not Recipe.objects.filter(name=complete_sentence) and complete_sentence not in recipe_name_choices_list:
             # print(complete_sentence)

@@ -13,5 +13,5 @@ class UserKakaoAccessTokenView(APIView):
         serializer = KakaoAccessTokenSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
-        serializer = UserSerializer(user)
+        serializer = UserSerializer(user, context=self.request)
         return Response(serializer.data)
