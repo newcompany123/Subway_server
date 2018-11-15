@@ -73,7 +73,14 @@ class RecipeListCreateView(generics.ListCreateAPIView):
     ordering = ('-like_bookmark_count', '-bookmark_count', '-like_count',)
 
     # searching
-    search_fields = ('name__name',)
+
+    # 2018.11.15
+    # Forgot to apply the change of name field to the search filter option
+    #  and it raised an 500 error as below
+    # "django.core.exceptions.FieldError: Unsupported lookup 'name' for
+    #  CharField or join on the field not permitted."
+    # search_fields = ('name__name',)
+    search_fields = ('name',)
 
     def get_queryset(self):
 
