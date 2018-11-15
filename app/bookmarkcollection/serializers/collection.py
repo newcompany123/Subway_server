@@ -3,7 +3,7 @@ from rest_framework import serializers, status
 from recipes.serializers import RecipeSerializer
 from users.serializers import UserSerializer
 from utils.exceptions import CustomAPIException
-from ..models import BookmarkCollection
+from ..models import Collection
 
 
 class BookmarkCollectionSerializer(serializers.ModelSerializer):
@@ -17,7 +17,7 @@ class BookmarkCollectionSerializer(serializers.ModelSerializer):
     # bookmarked_recipe = BookmarkedRecipeSerializer(many=True, read_only=True)
 
     class Meta:
-        model = BookmarkCollection
+        model = Collection
         fields = '__all__'
 
     def validate_name(self, name):

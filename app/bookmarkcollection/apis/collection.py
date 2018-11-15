@@ -5,7 +5,7 @@ from rest_framework import generics, permissions, status
 
 from utils.exceptions import CustomAPIException
 from utils.permission.custom_permission import IsOwnerOrReadOnly
-from ..models import BookmarkCollection
+from ..models import Collection
 from ..serializers.collection import BookmarkCollectionSerializer
 
 from utils.exceptions.get_object_or_404 import get_object_or_404_customed
@@ -14,7 +14,7 @@ User = get_user_model()
 
 
 class BookmarkCollectionListCreateView(generics.ListCreateAPIView):
-    # queryset = BookmarkCollection.objects.all()
+    # queryset = Collection.objects.all()
     serializer_class = BookmarkCollectionSerializer
 
     permission_classes = (
@@ -24,7 +24,7 @@ class BookmarkCollectionListCreateView(generics.ListCreateAPIView):
 
     def get_queryset(self):
         user = get_object_or_404_customed(User, pk=self.kwargs['pk'])
-        value = BookmarkCollection.objects.all().filter(user=user)
+        value = Collection.objects.all().filter(user=user)
         return value
 
     def perform_create(self, serializer):
@@ -35,7 +35,7 @@ class BookmarkCollectionListCreateView(generics.ListCreateAPIView):
 
 
 class BookmarkCollectionRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
-    # queryset = BookmarkCollection.objects.all()
+    # queryset = Collection.objects.all()
     serializer_class = BookmarkCollectionSerializer
 
     permission_classes = (
@@ -54,5 +54,5 @@ class BookmarkCollectionRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroy
                 detail="Authenticated user and user from request uri do not match",
                 request_user_pk=self.request.user.pk
             )
-        value = BookmarkCollection.objects.all().filter(user=self.request.user)
+        value = Collection.objects.all().filter(user=self.request.user)
         return value

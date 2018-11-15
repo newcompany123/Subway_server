@@ -2,7 +2,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from bookmarkcollection.models import BookmarkCollection
+from bookmarkcollection.models import Collection
 from users.serializers import UserSerializer
 from utils.exceptions.get_object_or_404 import get_object_or_404_customed
 from ..models import Recipe, Bookmark
@@ -26,7 +26,7 @@ class BookmarkListCreateView(APIView):
         # Get or create default collection
         #  and connect it with bookmark instance which was newly made above
         if created:
-            collection, _ = BookmarkCollection.objects.get_or_create(
+            collection, _ = Collection.objects.get_or_create(
                 name='default',
                 user=user
             )
