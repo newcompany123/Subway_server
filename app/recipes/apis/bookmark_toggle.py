@@ -48,5 +48,5 @@ class BookmarkListCreateView(APIView):
     def get(self, request, pk):
         recipe = get_object_or_404_customed(Recipe, pk=pk)
         bookmarkers = recipe.bookmarker.all()
-        serializer = UserSerializer(bookmarkers, many=True)
+        serializer = UserSerializer(bookmarkers, many=True, context=self.request)
         return Response(serializer.data)
