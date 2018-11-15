@@ -36,10 +36,19 @@ class UserSerializer(serializers.ModelSerializer):
         ]
 
         try:
-            path = self.context._request.path
-            if path in allowed_path or re.search(r'/user/(\d)/$', path):
+            # normal USER related API
+            if type(self.context) == dict and\
+                    (self.context['request']._request.path in allowed_path
+                     or re.search(r'/user/(\d)/$', self.context['request']._request.path)):
                 token, _ = Token.objects.get_or_create(user=instance)
                 ret['token'] = token.key
+
+            # Facebook-login / Kaka-login API
+            elif self.context._request.path in allowed_path:
+                token, _ = Token.objects.get_or_create(user=instance)
+                ret['token'] = token.key
+
+        # Bookmark & Collection API raise an AttributeError at 'self.context._request.path'
         except AttributeError:
             # delete email address if request is not related to USER API
             del ret['email']

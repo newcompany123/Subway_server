@@ -23,9 +23,13 @@ class UserListCreateView(generics.ListCreateAPIView):
     # 2018.11.14
     # Pass self.request data as context
     # : to represent token data in to_representation
+
+    # 2018.11.15
+    # Revoke the change above to allow serializer to get the original context data.
+    # (Original context data could be needed in the future)
     def get_serializer_context(self):
-        # context = super().get_serializer_context()
-        context = self.request
+        context = super().get_serializer_context()
+        # context = self.request
         return context
 
 
@@ -40,8 +44,3 @@ class UserRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
         permissions.IsAuthenticatedOrReadOnly,
         IsOneselfOrReadOnly,
     )
-
-    def get_serializer_context(self):
-        # context = super().get_serializer_context()
-        context = self.request
-        return context
