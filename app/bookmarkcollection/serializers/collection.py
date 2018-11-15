@@ -6,7 +6,7 @@ from utils.exceptions import CustomAPIException
 from ..models import Collection
 
 
-class BookmarkCollectionSerializer(serializers.ModelSerializer):
+class CollectionSerializer(serializers.ModelSerializer):
 
     # bookmarked_recipe = BookmarkSerializer(many=True, required=False)
     # Circling Import Issue -> model에서 'blank=True' 설정하고
@@ -23,7 +23,7 @@ class BookmarkCollectionSerializer(serializers.ModelSerializer):
     def validate_name(self, name):
 
         request_user = self.context['request'].user
-        if request_user.bookmarkcollection_set.filter(name=name):
+        if request_user.collection_set.filter(name=name):
             raise CustomAPIException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail='collection name already exist',

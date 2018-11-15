@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .apis.collection import BookmarkCollectionListCreateView, BookmarkCollectionRetrieveUpdateDestroyView
+from .apis.collection import CollectionListCreateView, CollectionRetrieveUpdateDestroyView
 from .apis.bookmark import BookmarkRetrieveUpdateDestroyView, BookmarkListCreateView
 
 urlpatterns = [
@@ -9,6 +9,6 @@ urlpatterns = [
     path('bookmark/<int:pk>/', BookmarkRetrieveUpdateDestroyView.as_view()),
 
     # 유저의 collection
-    path('collection/', BookmarkCollectionListCreateView.as_view()),
-    path('collection/<int:pk>/', BookmarkCollectionRetrieveUpdateDestroyView.as_view()),
+    path('collection/', CollectionListCreateView.as_view()),
+    path('collection/<int:pk>/', CollectionRetrieveUpdateDestroyView.as_view()),
 ]

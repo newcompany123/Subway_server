@@ -18,7 +18,7 @@ class IsOneselfOrReadOnly(permissions.BasePermission):
 
 
 class IsOwnerOrReadOnly(permissions.BasePermission):
-    # BookmarkCollectionListCreateView
+    # CollectionListCreateView
     def has_permission(self, request, view):
         if request.method in permissions.SAFE_METHODS:
             return True
@@ -29,7 +29,7 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
         user = get_object_or_404_customed(User, pk=pk)
         return user == request.user
 
-    # BookmarkCollectionRetrieveUpdateDestroyView
+    # CollectionRetrieveUpdateDestroyView
     def has_object_permission(self, request, view, obj):
         if request.method in permissions.SAFE_METHODS:
             return True

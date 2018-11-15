@@ -17,7 +17,7 @@ class BookmarkSerializer(serializers.ModelSerializer):
 
         user = self.context['request'].user
 
-        if not user.bookmarkcollection_set.filter(id=collection.pk):
+        if not user.collection_set.filter(id=collection.pk):
             raise CustomAPIException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail='collection does not belong to request user',
@@ -30,7 +30,7 @@ class BookmarkSerializer(serializers.ModelSerializer):
     # def to_representation(self, instance):
     #     ret = super().to_representation(instance)
     #
-    #     data = instance.bookmarkcollection_set.all()
-    #     serializer = BookmarkCollectionSerializer(data, many=True)
+    #     data = instance.collection_set.all()
+    #     serializer = CollectionSerializer(data, many=True)
     #     ret['collection'] = serializer.data
     #     return ret

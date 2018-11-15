@@ -6,16 +6,16 @@ from rest_framework import generics, permissions, status
 from utils.exceptions import CustomAPIException
 from utils.permission.custom_permission import IsOwnerOrReadOnly
 from ..models import Collection
-from ..serializers.collection import BookmarkCollectionSerializer
+from ..serializers.collection import CollectionSerializer
 
 from utils.exceptions.get_object_or_404 import get_object_or_404_customed
 
 User = get_user_model()
 
 
-class BookmarkCollectionListCreateView(generics.ListCreateAPIView):
+class CollectionListCreateView(generics.ListCreateAPIView):
     # queryset = Collection.objects.all()
-    serializer_class = BookmarkCollectionSerializer
+    serializer_class = CollectionSerializer
 
     permission_classes = (
         permissions.IsAuthenticated,
@@ -34,9 +34,9 @@ class BookmarkCollectionListCreateView(generics.ListCreateAPIView):
         serializer.save(user=user)
 
 
-class BookmarkCollectionRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+class CollectionRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     # queryset = Collection.objects.all()
-    serializer_class = BookmarkCollectionSerializer
+    serializer_class = CollectionSerializer
 
     permission_classes = (
         permissions.IsAuthenticated,
