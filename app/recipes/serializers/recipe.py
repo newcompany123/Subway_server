@@ -253,8 +253,12 @@ class RecipeSerializer(serializers.ModelSerializer):
     def to_representation(self, obj):
         ret = super().to_representation(obj)
 
+        # 2018.11.14
+        # 1. Token is not showed when request is not about User API
+        # 2. Represent email information only when request is related to USER API
+
         # To protect private user information
-        del ret['inventor']['email']
-        del ret['inventor']['token']
+        # del ret['inventor']['email']
+        # del ret['inventor']['token']
 
         return ret
