@@ -1,7 +1,7 @@
 from django.db import models
 from django.conf import settings
 
-from bookmarkcollection.models import BookmarkCollection
+from bookmarkcollection.models import Collection
 
 __all__ = (
     'Bookmark',
@@ -21,13 +21,13 @@ class Bookmark(models.Model):
         on_delete=models.CASCADE,
     )
     # collection = models.OneToOneField(
-    #     BookmarkCollection,
+    #     Collection,
     #     on_delete=models.SET_NULL,
     #     null=True,
     #     default=None
     # )
     collection = models.ForeignKey(
-        BookmarkCollection,
+        Collection,
         on_delete=models.CASCADE,
         blank=True,
         null=True,

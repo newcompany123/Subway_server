@@ -1,21 +1,28 @@
 import re
 
 from django.contrib.auth import get_user_model
-from rest_framework import generics, permissions, status
+from rest_framework import generics, permissions
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
-from utils.exceptions import CustomAPIException
 from utils.permission.custom_permission import IsOwnerOrReadOnly
-from ..models import BookmarkCollection
-from ..serializers.collection import BookmarkCollectionSerializer
+from ..models import Collection
+from ..serializers.collection import CollectionSerializer
 
 from utils.exceptions.get_object_or_404 import get_object_or_404_customed
 
 User = get_user_model()
 
+__all__ = (
+    'CollectionListCreateView',
+    'CollectionRetrieveUpdateDestroyView',
+    'CollectionRetrieveDefault',
+)
 
-class BookmarkCollectionListCreateView(generics.ListCreateAPIView):
-    # queryset = BookmarkCollection.objects.all()
-    serializer_class = BookmarkCollectionSerializer
+
+class CollectionListCreateView(generics.ListCreateAPIView):
+    # queryset = Collection.objects.all()
+    serializer_class = CollectionSerializer
 
     permission_classes = (
         permissions.IsAuthenticated,
@@ -24,19 +31,16 @@ class BookmarkCollectionListCreateView(generics.ListCreateAPIView):
 
     def get_queryset(self):
         user = get_object_or_404_customed(User, pk=self.kwargs['pk'])
-        value = BookmarkCollection.objects.all().filter(user=user)
+        value = Collection.objects.filter(user=user)
         return value
 
     def perform_create(self, serializer):
-        # user = get_object_or_404_customed(User, pk=self.kwargs['pk'])
-        # serializer.save(user=user)
-        user = self.request.user
-        serializer.save(user=user)
+        serializer.save(user=self.request.user)
 
 
-class BookmarkCollectionRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
-    # queryset = BookmarkCollection.objects.all()
-    serializer_class = BookmarkCollectionSerializer
+class CollectionRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+    # queryset = Collection.objects.all()
+    serializer_class = CollectionSerializer
 
     permission_classes = (
         permissions.IsAuthenticated,
@@ -48,10 +52,14 @@ class BookmarkCollectionRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroy
         result = re.search(r'.+?(\d+).+?', path)
         pk = result.group(1)
         user = get_object_or_404_customed(User, pk=pk)
-        if not user == self.request.user:
-            raise CustomAPIException(
-                detail="Authenticated user and user from request uri do not match",
-                status_code=status.HTTP_400_BAD_REQUEST,
-            )
-        value = BookmarkCollection.objects.all().filter(user=self.request.user)
+        value = Collection.objects.filter(user=user)
         return value
+
+
+class CollectionRetrieveDefault(APIView):
+
+    # pk is passed from users/urls.py
+    def get(self, request, pk):
+        default_collection = Collection.objects.filter(user=self.request.user).first()
+        serializer = CollectionSerializer(default_collection)
+        return Response(serializer.data)

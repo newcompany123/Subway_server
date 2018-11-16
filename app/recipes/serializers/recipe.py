@@ -114,7 +114,7 @@ class RecipeSerializer(serializers.ModelSerializer):
             raise CustomAPIException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail=f'Same sandwich recipe (pk:{result}) already exists!',
-                pk=result,
+                duplicate_recipe_pk=result,
             )
 
         # attrs을 return하여 validate 과정 종료
@@ -162,31 +162,24 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     def get_auth_user_like_state(self, obj):
 
-        if self.context:
-            user = self.context['request'].user
-            if type(user) is AnonymousUser:
-                return None
-
-            # if obj in user.liked_recipe.all():
-
+        if self.context and type(self.context['request'].user) is not AnonymousUser:
             # Code Refactoring : queryset -> filtering
+            # if obj in user.liked_recipe.all():
             if User.objects.filter(like__recipe__in=[obj]):
-                return 'True'
+                return True
             else:
-                return 'False'
+                return False
         else:
-            pass
+            return None
 
     def get_auth_user_bookmark_state(self, obj):
-        if self.context:
-            user = self.context['request'].user
-            if type(user) is AnonymousUser:
-                return None
+
+        if self.context and type(self.context['request'].user) is not AnonymousUser:
             # if obj in user.bookmarked_recipe.all():
             if User.objects.filter(bookmark__recipe__in=[obj]):
-                return 'True'
+                return True
             else:
-                return 'False'
+                return False
         else:
             pass
 
@@ -253,8 +246,12 @@ class RecipeSerializer(serializers.ModelSerializer):
     def to_representation(self, obj):
         ret = super().to_representation(obj)
 
+        # 2018.11.14
+        # 1. Token is not showed when request is not about User API
+        # 2. Represent email information only when request is related to USER API
+
         # To protect private user information
-        del ret['inventor']['email']
-        del ret['inventor']['token']
+        # del ret['inventor']['email']
+        # del ret['inventor']['token']
 
         return ret

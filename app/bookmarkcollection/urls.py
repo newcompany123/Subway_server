@@ -1,14 +1,17 @@
 from django.urls import path
 
-from .apis.collection import BookmarkCollectionListCreateView, BookmarkCollectionRetrieveUpdateDestroyView
-from .apis.bookmark import BookmarkRetrieveUpdateDestroyView, BookmarkListCreateView
+from .apis import BookmarkListCreateView, BookmarkRetrieveUpdateDestroyView, CollectionListCreateView, \
+    CollectionRetrieveUpdateDestroyView, CollectionRetrieveDefault
 
 urlpatterns = [
-    # 유저가 bookamrk한 모든 recipes
+    # User's bookamrked recipes
     path('bookmark/', BookmarkListCreateView.as_view()),
     path('bookmark/<int:pk>/', BookmarkRetrieveUpdateDestroyView.as_view()),
 
-    # 유저의 collection
-    path('collection/', BookmarkCollectionListCreateView.as_view()),
-    path('collection/<int:pk>/', BookmarkCollectionRetrieveUpdateDestroyView.as_view()),
+    # User's collection
+    path('collection/', CollectionListCreateView.as_view()),
+    path('collection/<int:pk>/', CollectionRetrieveUpdateDestroyView.as_view()),
+
+    # Special API to load data in the front-end more efficiently
+    path('collection/default/', CollectionRetrieveDefault.as_view()),
 ]

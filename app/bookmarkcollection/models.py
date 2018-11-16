@@ -1,8 +1,12 @@
 from django.conf import settings
 from django.db import models
 
+__all__ = (
+    'Collection',
+)
 
-class BookmarkCollection(models.Model):
+
+class Collection(models.Model):
     """
     Recipes which are Bookmarked by user
     """

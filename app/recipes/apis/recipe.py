@@ -1,8 +1,4 @@
-import urllib
-
 from django.contrib.auth import get_user_model
-from django.contrib.auth.models import AnonymousUser
-from django.core.cache import cache
 from django.db.models import Count
 from django_filters import FilterSet, Filter
 from django_filters.rest_framework import DjangoFilterBackend
@@ -73,7 +69,14 @@ class RecipeListCreateView(generics.ListCreateAPIView):
     ordering = ('-like_bookmark_count', '-bookmark_count', '-like_count',)
 
     # searching
-    search_fields = ('name__name',)
+
+    # 2018.11.15
+    # Forgot to apply the change of name field to the search filter option
+    #  and it raised an 500 error as below
+    # "django.core.exceptions.FieldError: Unsupported lookup 'name' for
+    #  CharField or join on the field not permitted."
+    # search_fields = ('name__name',)
+    search_fields = ('name',)
 
     def get_queryset(self):
 
@@ -96,7 +99,7 @@ class RecipeListCreateView(generics.ListCreateAPIView):
     def get_serializer_context(self):
         context = super().get_serializer_context()
 
-        # get_serializer_context 작동 테스트 코드
+        # Testing the Recipe API response in the case of AnonymousUser
         # context['request'].user = AnonymousUser()
         return context
 

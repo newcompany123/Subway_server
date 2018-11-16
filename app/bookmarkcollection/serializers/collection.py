@@ -1,12 +1,16 @@
 from rest_framework import serializers, status
 
-from recipes.serializers import RecipeSerializer
+from bookmarkcollection.serializers import BookmarkSerializer
 from users.serializers import UserSerializer
 from utils.exceptions import CustomAPIException
-from ..models import BookmarkCollection
+from ..models import Collection
+
+__all__ = (
+    'CollectionSerializer',
+)
 
 
-class BookmarkCollectionSerializer(serializers.ModelSerializer):
+class CollectionSerializer(serializers.ModelSerializer):
 
     # bookmarked_recipe = BookmarkSerializer(many=True, required=False)
     # Circling Import Issue -> model에서 'blank=True' 설정하고
@@ -14,29 +18,32 @@ class BookmarkCollectionSerializer(serializers.ModelSerializer):
     #   required=False가 설정되도록 함.
 
     user = UserSerializer(read_only=True)
-    # bookmarked_recipe = BookmarkedRecipeSerializer(many=True, read_only=True)
 
     class Meta:
-        model = BookmarkCollection
-        fields = '__all__'
+        model = Collection
+        fields = (
+            'id',
+            'user',
+            'name',
+        )
 
     def validate_name(self, name):
 
         request_user = self.context['request'].user
-        if request_user.bookmarkcollection_set.filter(name=name):
+        if request_user.collection_set.filter(name=name):
             raise CustomAPIException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail='collection name already exist',
-                name=name,
+                duplicate_name=name,
             )
         return name
 
     def to_representation(self, instance):
         ret = super().to_representation(instance)
 
-        bookmarked_recipe_list = []
-        for i in instance.bookmark_set.all():
-            bookmarked_recipe_list.append(i.recipe)
+        # bookmarked_recipe_list = []
+        # for i in instance.bookmark_set.all():
+        #     bookmarked_recipe_list.append(i.recipe)
 
         # 방법 1) informal way
         # serializer = RecipeSerializer(bookmarked_recipe_list, many=True)
@@ -52,7 +59,12 @@ class BookmarkCollectionSerializer(serializers.ModelSerializer):
 
         # * iOS 요청으로 일단 auth_user_like_state, auth_user_bookmark_state를
         # null로 표시되도록 임시 변경
-        serializer = RecipeSerializer(bookmarked_recipe_list, many=True)
+        # serializer = RecipeSerializer(bookmarked_recipe_list, many=True)
+        # ret['bookmarked_recipe'] = serializer.data
 
-        ret['bookmarked_recipe'] = serializer.data
+        # 3) Change representing 'recipe' -> 'bookmarks'
+        #   (bookmark objects contain recipe information)
+        bookmarks = instance.bookmark_set.all()
+        serializer = BookmarkSerializer(bookmarks, many=True, context=self.context)
+        ret['bookmarks'] = serializer.data
         return ret

@@ -60,8 +60,8 @@ def recipe_uniqueness_validator(attrs, **kwargs):
     #     name = attrs.get('name')
     #     if recipe.name == name:
     #         raise CustomAPIException(
-    #             detail='Same sandwich name already exists!',
     #             status_code=status.HTTP_400_BAD_REQUEST
+    #             detail='Same sandwich name already exists!',
     #         )
 
     # O(log n)
@@ -69,10 +69,11 @@ def recipe_uniqueness_validator(attrs, **kwargs):
 
     # Do not apply to Recipe Validation API
     if not kwargs.get('path') == '/recipe/validation/':
-        if Recipe.objects.filter(name=attrs.get('name')):
+        if Recipe.objects.filter(name=attrs['name']):
             raise CustomAPIException(
+                status_code=status.HTTP_400_BAD_REQUEST,
                 detail='Same sandwich name already exists!',
-                status_code=status.HTTP_400_BAD_REQUEST
+                duplicate_name=attrs['name']
             )
 
     # 2) recipe ingredients' uniqueness validation
@@ -106,8 +107,8 @@ def recipe_uniqueness_validator(attrs, **kwargs):
     #                             if set(recipe.sauces.all()) == (set(sauce_list) if sauce_list is not None else set()):
     #
     #                                 raise CustomAPIException(
-    #                                     detail='Same sandwich recipe already exists!',
     #                                     status_code=status.HTTP_400_BAD_REQUEST
+    #                                     detail='Same sandwich recipe already exists!',
     #                                 )
 
     # O(log n) - Time: 100~150ms
