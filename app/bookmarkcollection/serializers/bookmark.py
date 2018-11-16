@@ -1,7 +1,7 @@
 from rest_framework import serializers, status
 
 from recipes.models import Bookmark
-from users.serializers import UserSerializer
+from recipes.serializers import RecipeSerializer
 from utils.exceptions import CustomAPIException
 
 __all__ = (
@@ -11,11 +11,20 @@ __all__ = (
 
 class BookmarkSerializer(serializers.ModelSerializer):
 
-    user = UserSerializer(read_only=True)
+    # 2018.11.16
+    # Remove 'user' field from the Bookmark API response.
+    # user = UserSerializer(read_only=True)
+
+    recipe = RecipeSerializer(read_only=True)
 
     class Meta:
         model = Bookmark
-        fields = '__all__'
+        fields = (
+            'id',
+            'recipe',
+            'collection',
+            'created_date',
+        )
 
     def validate_collection(self, collection):
 
