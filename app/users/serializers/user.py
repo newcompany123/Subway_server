@@ -57,5 +57,7 @@ class UserSerializer(serializers.ModelSerializer):
         except AttributeError:
             # delete email address if request is not related to USER API
             del ret['email']
+        except KeyError:
+            del ret['email']
 
         return ret

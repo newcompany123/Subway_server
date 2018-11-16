@@ -4,6 +4,10 @@ from recipes.models import Bookmark
 from users.serializers import UserSerializer
 from utils.exceptions import CustomAPIException
 
+__all__ = (
+    'BookmarkSerializer',
+)
+
 
 class BookmarkSerializer(serializers.ModelSerializer):
 

@@ -1,2 +1,2 @@
-from .collection import *
 from .bookmark import *
+from .collection import *

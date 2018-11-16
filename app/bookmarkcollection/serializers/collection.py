@@ -5,6 +5,10 @@ from users.serializers import UserSerializer
 from utils.exceptions import CustomAPIException
 from ..models import Collection
 
+__all__ = (
+    'CollectionSerializer',
+)
+
 
 class CollectionSerializer(serializers.ModelSerializer):
 

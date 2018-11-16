@@ -2,6 +2,8 @@ import re
 
 from django.contrib.auth import get_user_model
 from rest_framework import generics, permissions, status
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from utils.exceptions import CustomAPIException
 from utils.permission.custom_permission import IsOwnerOrReadOnly
@@ -11,6 +13,12 @@ from ..serializers.collection import CollectionSerializer
 from utils.exceptions.get_object_or_404 import get_object_or_404_customed
 
 User = get_user_model()
+
+__all__ = (
+    'CollectionListCreateView',
+    'CollectionRetrieveUpdateDestroyView',
+    'CollectionRetrieveDefault',
+)
 
 
 class CollectionListCreateView(generics.ListCreateAPIView):
@@ -24,14 +32,11 @@ class CollectionListCreateView(generics.ListCreateAPIView):
 
     def get_queryset(self):
         user = get_object_or_404_customed(User, pk=self.kwargs['pk'])
-        value = Collection.objects.all().filter(user=user)
+        value = Collection.objects.filter(user=user)
         return value
 
     def perform_create(self, serializer):
-        # user = get_object_or_404_customed(User, pk=self.kwargs['pk'])
-        # serializer.save(user=user)
-        user = self.request.user
-        serializer.save(user=user)
+        serializer.save(user=self.request.user)
 
 
 class CollectionRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
@@ -48,11 +53,5 @@ class CollectionRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView)
         result = re.search(r'.+?(\d+).+?', path)
         pk = result.group(1)
         user = get_object_or_404_customed(User, pk=pk)
-        if not user == self.request.user:
-            raise CustomAPIException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Authenticated user and user from request uri do not match",
-                request_user_pk=self.request.user.pk
-            )
-        value = Collection.objects.all().filter(user=self.request.user)
+        value = Collection.objects.filter(user=user)
         return value

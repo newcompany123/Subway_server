@@ -1,6 +1,10 @@
 from django.conf import settings
 from django.db import models
 
+__all__ = (
+    'Collection',
+)
+
 
 class Collection(models.Model):
     """
