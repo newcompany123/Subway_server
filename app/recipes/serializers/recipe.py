@@ -162,31 +162,24 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     def get_auth_user_like_state(self, obj):
 
-        if self.context:
-            user = self.context['request'].user
-            if type(user) is AnonymousUser:
-                return None
-
-            # if obj in user.liked_recipe.all():
-
+        if self.context and type(self.context['request'].user) is not AnonymousUser:
             # Code Refactoring : queryset -> filtering
+            # if obj in user.liked_recipe.all():
             if User.objects.filter(like__recipe__in=[obj]):
-                return 'True'
+                return True
             else:
-                return 'False'
+                return False
         else:
-            pass
+            return None
 
     def get_auth_user_bookmark_state(self, obj):
-        if self.context:
-            user = self.context['request'].user
-            if type(user) is AnonymousUser:
-                return None
+
+        if self.context and type(self.context['request'].user) is not AnonymousUser:
             # if obj in user.bookmarked_recipe.all():
             if User.objects.filter(bookmark__recipe__in=[obj]):
-                return 'True'
+                return True
             else:
-                return 'False'
+                return False
         else:
             pass
 

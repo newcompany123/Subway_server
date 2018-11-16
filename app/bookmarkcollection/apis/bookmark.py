@@ -30,8 +30,9 @@ class BookmarkListCreateView(generics.ListCreateAPIView):
         values = Bookmark.objects.filter(user=user)
         return values
 
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+    # Unnecessary since Bookmark POST request is not used
+    # def perform_create(self, serializer):
+    #     serializer.save(user=self.request.user)
 
 
 class BookmarkRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):

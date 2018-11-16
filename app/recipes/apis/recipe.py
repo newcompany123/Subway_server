@@ -1,8 +1,4 @@
-import urllib
-
 from django.contrib.auth import get_user_model
-from django.contrib.auth.models import AnonymousUser
-from django.core.cache import cache
 from django.db.models import Count
 from django_filters import FilterSet, Filter
 from django_filters.rest_framework import DjangoFilterBackend
@@ -103,7 +99,7 @@ class RecipeListCreateView(generics.ListCreateAPIView):
     def get_serializer_context(self):
         context = super().get_serializer_context()
 
-        # get_serializer_context 작동 테스트 코드
+        # Testing the Recipe API response in the case of AnonymousUser
         # context['request'].user = AnonymousUser()
         return context
 
