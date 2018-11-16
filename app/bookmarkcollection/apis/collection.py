@@ -55,3 +55,12 @@ class CollectionRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView)
         user = get_object_or_404_customed(User, pk=pk)
         value = Collection.objects.filter(user=user)
         return value
+
+
+class CollectionRetrieveDefault(APIView):
+
+    # pk is passed from users/urls.py
+    def get(self, request, pk):
+        default_collection = Collection.objects.filter(user=self.request.user).first()
+        serializer = CollectionSerializer(default_collection)
+        return Response(serializer.data)
