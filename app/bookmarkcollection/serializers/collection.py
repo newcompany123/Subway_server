@@ -1,6 +1,6 @@
 from rest_framework import serializers, status
 
-from recipes.serializers import RecipeSerializer
+from bookmarkcollection.serializers import BookmarkSerializer
 from users.serializers import UserSerializer
 from utils.exceptions import CustomAPIException
 from ..models import Collection
@@ -18,11 +18,14 @@ class CollectionSerializer(serializers.ModelSerializer):
     #   required=False가 설정되도록 함.
 
     user = UserSerializer(read_only=True)
-    # bookmarked_recipe = BookmarkedRecipeSerializer(many=True, read_only=True)
 
     class Meta:
         model = Collection
-        fields = '__all__'
+        fields = (
+            'id',
+            'user',
+            'name',
+        )
 
     def validate_name(self, name):
 
@@ -38,9 +41,9 @@ class CollectionSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         ret = super().to_representation(instance)
 
-        bookmarked_recipe_list = []
-        for i in instance.bookmark_set.all():
-            bookmarked_recipe_list.append(i.recipe)
+        # bookmarked_recipe_list = []
+        # for i in instance.bookmark_set.all():
+        #     bookmarked_recipe_list.append(i.recipe)
 
         # 방법 1) informal way
         # serializer = RecipeSerializer(bookmarked_recipe_list, many=True)
@@ -56,7 +59,12 @@ class CollectionSerializer(serializers.ModelSerializer):
 
         # * iOS 요청으로 일단 auth_user_like_state, auth_user_bookmark_state를
         # null로 표시되도록 임시 변경
-        serializer = RecipeSerializer(bookmarked_recipe_list, many=True)
+        # serializer = RecipeSerializer(bookmarked_recipe_list, many=True)
+        # ret['bookmarked_recipe'] = serializer.data
 
-        ret['bookmarked_recipe'] = serializer.data
+        # 3) Change representing 'recipe' -> 'bookmarks'
+        #   (bookmark objects contain recipe information)
+        bookmarks = instance.bookmark_set.all()
+        serializer = BookmarkSerializer(bookmarks, many=True, context=self.context)
+        ret['bookmarks'] = serializer.data
         return ret
