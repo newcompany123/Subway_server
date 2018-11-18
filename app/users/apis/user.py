@@ -14,7 +14,7 @@ __all__ = (
 
 
 class UserListCreateView(generics.ListCreateAPIView):
-    queryset = User.objects.all()
+    queryset = User.objects.filter(is_superuser=False)
     serializer_class = UserSerializer
 
     # Data caching by Redis
@@ -34,7 +34,7 @@ class UserListCreateView(generics.ListCreateAPIView):
 
 
 class UserRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = User.objects.all()
+    queryset = User.objects.filter(is_superuser=False)
     serializer_class = UserSerializer
 
     # Data caching by Redis
