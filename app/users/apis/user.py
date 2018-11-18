@@ -17,7 +17,7 @@ class UserListCreateView(generics.ListCreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
-    # Data caching by Redis∂
+    # Data caching by Redis
     # queryset = cache.get_or_set('users', User.objects.all(), 3600)
 
     # 2018.11.14
