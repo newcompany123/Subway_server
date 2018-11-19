@@ -209,9 +209,10 @@ def recipe_uniqueness_validator(attrs, **kwargs):
     # toppings
     if recipe_filtered_list:
 
-        topping_pk_list = []
-        for topping in attrs.get('toppings', []):
-            topping_pk_list.append(topping.pk)
+        # topping_pk_list = []
+        # for topping in attrs.get('toppings', []):
+        #     topping_pk_list.append(topping.pk)
+        topping_pk_list = [x.pk for x in attrs.get('toppings', [])]
 
         if attrs.get('toppings'):
             recipe_filtered_list = recipe_filtered_list \
@@ -226,9 +227,7 @@ def recipe_uniqueness_validator(attrs, **kwargs):
     # vegetables
     if recipe_filtered_list:
 
-        vegetable_pk_list = []
-        for vegetable in attrs.get('vegetables', []):
-            vegetable_pk_list.append(vegetable.pk)
+        vegetable_pk_list = [x.pk for x in attrs.get('vegetables', [])]
 
         if attrs.get('vegetables'):
             recipe_filtered_list = recipe_filtered_list \
@@ -236,6 +235,7 @@ def recipe_uniqueness_validator(attrs, **kwargs):
                 .annotate(num_vegetables=Count('vegetables', distinct=True)) \
                 .filter(num_vegetables=len(attrs.get('vegetables'))) \
                 .exclude(vegetables__in=Vegetables.objects.exclude(pk__in=vegetable_pk_list))
+
         else:
             recipe_filtered_list \
                 .filter(vegetables__isnull=True)
@@ -243,9 +243,7 @@ def recipe_uniqueness_validator(attrs, **kwargs):
     # sauces
     if recipe_filtered_list:
 
-        sauce_pk_list = []
-        for sauce in attrs.get('sauces', []):
-            sauce_pk_list.append(sauce.pk)
+        sauce_pk_list = [x.pk for x in attrs.get('sauces', [])]
 
         if attrs.get('sauces'):
             recipe_filtered_list = recipe_filtered_list \
