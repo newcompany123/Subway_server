@@ -235,6 +235,30 @@ class Command(BaseCommand):
                 obj.calories = obj_name_dict[obj_name]
                 obj.save()
 
+        def get_or_create_with_calories_for_vegetables(class_name, folder_name, obj_name_dict):
+            for obj_name in obj_name_dict:
+                for quantity in ['조금', '보통', '많이']:
+                    obj, _ = class_name.objects.get_or_create(name=obj_name, quantity=quantity)
+
+                    image_path = folder_name + '/' + eval(folder_name + '_dict')[obj_name] + '.png'
+                    image_path3x = folder_name + '/' + eval(folder_name + '_dict')[obj_name] + '@3x.png'
+
+                    static_storage_class = import_string(settings.STATICFILES_STORAGE)
+                    static_storage = static_storage_class()
+
+                    image_url = static_storage.url(image_path)
+                    image_url3x = static_storage.url(image_path3x)
+                    obj.image = image_url
+                    obj.image3x = image_url3x
+
+                    obj.calories = obj_name_dict[obj_name]
+
+                    # 2018.11.19
+                    # Quantity process added
+                    obj.quantity = quantity
+
+                    obj.save()
+
         def get_or_create_for_main_ingredient(obj_name, obj_quantity):
             obj, _ = MainIngredient.objects.get_or_create(name=obj_name, quantity=obj_quantity)
 
@@ -279,8 +303,10 @@ class Command(BaseCommand):
         get_or_create_with_calories(Bread, 'bread', bread_dict)
         get_or_create_with_calories(Cheese, 'cheese', cheese_dict)
         get_or_create_with_calories(Toppings, 'toppings', topping_dict)
-        get_or_create_with_calories(Vegetables, 'vegetables', vegetable_dict)
+        # get_or_create_with_calories(Vegetables, 'vegetables', vegetable_dict)
         get_or_create_with_calories(Sauces, 'sauces', sauce_dict)
+
+        get_or_create_with_calories_for_vegetables(Vegetables, 'vegetables', vegetable_dict)
 
         for name in sandwich_list:
             sandwich, _ = Sandwich.objects.get_or_create(name=name)
