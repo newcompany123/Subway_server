@@ -4,6 +4,7 @@
 /.secrets
 .vscode/
 *.json
+/app/*.png
 
 # static
 bread
