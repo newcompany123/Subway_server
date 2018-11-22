@@ -32,7 +32,7 @@ class BookmarkSerializer(serializers.ModelSerializer):
 
         if not user.collection_set.filter(id=collection.pk):
             raise CustomAPIException(
-                status_code=status.HTTP_400_BAD_REQUEST,
+                status_code=status.HTTP_403_FORBIDDEN,
                 detail='collection does not belong to request user',
                 collection_pk=collection.pk
             )
