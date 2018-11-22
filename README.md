@@ -66,7 +66,6 @@ In this review, the example codes have been simplified to make it easier to unde
 [2. Make Field lookup '__exact__in' available in Django](https://github.com/newcompany123/Subway_Server/tree/smallbee#2-make-field-lookup-__exact__in-available-in-django) \
 [3. Display extra string data in json API response using CustomExceptionHandler](https://github.com/newcompany123/Subway_Server/tree/smallbee#3-display-extra-string-data-in-json-api-response-using-customexceptionhandler) \
 [4. Find a DjangoFilterBackend bug and fix it with BaseFilterBackend](https://github.com/newcompany123/Subway_Server/tree/smallbee#4-find-a-djangofilterbackend-bug-and-fix-it-with-basefilterbackend) \
-[5. Fix a OrderingFilter import bug](https://github.com/newcompany123/Subway_Server/tree/smallbee#5-fix-a-orderingfilter-import-bug)
 
 
 
@@ -682,5 +681,185 @@ Now, we can display any string data in the API response.
     "duplicate_name": "..."
 }
 ```
+
+<br>
+
+
+
+
+## 4. Find a DjangoFilterBackend bug and fix it with BaseFilterBackend
+
+The first page of MySubway app shows the rank of Sandwich Recipe. \
+As the page should shows the latest data, it brings all objects from the database and turn into python objects.
+This can make a problem with big Sandwich recipes data. \
+For this reason, checked the efficiency of the rank page with django-debug-toolbar. \
+The result was pretty serious.
+
+![sql_queries_before_optimization](./assets/sql_queries_before_optimization.png)
+
+Loading just 18 objects makes 384 queries(including 382 similar and 361 duplicates) in Django.
+It seems that the server will be down even with a small amount of data.
+To solve the problem, used one of the most effective ways, using select_related, prefetch_related.
+
+
+```python
+    def get_queryset(self):
+
+        value = Recipe.objects \
+            .select_related('sandwich', 'bread', 'cheese', 'toasting', 'inventor') \
+            .prefetch_related('toppings', 'vegetables', 'sauces',
+                              'sandwich__main_ingredient', 'sandwich__category')
+        return value
+```
+
+Use select_related with OneToOneField and ForeignKey of Recipe, and prefetch_related with ManyToManyField. \
+As you can see, add 'sandwich__main_ingredient' and 'sandwich__category' too because those models are also displayed in the Recipe API Response. \
+(Just think add every field that is displayed in the json API response) \
+Let's check the django-debug-toolbar again.
+
+![sql_queries_after_optimization](./assets/sql_queries_after_optimization.png)
+
+The duplicated queries decreased from 384 to 153. But it still makes 144 duplicate queries. \
+After a long time of debugging, it turned out that the DjangoFilterBackend caused the problem. \
+Without DjangoFilterBackend, the django made only 7 queries.
+
+![sql_queries_without_DjangoFilterBackend](./assets/sql_queries_without_DjangoFilterBackend.png)
+
+
+The DjangoFilterBackend code used in the project was the way written in official Django REST framework website.
+
+
+`Django REST framework official guide` \
+[https://www.django-rest-framework.org/api-guide/filtering/#api-guide](https://www.django-rest-framework.org/api-guide/filtering/#api-guide)
+
+
+![DRF_Official_DjangoFilterBackend](./assets/DRF_Official_DjangoFilterBackend.png)
+
+<br>
+
+`My Code - Using default DjangoFilterBackend`
+
+```python
+class RecipeListCreateView(generics.ListCreateAPIView):
+
+    ...
+
+    filter_backends = (DjangoFilterBackend, ...)
+    filter_fields = ('sandwich',)
+
+```
+
+And even with FilterSet class(Custom usage of DjangoFilterBackend), django made 144 duplicate queries.
+
+
+`My Code (2) - Using FilterSet`
+
+```python
+class ListFilter(Filter):
+    def filter(self, qs, value):
+        if not value:
+            return qs
+
+        self.lookup_expr = 'in'
+        value = value.replace(', ', '_ ')
+        values_text = value.split(',')
+        values = []
+        for value in values_text:
+            value = value.replace('_ ', ', ')
+            obj = Sandwich.objects.get(name=value)
+            values.append(obj.id)
+        return super().filter(qs, values)
+
+
+class RecipeFilter(FilterSet):
+    sandwich = ListFilter()
+
+    class Meta:
+        model = Recipe
+        fields = (
+            'sandwich',
+        )
+
+class RecipeListCreateView(generics.ListCreateAPIView):
+
+    ...
+
+    filter_backends = (DjangoFilterBackend, ...)
+    filter_class = RecipeFilter
+
+```
+
+
+Later on, I found the person who experienced the same issue in django-rest-framework github page.
+
+Link : [Duplicate results of ManyToManyField when using SearchFilter.](https://github.com/encode/django-rest-framework/issues/1488)
+
+In the post of the issue, the user named 'mmedal' said that he made a solution and made a pull request. \
+So, I checked the code of [django-rest-framework/rest-framework/filters.py](https://github.com/tomchristie/django-rest-framework/blob/master/rest_framework/filters.py#L107) and it was fixed as he said in the issue post.
+
+
+```python
+class SearchFilter(BaseFilterBackend):
+
+    ...
+
+    def filter_queryset(self, request, queryset, view):
+
+        ...
+
+        if self.must_call_distinct(queryset, search_fields):
+            # Filtering against a many-to-many field requires us to
+            # call queryset.distinct() in order to avoid duplicate items
+            # in the resulting queryset.
+            # We try to avoid this if possible, for performance reasons.
+            queryset = distinct(queryset, base)
+        return queryset
+```
+
+This code implement inheritance with 'BaseFilterBackend'. BaseFilterBackend was the basic way written in official Django REST framework website.
+
+`Django REST framework official guide (2)` \
+[https://www.django-rest-framework.org/api-guide/filtering/#custom-generic-filtering](https://www.django-rest-framework.org/api-guide/filtering/#custom-generic-filtering)
+
+![DRF_Official_CustomGenericFiltering](./assets/DRF_Official_CustomGenericFiltering.png)
+
+I tried again using BaseFilterBackend with filter_queryset method. \
+Using filter_queryset method of BaseFilterBackend needs a little more works than using DjangoFilterBackend or FilterSet. \
+Query parameter should be extracted from request and also queryset should be made and returned.
+
+
+```python
+class RecipeFilter(BaseFilterBackend):
+    """
+    Filter Recipe with category
+    """
+    def filter_queryset(self, request, queryset, view):
+        params = request.query_params.get('sandwich')
+
+        if params:
+            params = params.replace(', ', '_ ')
+            params_text = params.split(',')
+            sandwich_list = [x.replace('_ ', ', ') for x in params_text]
+            queryset = queryset.filter(sandwich__name__in=sandwich_list)
+        return queryset
+
+
+class RecipeListCreateView(generics.ListCreateAPIView):
+
+    ...
+
+    filter_backends = (RecipeFilter, ...)
+
+```
+
+After all, we succeed optimizing queries with no duplicate.
+
+
+![sql_queries_with_BaseFilterBackend](./assets/sql_queries_with_BaseFilterBackend.png)
+
+
+In conclusion, the way of using DjangoFilterBackend or FilterSet as guide of Django REST framework still cause a duplicate queries issue. \
+For now, use BaseFilterBackend with filter_queryset method since it fixed the bug. \
+
 
 <br>
