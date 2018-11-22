@@ -41,10 +41,34 @@ With MySubway, your Subway life will be much simpler!
 
 <br>
 
+
+
+## Modeling
+
+
+<br>
+
+
+
+## ERD
+
+<br>
+
+
+
 ---
 
-# Code Review
-* In this code review, the example codes have been simplified to make it easier to understand.
+# Tips learned from the project
+In this review, the example codes have been simplified to make it easier to understand.
+
+### TABLE
+[1. Facebook Login Test with access_token](https://github.com/newcompany123/Subway_Server/tree/smallbee#1-facebook-login-test-with-access_token) \
+[2. Make Field lookup '__exact__in' available in Django](https://github.com/newcompany123/Subway_Server/tree/smallbee#2-make-field-lookup-__exact__in-available-in-django) \
+[3. Display extra string data in json API response using CustomExceptionHandler](https://github.com/newcompany123/Subway_Server/tree/smallbee#3-display-extra-string-data-in-json-api-response-using-customexceptionhandler) \
+[4. Find a DjangoFilterBackend bug and fix it with BaseFilterBackend](https://github.com/newcompany123/Subway_Server/tree/smallbee#4-find-a-djangofilterbackend-bug-and-fix-it-with-basefilterbackend) \
+[5. Fix a OrderingFilter import bug](https://github.com/newcompany123/Subway_Server/tree/smallbee#5-fix-a-orderingfilter-import-bug)
+
+
 
 <br>
 
@@ -205,8 +229,11 @@ Now all we have to do is testing Facebook Login API with access_token we just go
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 ```
 
-
 <br>
+
+
+
+
 
 ## 2. Make Field lookup '__exact__in' available in Django
 
@@ -402,15 +429,17 @@ Here is simple format for '__exact__in' in Django
         <Model_name_of_field>.objects.exclude(pk__in=[])
 ```
 
-
-
 <br>
 
-## 3. Pass extra data to default JSON API response
+
+
+
+
+## 3. Display extra string data in json API response using CustomExceptionHandler
 
 
 Second code review above covered the uniqueness of the Recipe model.
-And when the Recipe Unique Validator finds the same recipe already existing in the DATABASE, it will return the below response.
+And when the Recipe Unique Validator finds the same recipe already existing in the DATABASE, it will return the response as below.
 
 ```json
 {
@@ -419,8 +448,8 @@ And when the Recipe Unique Validator finds the same recipe already existing in t
 ```
 
 But, front-end developers need more than the error message.
-They also need the exact number of the duplicate recipe to let user visit the page of the recipe he tried to create.
-So, the response should be something like this.
+They also need the exact number of the duplicate recipe to let user visit the page of the duplicate recipe.
+To do that, we need to turn response into something like this.
 
 ```json
 {
@@ -429,7 +458,8 @@ So, the response should be something like this.
 }
 ```
 
-To add that extra pk data to error response message, look at the CustomAPIException first.
+Let's make this response using CustomExceptionHandler. \
+First, look at the CustomAPIException to add the extra pk information.
 
 ```python
 from rest_framework import status
@@ -516,13 +546,13 @@ class CustomAPIException(APIException):
         if detail is not None:
             self.detail = detail
 
-        if pk is not None:
+        if pk:
             self.pk = pk
 
 ```
 
 Assigning received 'pk' data into self.pk in __init__ method will pass the data to Custom Exception Handler.
-Then, it can be obtained in 'exc' argument in Custom Exception Handler.
+Then, it can be obtained with 'exc' argument in Custom Exception Handler.
 
 
 ```python
@@ -547,6 +577,109 @@ Now, we can get the response with 'pk' data.
 {
     "detail": "Same sandwich recipe already exists!",
     "pk": 11
+}
+```
+
+<br>
+
+If you understand the explanation till this point, let's go further step with this code.
+
+Although we can display pk data in the API response when user try making an existing recipe, there could be many similar situations. \
+In other words, we might want to display other data such as "duplicate_name": "my best sandwich!". \
+We are going to take advantage of Python function's trait: Python function can accept unlimited number of keyword arguments using '**kwargs'.
+
+
+Let's pass "duplicate_name=name" instead of "pk=result"
+
+
+```python
+from rest_framework import status
+
+    ...
+    raise CustomAPIException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail='collection name already exist',
+                duplicate_name=name,
+            )
+```
+
+And, we need to accept the data in CustomAPIException. \
+look at the difference in parameters of __init__ method.
+
+```python
+class CustomAPIException(APIException):
+
+    status_code = status.HTTP_400_BAD_REQUEST
+    detail = 'Invalid input.'
+    default_code = 'invalid'
+
+    def __init__(self, status_code=None, detail=None, **kwargs):
+        ...
+```
+
+keyword arguments received from **kwargs are dictionary data, which means we can display input 'key' in the API response too.
+
+To extract the key from the dictionary, use dictionary's 'keys' function.
+
+e.g.
+```
+$ kwargs
+>> { 'key1': 'a', 'key2': 'b', ...}
+$ kwargs.keys()
+>> dict_keys(['key1', 'key2'])
+$ list(kwargs.keys())
+>> ['key1', 'key2']
+$ list(kwargs.keys())[0]
+'key1'
+```
+
+Using 'keys' function, we can assign 'key' and 'value'.
+
+```python
+class CustomAPIException(APIException):
+
+    status_code = status.HTTP_400_BAD_REQUEST
+    detail = 'Invalid input.'
+    default_code = 'invalid'
+
+    def __init__(self, status_code=None, detail=None, **kwargs):
+
+        if status_code is not None:
+            self.status_code = status_code
+        if detail is not None:
+            self.detail = detail
+
+        if kwargs:
+            self.key = list(kwargs.keys())[0]
+            self.value = kwargs[self.key]
+```
+
+
+The only thing left is modifying custom_exception_handler function.
+
+
+```python
+def custom_exception_handler(exc, context):
+
+    response = exception_handler(exc, context)
+
+    try:
+        # if exc.pk:
+        #     response.data['pk'] = exc.pk
+        if exc.key and exc.value:
+            response.data[exc.key] = exc.value
+    finally:
+        return response
+```
+
+
+Now, we can display any string data in the API response.
+
+
+```json
+{
+    "detail": "collection name already exist",
+    "duplicate_name": "..."
 }
 ```
 
