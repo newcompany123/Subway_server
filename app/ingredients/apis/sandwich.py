@@ -46,17 +46,12 @@ class SandwichFilter(BaseFilterBackend):
 
 
 class SandwichListCreateView(generics.ListCreateAPIView):
-    # queryset = Sandwich.objects.all()
+
     queryset = Sandwich.objects.prefetch_related(
         'main_ingredient',
         'category',
     )
     serializer_class = SandwichSerializer
-
-    # Data caching by Redis
-    # queryset = cache.get_or_set('sandwiches', Sandwich.objects.all().values(), 3600)
-    # queryset = cache.get_or_set('sandwiches', Sandwich.objects.all(), 3600)
-
     permission_classes = (
         permissions.IsAuthenticatedOrReadOnly,
         IsSuperUserOrReadOnly,
@@ -66,10 +61,10 @@ class SandwichListCreateView(generics.ListCreateAPIView):
     # filtering
     # filter_fields = ('category',)
     # filter_class = SandwichFilter
-    
+
     # >> 2018.11.21
     filter_backends = (SandwichFilter, OrderingFilter)
 
-    # ordering
+    # OrderingFilter
     ordering_fields = ('id', 'ordering_num', 'category_new', 'category_event',)
     ordering = ('ordering_num',)

@@ -65,9 +65,7 @@ class RecipeFilter(BaseFilterBackend):
 
 class RecipeListCreateView(generics.ListCreateAPIView):
 
-    # queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
-
     permission_classes = (
         permissions.IsAuthenticatedOrReadOnly,
     )
@@ -81,14 +79,14 @@ class RecipeListCreateView(generics.ListCreateAPIView):
     # filter_class = RecipeFilter
 
     # >> 2018.11.21
+    # For the same reason above
     filter_backends = (RecipeFilter, OrderingFilter, SearchFilter,)
 
-    # ordering
+    # OrderingFilter
     ordering_fields = ('id', 'like_count', 'bookmark_count', 'created_date',)
     ordering = ('-like_bookmark_count', '-bookmark_count', '-like_count',)
 
-    # searching
-
+    # SearchingFilter
     # 2018.11.15
     # Forgot to apply the change of name field to the search filter option
     #  and it raised an 500 error as below
@@ -109,7 +107,6 @@ class RecipeListCreateView(generics.ListCreateAPIView):
                     like_bookmark_count=Count('liker', distinct=True)
                                         + Count('bookmarker', distinct=True),
             )
-
         return value
 
     def get_serializer_context(self):
@@ -125,9 +122,7 @@ class RecipeListCreateView(generics.ListCreateAPIView):
 
 class RecipeRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
 
-    # queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
-
     permission_classes = (
         permissions.IsAuthenticatedOrReadOnly,
         IsRecipeInventorOrReadOnly,
@@ -135,8 +130,6 @@ class RecipeRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
 
-        # value = cache.get('recipes_detail')
-        # if not value:
         value = Recipe.objects \
             .select_related('sandwich', 'bread', 'cheese', 'toasting', 'inventor') \
             .prefetch_related('toppings', 'vegetables', 'sauces',
@@ -147,6 +140,4 @@ class RecipeRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
                     like_bookmark_count=Count('liker', distinct=True)
                                         + Count('bookmarker', distinct=True),
             )
-            # value = cache.get_or_set('recipes_detail', value, 300)
-
         return value
