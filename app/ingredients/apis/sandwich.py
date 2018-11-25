@@ -1,53 +1,70 @@
-# from django_filters import FilterSet
-from django.core.cache import cache
-from django_filters.rest_framework import DjangoFilterBackend, FilterSet, Filter
-from rest_framework.filters import OrderingFilter
+from rest_framework.filters import OrderingFilter, BaseFilterBackend
 from rest_framework import generics, permissions
 
-from utils.exceptions.get_object_or_404 import get_object_or_404_customed
 from utils.permission.custom_permission import IsSuperUserOrReadOnly
 from ..serializers import SandwichSerializer
-from ..models import Sandwich, Category
+from ..models import Sandwich
 
 
-class CustomFilter(Filter):
-    def filter(self, qs, value):
-        if not value:
-            return qs
-        uppercase_value = value.upper()
-        obj = get_object_or_404_customed(Category, name=uppercase_value)
-        return super().filter(qs, obj)
+# class CustomFilter(Filter):
+#     def filter(self, qs, value):
+#         # qs = distinct(qs, qs)
+#         qs = qs.distinct()
+#
+#         if not value:
+#             return qs
+#         # uppercase_value = value.upper()
+#         obj = get_object_or_404_customed(Category, name=value)
+#         return super().filter(qs, obj)
+#
+#
+# class SandwichFilter(FilterSet):
+#     category = CustomFilter()
+#
+#     class Meta:
+#         model = Sandwich
+#         fields = (
+#             'category',
+#         )
 
 
-class SandwichFilter(FilterSet):
-    category = CustomFilter()
+# 2018.11.21
+# Using FilterSet and Filter causes duplicates in queries
+# -> BaseFilterBackend and filter_queryset
+# Result : 22 qs -> 4 qs
 
-    class Meta:
-        model = Sandwich
-        fields = (
-            'category',
-        )
+class SandwichFilter(BaseFilterBackend):
+    """
+    Filter Sandwich with category
+    """
+    def filter_queryset(self, request, queryset, view):
+        params = request.query_params.get('category')
+
+        if params:
+            queryset = queryset.filter(category__name=params)
+        return queryset
 
 
 class SandwichListCreateView(generics.ListCreateAPIView):
-    queryset = Sandwich.objects.all()
+
+    queryset = Sandwich.objects.prefetch_related(
+        'main_ingredient',
+        'category',
+    )
     serializer_class = SandwichSerializer
-
-    # Data caching by Redis
-    # queryset = cache.get_or_set('sandwiches', Sandwich.objects.all().values(), 3600)
-    # queryset = cache.get_or_set('sandwiches', Sandwich.objects.all(), 3600)
-
     permission_classes = (
         permissions.IsAuthenticatedOrReadOnly,
         IsSuperUserOrReadOnly,
     )
 
-    filter_backends = (DjangoFilterBackend, OrderingFilter)
-
+    # filter_backends = (DjangoFilterBackend, OrderingFilter)
     # filtering
     # filter_fields = ('category',)
-    filter_class = SandwichFilter
+    # filter_class = SandwichFilter
 
-    # ordering
+    # >> 2018.11.21
+    filter_backends = (SandwichFilter, OrderingFilter)
+
+    # OrderingFilter
     ordering_fields = ('id', 'ordering_num', 'category_new', 'category_event',)
     ordering = ('ordering_num',)

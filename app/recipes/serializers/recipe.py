@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
+from django.core.cache import cache
 
 from rest_framework import serializers, status
 
@@ -245,6 +246,15 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     def to_representation(self, obj):
         ret = super().to_representation(obj)
+
+        # 2018.11.21
+        # Cannot apply Redis cache to django rest framework API
+        #   since the most of returned data is changed according to the request.
+        #   And even with the API that returns same json data, couldn't find the point to cache the json data.
+
+        # ret = cache.get('recipe_ret')
+        # if not ret:
+        #     ret = cache.get_or_set('recipe_ret', super().to_representation(obj), 300)
 
         # 2018.11.14
         # 1. Token is not showed when request is not about User API

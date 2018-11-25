@@ -1,14 +1,23 @@
 from rest_framework import serializers, status
 
+from ..models import Vegetables
+
 from utils.exceptions import CustomAPIException
 from utils.exceptions.get_object_or_404 import get_object_or_404_customed
-from ..models import Vegetables
 
 
 class VegetablesSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Vegetables
-        fields = '__all__'
+        fields = (
+            'id',
+            'name',
+            'quantity',
+            'calories',
+            'image',
+            'image3x',
+        )
 
 
 class VegetablesRelatedField(serializers.RelatedField):
@@ -20,7 +29,6 @@ class VegetablesRelatedField(serializers.RelatedField):
 
     def to_internal_value(self, data):
         vegetable_name = data.get('name')
-        vegetable = get_object_or_404_customed(Vegetables, name=vegetable_name)
         quantity_text = data.get('quantity')
         if quantity_text not in ['조금', '보통', '많이'] \
                 or quantity_text is None:
@@ -28,7 +36,5 @@ class VegetablesRelatedField(serializers.RelatedField):
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail='Input correct vegetable quantity option!',
             )
-        else:
-            vegetable.quantity = quantity_text
-            vegetable.save()
+        vegetable = get_object_or_404_customed(Vegetables, name=vegetable_name, quantity=quantity_text)
         return vegetable

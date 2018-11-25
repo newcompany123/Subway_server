@@ -37,5 +37,5 @@ class LikeListCreateView(APIView):
         # recipe = Recipe.objects.get(pk=pk)
         recipe = get_object_or_404_customed(Recipe, pk=pk)
         likers = recipe.liker.all()
-        serializer = UserSerializer(likers, many=True)
+        serializer = UserSerializer(likers, many=True, context=self.request)
         return Response(serializer.data)

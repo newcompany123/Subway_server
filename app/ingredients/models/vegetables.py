@@ -22,7 +22,7 @@ class Vegetables(models.Model):
     )
     name = models.CharField(
         max_length=100,
-        unique=True,
+        # unique=True,
         help_text='100자까지 Vegetable의 이름을 저장합니다.',
     )
     quantity = models.CharField(

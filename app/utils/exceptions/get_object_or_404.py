@@ -21,5 +21,5 @@ def get_object_or_404_customed(queryset, *filter_args, **filter_kwargs):
         raise CustomAPIException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"{queryset.__name__}'s object is not found!",
-            duplicate_object=queryset.__name__,
+            object=queryset.__name__,
         )

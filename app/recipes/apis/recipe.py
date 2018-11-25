@@ -1,12 +1,8 @@
 from django.contrib.auth import get_user_model
 from django.db.models import Count
-from django_filters import FilterSet, Filter
-from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.filters import OrderingFilter, SearchFilter
-
+from rest_framework.filters import OrderingFilter, SearchFilter, BaseFilterBackend
 from rest_framework import generics, permissions
 
-from ingredients.models import Sandwich
 from utils.permission.custom_permission import IsRecipeInventorOrReadOnly
 
 from ..serializers.recipe import RecipeSerializer
@@ -20,56 +16,77 @@ __all__ = (
 )
 
 
-class ListFilter(Filter):
-    def filter(self, qs, value):
-        if not value:
-            return qs
+# class ListFilter(Filter):
+#     def filter(self, qs, value):
+#         if not value:
+#             return qs
+#
+#         self.lookup_expr = 'in'
+#         # value = urllib.parse.unquote_plus(value)
+#         value = value.replace(', ', '_ ')
+#         values_text = value.split(',')
+#         values = []
+#         for value in values_text:
+#             value = value.replace('_ ', ', ')
+#             obj = Sandwich.objects.get(name=value)
+#             values.append(obj.id)
+#         return super().filter(qs, values)
+#
+#
+# class RecipeFilter(FilterSet):
+#     sandwich = ListFilter()
+#
+#     class Meta:
+#         model = Recipe
+#         fields = (
+#             'sandwich',
+#         )
 
-        self.lookup_expr = 'in'
-        # value = urllib.parse.unquote_plus(value)
-        value = value.replace(', ', '_ ')
-        values_text = value.split(',')
-        values = []
-        for value in values_text:
-            value = value.replace('_ ', ', ')
-            obj = Sandwich.objects.get(name=value)
-            values.append(obj.id)
-        return super().filter(qs, values)
 
+# 2018.11.21
+# Using FilterSet and Filter causes duplicates in queries
+# -> BaseFilterBackend and filter_queryset
+# Result : 145 qs -> 7 qs
 
-class RecipeFilter(FilterSet):
-    sandwich = ListFilter()
+class RecipeFilter(BaseFilterBackend):
+    """
+    Filter Recipe with category
+    """
+    def filter_queryset(self, request, queryset, view):
+        params = request.query_params.get('sandwich')
 
-    class Meta:
-        model = Recipe
-        fields = (
-            'sandwich',
-        )
+        if params:
+            params = params.replace(', ', '_ ')
+            params_text = params.split(',')
+            sandwich_list = [x.replace('_ ', ', ') for x in params_text]
+            queryset = queryset.filter(sandwich__name__in=sandwich_list)
+        return queryset
 
 
 class RecipeListCreateView(generics.ListCreateAPIView):
 
-    # queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
-
     permission_classes = (
         permissions.IsAuthenticatedOrReadOnly,
     )
 
-    filter_backends = (DjangoFilterBackend, OrderingFilter, SearchFilter)
+    # filter_backends = (DjangoFilterBackend, OrderingFilter, SearchFilter)
+    # # filtering
+    # # filter_fields = ('sandwich',)
+    # # FilterSet & Filter used to allow DjangoFilterBackends get multiple fields.
+    # # e.g.
+    # # {{HOST}}/recipe/?sandwich=비엘티%2C블랙+포레스트햄+%26+에그%2C+치즈
+    # filter_class = RecipeFilter
 
-    # filtering
-    # filter_fields = ('sandwich',)
-    # DjangoFilterBackends에 multiple id를 사용하기 위해
-    # filter_class와 ListFilter를 활용하여 Custom
-    filter_class = RecipeFilter
+    # >> 2018.11.21
+    # For the same reason above
+    filter_backends = (RecipeFilter, OrderingFilter, SearchFilter,)
 
-    # ordering
+    # OrderingFilter
     ordering_fields = ('id', 'like_count', 'bookmark_count', 'created_date',)
     ordering = ('-like_bookmark_count', '-bookmark_count', '-like_count',)
 
-    # searching
-
+    # SearchingFilter
     # 2018.11.15
     # Forgot to apply the change of name field to the search filter option
     #  and it raised an 500 error as below
@@ -80,8 +97,6 @@ class RecipeListCreateView(generics.ListCreateAPIView):
 
     def get_queryset(self):
 
-        # value = cache.get('recipes_detail')
-        # if not value:
         value = Recipe.objects \
             .select_related('sandwich', 'bread', 'cheese', 'toasting', 'inventor') \
             .prefetch_related('toppings', 'vegetables', 'sauces',
@@ -92,8 +107,6 @@ class RecipeListCreateView(generics.ListCreateAPIView):
                     like_bookmark_count=Count('liker', distinct=True)
                                         + Count('bookmarker', distinct=True),
             )
-            # value = cache.get_or_set('recipes_detail', value, 300)
-
         return value
 
     def get_serializer_context(self):
@@ -109,9 +122,7 @@ class RecipeListCreateView(generics.ListCreateAPIView):
 
 class RecipeRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
 
-    # queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
-
     permission_classes = (
         permissions.IsAuthenticatedOrReadOnly,
         IsRecipeInventorOrReadOnly,
@@ -119,8 +130,6 @@ class RecipeRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
 
-        # value = cache.get('recipes_detail')
-        # if not value:
         value = Recipe.objects \
             .select_related('sandwich', 'bread', 'cheese', 'toasting', 'inventor') \
             .prefetch_related('toppings', 'vegetables', 'sauces',
@@ -131,6 +140,4 @@ class RecipeRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
                     like_bookmark_count=Count('liker', distinct=True)
                                         + Count('bookmarker', distinct=True),
             )
-            # value = cache.get_or_set('recipes_detail', value, 300)
-
         return value

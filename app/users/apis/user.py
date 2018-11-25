@@ -1,5 +1,4 @@
 from django.contrib.auth import get_user_model
-from django.core.cache import cache
 from rest_framework import generics, permissions
 
 from utils.permission.custom_permission import IsOneselfOrReadOnly
@@ -14,11 +13,8 @@ __all__ = (
 
 
 class UserListCreateView(generics.ListCreateAPIView):
-    queryset = User.objects.all()
+    queryset = User.objects.filter(is_superuser=False)
     serializer_class = UserSerializer
-
-    # Data caching by Redis∂
-    # queryset = cache.get_or_set('users', User.objects.all(), 3600)
 
     # 2018.11.14
     # Pass self.request data as context
@@ -34,11 +30,8 @@ class UserListCreateView(generics.ListCreateAPIView):
 
 
 class UserRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = User.objects.all()
+    queryset = User.objects.filter(is_superuser=False)
     serializer_class = UserSerializer
-
-    # Data caching by Redis
-    # queryset = cache.get_or_set('users', User.objects.all(), 3600)
 
     permission_classes = (
         permissions.IsAuthenticatedOrReadOnly,
