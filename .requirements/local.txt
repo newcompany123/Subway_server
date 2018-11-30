@@ -51,7 +51,7 @@ python-dateutil==2.7.3
 pytz==2018.4
 PyYAML==3.12
 redis==2.10.6
-requests==2.18.4
+requests==2.20.1
 s3transfer==0.1.13
 semantic-version==2.5.0
 sentry-sdk==0.5.2
