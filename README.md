@@ -45,12 +45,30 @@ With MySubway, your Subway life will be much simpler!
 
 ## Modeling
 
+<br>
+
+![erd_core](./assets/erd_core.png)
+
+
+This is the ERD(Entity Relationship Diagram) of a few core models of this app. \
+The core models are 'User', 'Recipe', 'Bookmark', 'Collection'.
+
+In the photo, line and circle tell the relationship between two models.
+
+```
+[Many To One]       [Many To One]       [One To Many]       [One To One]
+
+⬤----------⬤       ----------⬤        ⬤-----------     -------------
+```
+
+
+After adjusting this rule to the photo, we can see the relationship with a glance.
+
+The ERD below shows the whole models of the app.
 
 <br>
 
-
-
-## ERD
+![erd_all](./assets/erd_all.png)
 
 <br>
 
@@ -58,14 +76,16 @@ With MySubway, your Subway life will be much simpler!
 
 ---
 
+<br>
+
 # Tips learned from the project
 In this review, the example codes have been simplified to make it easier to understand.
 
 ### TABLE
-[1. Facebook Login Test with access_token](https://github.com/newcompany123/Subway_Server/tree/smallbee#1-facebook-login-test-with-access_token) \
-[2. Make Field lookup '__exact__in' available in Django](https://github.com/newcompany123/Subway_Server/tree/smallbee#2-make-field-lookup-__exact__in-available-in-django) \
-[3. Display extra string data in json API response using CustomExceptionHandler](https://github.com/newcompany123/Subway_Server/tree/smallbee#3-display-extra-string-data-in-json-api-response-using-customexceptionhandler) \
-[4. Find a DjangoFilterBackend bug and fix it with BaseFilterBackend](https://github.com/newcompany123/Subway_Server/tree/smallbee#4-find-a-djangofilterbackend-bug-and-fix-it-with-basefilterbackend) \
+[1. Facebook Login Test with access_token](https://github.com/newcompany123/Subway_Server/tree/master#1-facebook-login-test-with-access_token) \
+[2. Create Field lookup '__exact__in' in Django](https://github.com/newcompany123/Subway_Server/tree/master#2-create-field-lookup-__exact__in-in-django) \
+[3. Display extra string data in json API response using CustomExceptionHandler](https://github.com/newcompany123/Subway_Server/tree/master#3-display-extra-string-data-in-json-api-response-using-customexceptionhandler) \
+[4. Find a DjangoFilterBackend bug and fix it with BaseFilterBackend](https://github.com/newcompany123/Subway_Server/tree/master#4-find-a-djangofilterbackend-bug-and-fix-it-with-basefilterbackend)
 
 
 
@@ -201,7 +221,7 @@ Response data looks like this.
 ```
 
 Now we have normal access_token which we can test our own Facebook Login API with.\
-Now all we have to do is testing Facebook Login API with access_token we just got. And check the response data whether API works correctly.
+What we can do next is testing the Facebook Login API with access_token we just got. Check the response data whether API works correctly.
 
 ```python
     def test_facebook_login(self):
@@ -234,7 +254,7 @@ Now all we have to do is testing Facebook Login API with access_token we just go
 
 
 
-## 2. Make Field lookup '__exact__in' available in Django
+## 2. Create Field lookup '__exact__in' in Django
 
 ### 1) The meaning of Field lookup '__exact__in' and why is is needed
 
@@ -859,7 +879,6 @@ After all, we succeed optimizing queries with no duplicate.
 
 
 In conclusion, the way of using DjangoFilterBackend or FilterSet as guide of Django REST framework still cause a duplicate queries issue. \
-For now, use BaseFilterBackend with filter_queryset method since it fixed the bug. \
-
+For now, use BaseFilterBackend with filter_queryset method since it fixed the bug.
 
 <br>

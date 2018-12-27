@@ -59,3 +59,12 @@ class UserSerializer(serializers.ModelSerializer):
             del ret['email']
 
         return ret
+
+    # def to_representation(self, instance):
+    #     ret = super().to_representation(instance)
+    #     if self.context.get('request') \
+    #             and self.context['request']._request.path == '/user/'\
+    #             and self.context['request']._request.method == 'POST':
+    #         token, _ = Token.objects.get_or_create(user=instance)
+    #         ret['token'] = token.key
+    #     return ret
