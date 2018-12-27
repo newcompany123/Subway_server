@@ -82,10 +82,10 @@ The ERD below shows the whole models of the app.
 In this review, the example codes have been simplified to make it easier to understand.
 
 ### TABLE
-[1. Facebook Login Test with access_token](https://github.com/newcompany123/Subway_Server/tree/smallbee#1-facebook-login-test-with-access_token) \
-[2. Create Field lookup '__exact__in' in Django](https://github.com/newcompany123/Subway_Server/tree/smallbee#2-make-field-lookup-__exact__in-available-in-django) \
-[3. Display extra string data in json API response using CustomExceptionHandler](https://github.com/newcompany123/Subway_Server/tree/smallbee#3-display-extra-string-data-in-json-api-response-using-customexceptionhandler) \
-[4. Find a DjangoFilterBackend bug and fix it with BaseFilterBackend](https://github.com/newcompany123/Subway_Server/tree/smallbee#4-find-a-djangofilterbackend-bug-and-fix-it-with-basefilterbackend)
+[1. Facebook Login Test with access_token](https://github.com/newcompany123/Subway_Server/tree/master#1-facebook-login-test-with-access_token) \
+[2. Create Field lookup '__exact__in' in Django](https://github.com/newcompany123/Subway_Server/tree/master#2-make-field-lookup-__exact__in-available-in-django) \
+[3. Display extra string data in json API response using CustomExceptionHandler](https://github.com/newcompany123/Subway_Server/tree/master#3-display-extra-string-data-in-json-api-response-using-customexceptionhandler) \
+[4. Find a DjangoFilterBackend bug and fix it with BaseFilterBackend](https://github.com/newcompany123/Subway_Server/tree/master#4-find-a-djangofilterbackend-bug-and-fix-it-with-basefilterbackend)
 
 
 
